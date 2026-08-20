@@ -1,0 +1,429 @@
+/* --- GENERAL & RESET --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'TikTok Sans', Arial, sans-serif;
+}
+
+body {
+  background: #DCE6F2;
+  color: #222222;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'TikTok Sans', sans-serif;
+}
+
+h1, h2, h3, .logo-box, .stat-value {
+  font-family: 'Merriweather Sans', sans-serif;
+  font-weight: 700;
+}
+
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- SHARED PATTERNS --- */
+/* Boxes that center their content (logos, icons, avatars) */
+.logo-box,
+.footer-logo-box,
+.chatbot-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Elements with the standard 2px dark wireframe border */
+.navbar,
+.sign-in-btn,
+.chatbot-btn {
+  border: 2px solid #333333;
+}
+
+/* --- HEADER & NAVIGATION --- */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 40px;
+  border-bottom: 2px solid #333333;
+  background: #0E2841;
+}
+
+.logo-box {
+  width: 170px;
+  height: 110px;
+  font-weight: bold;
+}
+
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.navbar {
+  display: flex;
+  border-radius: 1px;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+}
+
+.nav-item {
+  padding: 8px 24px;
+  border-right: 1px solid #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.nav-item:last-child {
+  border-right: none;
+}
+
+.nav-item.active {
+  background: #F36E39;
+}
+
+.sign-in-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 1px;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  background: #F36E39;
+}
+
+/* --- MAIN CONTAINER --- */
+#heading {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #0E2841;
+}
+
+.about-container {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px ;
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.content-section {
+  margin-bottom: 50px;
+}
+
+.content-section h1 {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #0E2841;
+}
+
+.section-title {
+  font-size: 22px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 8px;
+  color: #0E2841;
+}
+
+/* --- QUICK STATS --- */
+.stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 1px;
+}
+
+.stat-icon {
+  font-size: 22px;
+  color: #F36E39;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #555555;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #0E2841;
+}
+
+.stat-subvalue {
+  font-size: 12px;
+  color: #777777;
+}
+
+.stats-note {
+  margin-top: 15px;
+  font-size: 12px;
+  color: #555555;
+  text-align: center;
+}
+
+/* --- MUNICIPAL SNAPSHOT --- */
+.info-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.info-card {
+  flex: 1;
+  min-width: 260px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 1px;
+}
+
+.info-card h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #0E2841;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 6px 0;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+/* --- MAP TOOLBAR (Pin View / Heatmap View toggle) --- */
+.map-toolbar {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.map-toggle-btn {
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid #333333;
+  border-radius: 1px;
+  background: #ffffff;
+  color: #0E2841;
+  cursor: pointer;
+}
+
+.map-toggle-btn.active {
+  background: #F36E39;
+  border-color: #F36E39;
+  color: #ffffff;
+}
+
+/* --- MAP CONTAINER --- */
+.map-wrapper {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  border: 1px solid #262626;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+#issue-map {
+  width: 100%;
+  height: 420px;
+}
+
+/* --- MAP LEGEND --- */
+.map-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 15px;
+  font-size: 13px;
+  color: #0E2841;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid #ffffff;
+}
+
+/* --- CHATBOT WIDGET (Makbot) --- */
+.chatbot-widget {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  padding: 8px 14px;
+  border: 1px solid #333333;
+  border-radius: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.chatbot-text {
+  font-size: 12px;
+  font-weight: 500;
+  max-width: 170px;
+  line-height: 1.3;
+}
+
+.chatbot-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 1px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* --- FOOTER --- */
+.site-footer {
+  border-top: 2px solid #262626;
+  background: #0E2841;
+  padding: 35px 40px 15px;
+  margin-top: auto;
+  color: #ffffff;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto 30px;
+}
+
+.footer-col {
+  flex: 1;
+}
+
+.footer-about {
+  flex: 1.4;
+}
+
+.footer-logo-box {
+  width: 70px;
+  height: 40px;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.footer-about p {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.footer-col h4 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.footer-col ul {
+  list-style: none;
+}
+
+.footer-col ul li {
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.social-icons-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 15px;
+  font-size: 13px;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .site-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+  .navbar {
+    width: 100%;
+    justify-content: space-around;
+  }
+  .nav-item {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .footer-top {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .social-icons-vertical {
+    flex-direction: row;
+  }
+  #issue-map {
+    height: 320px;
+  }
+  .map-toggle-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+  .map-legend {
+    gap: 12px;
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map | M-Unite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="map.css">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet (map) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+</head>
+<body>
+
+  <!-- HEADER & NAVIGATION (Matches Wireframe) -->
+  <header class="site-header">
+   <div class="logo-box">
+      <img src="logo1.png" alt="M-Unite Logo" class="logo-image">
+      <a href="index.html" class="logo-link"></a>
+    </div>
+
+
+    <nav class="navbar">
+      <a href="index.html" class="nav-item">Home</a>
+      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="notices.html" class="nav-item">Notices</a>
+      <a href="map.html" class="nav-item active">Map</a>
+      <a href="about.html" class="nav-item">About Us</a>
+    </nav>
+
+    <div class="header-right">
+      <a href="signin.html" class="sign-in-btn">
+        Sign In <i class="fa-regular fa-circle-user"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN BODY CONTENT -->
+ 
+
+    <!-- 2. Interactive Map -->
+    <section class="content-section text-center">
+      <h1 id="heading">Makhanda Community Map</h1>
+
+      <h2 class="section-title text-center">Reported Issues Near You</h2>
+
+      <div class="map-toolbar">
+        <button id="btn-pins" class="map-toggle-btn active">Pin View</button>
+        <button id="btn-heat" class="map-toggle-btn">Heatmap View</button>
+      </div>
+
+      <div class="map-wrapper">
+        <div id="issue-map"></div>
+      </div>
+
+      <div class="map-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#3399CC;"></span> Water Leak</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#F36E39;"></span> Road Defect</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#E3B505;"></span> Electrical Fault</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#6B8E23;"></span> Sanitation</div>
+      </div>
+    </section>
+
+     <main class="about-container">
+
+    <!-- 1. Page Heading -->
+   
+
+    <!-- 3. Additional Informative Stats -->
+    <section class="content-section">
+      <h2 class="section-title text-center">Municipal Snapshot</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>Reports by Category</h3>
+          <div class="info-row"><span>Water Leaks</span><span>18</span></div>
+          <div class="info-row"><span>Road Defects</span><span>14</span></div>
+          <div class="info-row"><span>Electrical Faults</span><span>9</span></div>
+          <div class="info-row"><span>Sanitation</span><span>6</span></div>
+        </div>
+
+        <div class="info-card">
+          <h3>Water &amp; Load-Shedding</h3>
+          <div class="info-row"><span>Current water schedule</span><span>Normal supply</span></div>
+          <div class="info-row"><span>Load-shedding stage</span><span>Stage 0</span></div>
+          <div class="info-row"><span>Next scheduled maintenance</span><span>25 Aug</span></div>
+          <div class="info-row"><span>Reservoir status</span><span>Stable</span></div>
+        </div>
+      </div>
+    <div class="stats-grid">
+    
+
+    
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <div class="stat-label">Population (Makana Municipality)</div>
+            <div class="stat-value">~93,000</div>
+            <div class="stat-subvalue">2022 municipal estimate</div>
+          </div>
+        </div>
+
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div>
+            <div class="stat-label">Active Reports</div>
+            <div class="stat-value">47</div>
+            <div class="stat-subvalue">12 resolved this week</div>
+          </div>
+        </div>
+      </div>
+    <section class="dam-levels">
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-water"></i></div>
+        <div>
+        <div class="stat-label">Dam Levels</div>
+        <div class="stat-value">61%</div>
+        <div>Grey Dam - 61%</div>
+        <div>Buffels Dam - 59%</div>
+        <div>Loerie Dam - 64%</div>
+        </div>
+    </div>    </section>
+
+
+    </section>
+  
+      
+
+  </main>
+
+  <!-- FLOATING CHATBOT WIDGET -->
+  <aside class="chatbot-widget">
+    <span class="chatbot-text">Want to chat with Makbot, our AI assistant?</span>
+    <button class="chatbot-btn" aria-label="Open Makbot AI Chat">
+      <i class="fa-regular fa-comment-dots"></i>
+    </button>
+  </aside>
+
+  <!-- FOOTER (Matches Wireframe) -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-col footer-about">
+        <div class="footer-logo-box">
+            <img src="logo1.png" alt="M-Unite Logo" class="logo-image"></div>
+        <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="reports.html">Reports</a></li>
+          <li><a href="notices.html">Notices</a></li>
+          <li><a href="map.html">Map</a></li>
+          <li><a href="about.html">About Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Report Website Bugs</a></li>
+          <li><a href="#">Volunteer</a></li>
+          <li><a href="mailto:info@munite.co.za">info@munite.co.za</a></li>
+          <li><a href="tel:+27000000000">+27 000000000</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Terms Of Use</a></li>
+          <li><a href="#">Copyright Notice</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-socials">
+        <h4>Socials</h4>
+        <div class="social-icons-vertical">
+          <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://github.com" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+          <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; M-Unite 2026</p>
+    </div>
+  </footer>
+
+  <!-- Leaflet + heatmap plugin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+  <script>
+    // --- Sample reported issues around Makhanda (demo data) ---
+    const issues = [
+      { lat: -33.3120, lng: 26.5225, type: "water",  title: "Burst water main",        area: "High Street, CBD" },
+      { lat: -33.2980, lng: 26.5470, type: "road",   title: "Large pothole",           area: "Joza" },
+      { lat: -33.3050, lng: 26.5380, type: "electrical", title: "Downed power line",   area: "Fingo Village" },
+      { lat: -33.2900, lng: 26.5520, type: "water",  title: "Leaking pipe",            area: "Extension 6" },
+      { lat: -33.3115, lng: 26.5200, type: "road",   title: "Collapsed storm drain",   area: "Somerset Street" },
+      { lat: -33.2850, lng: 26.5550, type: "water",  title: "No water supply",         area: "Vukani" },
+      { lat: -33.3000, lng: 26.5450, type: "electrical", title: "Flickering streetlights", area: "Grahamstown East" },
+      { lat: -33.3180, lng: 26.5150, type: "road",   title: "Road surface erosion",    area: "Sunnyside" },
+      { lat: -33.3020, lng: 26.5320, type: "water",  title: "Sewage overflow",         area: "Tantyi" },
+      { lat: -33.3200, lng: 26.5100, type: "sanitation", title: "Blocked drain",       area: "Hooggenoeg" },
+      { lat: -33.2930, lng: 26.5400, type: "sanitation", title: "Overflowing bin area", area: "Extension 9" },
+      { lat: -33.3070, lng: 26.5260, type: "electrical", title: "Faulty traffic light", area: "Beaufort Street" }
+    ];
+
+    const typeColors = {
+      water: "#3399CC",
+      road: "#F36E39",
+      electrical: "#E3B505",
+      sanitation: "#6B8E23"
+    };
+
+    const typeLabels = {
+      water: "Water Leak",
+      road: "Road Defect",
+      electrical: "Electrical Fault",
+      sanitation: "Sanitation"
+    };
+
+    // Init map centered on Makhanda
+    const map = L.map('issue-map', { scrollWheelZoom: false }).setView([-33.3080, 26.5340], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 18
+    }).addTo(map);
+
+    // Pin layer
+    const pinLayer = L.layerGroup();
+    issues.forEach(issue => {
+      const marker = L.circleMarker([issue.lat, issue.lng], {
+        radius: 8,
+        fillColor: typeColors[issue.type],
+        color: "#ffffff",
+        weight: 2,
+        fillOpacity: 0.9
+      }).bindPopup(`<strong>${issue.title}</strong><br>${typeLabels[issue.type]}<br>${issue.area}`);
+      pinLayer.addLayer(marker);
+    });
+    pinLayer.addTo(map);
+
+    // Heatmap layer
+    const heatPoints = issues.map(issue => [issue.lat, issue.lng, 0.8]);
+    const heatLayer = L.heatLayer(heatPoints, { radius: 35, blur: 25, maxZoom: 15 });
+
+    // Toggle behaviour
+    const btnPins = document.getElementById('btn-pins');
+    const btnHeat = document.getElementById('btn-heat');
+
+    btnPins.addEventListener('click', () => {
+      map.removeLayer(heatLayer);
+      pinLayer.addTo(map);
+      btnPins.classList.add('active');
+      btnHeat.classList.remove('active');
+    });
+
+    btnHeat.addEventListener('click', () => {
+      map.removeLayer(pinLayer);
+      heatLayer.addTo(map);
+      btnHeat.classList.add('active');
+      btnPins.classList.remove('active');
+    });
+  </script>
+
+</body>
+</html>
