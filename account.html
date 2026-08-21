@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Account - M-Unite</title>
+<link rel="stylesheet" href="account.css">
+</head>
+<body>
+
+<header>
+  <h2>M-Unite</h2>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="reports.html">Reports</a>
+    <a href="notices.html">Notices</a>
+    <a href="map.html">Map</a>
+    <a href="about.html">About Us</a>
+  </nav>
+</header>
+
+<p id="signed-out" style="display:none;">You are signed out. <button id="login-btn">Log In</button></p>
+
+<main id="main-content">
+  <h1>My Account</h1>
+
+  <section>
+    <h2>Profile</h2>
+    <p>Name: <span id="p-name">Amahle Mtshali</span></p>
+    <p>Email: <span id="p-email">amahle.mtshali@example.com</span></p>
+    <p>Phone: <span id="p-phone">0731234567</span></p>
+    <p>Ward: Ward 5, Makhanda Central</p>
+    <p>Role: Community Member</p>
+  </section>
+
+  <section>
+    <h2>My Reports</h2>
+    <ul id="report-list"></ul>
+  </section>
+
+  <section>
+    <h2>Settings</h2>
+    <form id="settings-form">
+      <label>First name: <input type="text" id="name"></label>
+      <label>Email: <input type="email" id="email"></label>
+      <label>Phone: <input type="text" id="phone"></label>
+      <button type="submit">Save</button>
+    </form>
+  </section>
+
+  <button id="logout-btn">Log Out</button>
+</main>
+
+<script src="account.js"></script>
+</body>
+</html>
