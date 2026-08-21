@@ -1,0 +1,654 @@
+
+body{
+    margin: 0;
+    font-family: "TikTok Sans", sans-serif;  
+    background-color:  #DCE6F2;
+}
+/* Titles and headings */
+h1,h2,h3 {
+    font-family: "Merriweather Sans", sans-serif;
+}
+
+/*Navigation bar*/
+#notif-header {
+    display: flex;
+    align-items: center;
+    background-color: #0E2841;
+    color: #ffffff;
+    padding: 0.75rem 2rem;
+}
+header p {
+    margin: 0;
+    font-weight: bold;
+}
+header nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+header nav a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.5rem 0.75rem;
+}
+
+header nav a:hover {
+    color: #DCE6F2;
+}
+
+header nav a[aria-current="page"] {
+    color: #F36E39;
+}
+
+/*FILTERING TABS*/
+.filtering-tabs {
+    padding: 2rem;
+    position: relative;
+}
+
+.filtering-tabs h1 {
+    display: inline;
+    margin: 0;
+    font-size: 1.75rem;
+}
+
+.filtering-tabs h1 + span {  /* My noficications and  unread part*/
+    display: inline-block;
+    margin-left: 0.75rem;
+    background-color: #F36E39;
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    vertical-align: middle;
+}
+
+.filtering-tabs > p {
+    margin: 0;
+    color: #4A4A46;
+}
+
+.filtering-tabs > button {
+    position: absolute;
+    top: 2rem;
+    right: 6rem;
+    margin: 0;
+    background: #ffffff;
+    border: 2px solid #ffffff;
+    color: #262626;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    height: 40px;
+    width: 120px;
+    border-radius: 15px;
+}
+
+.filtering-tabs > button:hover {
+    color: #ffffff;
+    background-color: #F36E39;
+    border: 1px solid #F36E39;
+}
+/* THE TABS - ALL, TICKETS, WARD, GENERAL */
+.notif-type-tab {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.filter-top-row { /*Top row is the part with all, my tickets, my wards, general tabs*/
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.filter-bottom-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    width: 100%;
+}
+/*The search bar*/
+.notification-search {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #D8D5C8;
+    border-radius: 12px;
+    height: 38px;
+    width: 650px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.search-icon {
+    font-size: 1.3rem;
+    margin-left: 0.75rem;
+    color: #4A4A46;
+}
+
+.notification-search input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.9rem;
+    width: 50%;
+    padding: 0 0.75rem;
+}
+
+.notification-search input::placeholder {
+    color: #4A4A46;
+}
+
+/*The category bar*/
+.category-filter {
+    height: 40px;
+    width: 210px;
+    padding: 0 0.9rem;
+    background-color: #ffffff;
+    border: 1px solid #D8D5C8;
+    border-radius: 12px;
+    color: #262626;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Main category tabs */
+.notif-type-tab nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: #ffffff;
+    border-radius: 50px;
+    padding: 0.35rem;
+    width: fit-content;
+}
+
+
+/* Individual category tabs */
+.notif-type-tab nav button {
+    background-color: transparent;
+    border: none;
+    color: #262626;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+
+/* Hover */
+.notif-type-tab nav button:hover {
+    background-color: #F36E39;
+}
+
+
+/* ACTIVE TAB */
+.notif-type-tab nav button[aria-pressed="true"] {
+    background-color: #0E2841;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/*The search bar and toggle button*/
+.notif-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    
+}
+
+/* UNREAD TOGGLE*/
+.notif-type-tab > button {
+    background-color: #ffffff;
+    border: none;
+    color: #262626;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: 
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+
+/* Unread hover */
+.notif-type-tab > button:hover {
+    background-color: #DCE6F2;
+}
+
+
+/* UNREAD TOGGLE ON */
+.notif-type-tab > button[aria-pressed="true"] {
+    background-color: #0E2841;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* UNREAD TOGGLE */
+
+.unread-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.9rem;
+    color: #262626;
+}
+
+
+/* Hide the actual checkbox */
+.unread-toggle input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+/* Toggle background */
+.toggle-slider {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background-color: rgb(163, 161, 161);
+    border-radius: 999px;
+    transition: background-color 0.2s ease;
+}
+
+
+/* Toggle circle */
+.toggle-slider::before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    top: 2px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+/* ON state */
+.unread-toggle input:checked + .toggle-slider {
+    background-color: #0E2841;
+}
+
+/* Move circle when ON */
+.unread-toggle input:checked + .toggle-slider::before {
+    transform: translateX(16px);
+}
+
+/*This Section Is for the individual notifications*/
+/* NOTIFICATION SECTIONS */
+
+.today-notices,
+.yesterday-notices,
+.earlier-notices {
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+}
+
+.today-notices h2,
+.yesterday-notices h2,
+.earlier-notices h2 {
+    font-family: "Merriweather Sans", sans-serif;
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+}
+
+
+/* NOTIFICATION CARD */
+.notif-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1.15rem 1.25rem;
+    background-color: #ffffff;
+    border: 1px solid #D8D5C8;
+    border-radius: 14px;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+}
+
+/* Unread notification */
+.notif-card.unread {
+    background-color: #F7FAFC;
+}
+
+/* NOTIFICATION ICON */
+.notif-icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    background-color: #DCE6F2;
+}
+.notif-icon .material-symbols-outlined {
+    font-size: 24px;
+}
+
+/* NOTIFICATION CONTENT*/
+.notif-content {
+    flex: 1;
+    min-width: 0;
+}
+
+/* TITLE & TIME */
+.notif-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.35rem;
+}
+
+.notif-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+}
+
+.notif-title {
+    margin: 0;
+    font-family: "Merriweather Sans", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0E2841;
+}
+
+
+/* UNREAD DOT to indicate unread notics for now*/
+.unread-dot {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    background-color: #F36E39;
+    border-radius: 50%;
+}
+
+/* STATUS BADGE (might not be necessry) */
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background-color: #EAF3F8;
+    border: 1px solid #A9D3E8;
+    color: #0E2841;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* TIME on the far right of each notice card */
+
+.time {
+    flex-shrink: 0;
+    color: #6B6B67;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.8rem;
+}
+
+
+/* MESSAGE */
+
+.notif-msg {
+    margin: 0 0 0.65rem 0;
+    color: #4A4A46;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+/*Show more link*/
+.notif-msg a {
+    color: #0E2841;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.notif-msg a:hover {
+    text-decoration: none;
+}
+
+/* FOOTER of the notice card / CATEGORY */
+.notif-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #6B6B67;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.78rem;
+}
+
+.notif-category {
+    font-weight: 600;
+}
+
+.notif-separator {
+    color: #A0A09B;
+}
+
+
+/* DISMISS X right after the time */
+.dismiss-btn {
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-left: auto;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #6B6B67;
+    font-family: Arial, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.dismiss-btn:hover {
+    background-color: #DCE6F2;
+    color: #0E2841;
+}
+.dismiss-btn .material-symbols-outlined {
+    font-size: 15px;
+}
+
+/*Appears only when there are no notices*/
+.no-notifications {
+    text-align: center;
+    margin: 3rem 0;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 1rem;
+    color: #4A4A46;
+}
+
+/*Appears only when there are no unread notices*/
+.no-unread-notifications {
+    text-align: center;
+    margin: 3rem 0;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 1rem;
+    color: #4A4A46;
+}
+
+/* RESPONSIVE DESIGN*/
+
+/* TABLET / small laptop */
+@media (max-width: 900px) {
+    .notification-search {
+        width: 100%;
+    }
+    .filter-bottom-row {
+        flex-wrap: wrap;
+    }
+    .category-filter {
+        width: 100%;
+    }
+
+    .filtering-tabs {
+        padding: 1.5rem;
+    }
+
+    .today-notices,
+    .yesterday-notices,
+    .earlier-notices {
+        padding: 0 1.5rem;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+
+    /* Header: stack logo above nav, let nav links wrap */
+    #notif-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+    }
+
+    header nav {
+        flex: none;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        width: 100%;
+    }
+
+    header nav a {
+        padding: 0.25rem 0;
+    }
+
+    /* Filtering tabs area */
+    .filtering-tabs {
+        padding: 1.25rem;
+    }
+
+    .filtering-tabs h1 {
+        font-size: 1.4rem;
+    }
+
+    /* "Mark all read button*/
+    .filtering-tabs > button {
+        position: static;
+        display: block;
+        margin-top: 0.75rem;
+        width: 50%;
+    }
+
+    /* Category tab pills for horizontal scroll*/
+    .filter-top-row {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .notif-type-tab nav {
+        width: 100%;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .notif-type-tab nav button {
+        flex-shrink: 0;
+        padding: 0.5rem 0.85rem;
+        font-size: 0.85rem;
+    }
+
+    .unread-toggle {
+        font-size: 0.85rem;
+    }
+
+    /* Notification cards */
+    .today-notices,
+    .yesterday-notices,
+    .earlier-notices {
+        padding: 0 1rem;
+    }
+
+    .notif-card {
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+
+    .notif-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .notif-icon .material-symbols-outlined {
+        font-size: 20px;
+    }
+
+    .notif-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .notif-title-row {
+        flex-wrap: wrap;
+        row-gap: 0.35rem;
+    }
+
+    .notif-title {
+        font-size: 0.9rem;
+    }
+
+    .time {
+        font-size: 0.75rem;
+    }
+
+    .notif-footer {
+        flex-wrap: wrap;
+    }
+}
+
+/* SMALL PHONE */
+@media (max-width: 420px) {
+
+    .filtering-tabs h1 {
+        display: block;
+    }
+
+    .filtering-tabs h1 + span {
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+
+    .notif-card {
+        flex-wrap: wrap;
+    }
+
+    .dismiss-btn {
+        margin-left: auto;
+    }
+}
