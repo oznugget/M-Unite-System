@@ -14,12 +14,34 @@
     if ($stmt === false) {
         error_log("Prepare failed: " . $conn->error);
     } else {
-        $stmt->bind_param("s", $username); // "s" because username is a string (email)
+        $stmt->bind_param("s", $username); 
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
         $unread_count = $row['unread_count'];
         $stmt->close();
     }
+
+    //implementing  filteiring tabs
+   
+    $notices = [];
+    $sql2 = "SELECT notice_id, title, content, notif_type, is_read, is_dismissed FROM notices WHERE username = ? AND is_dismissed = 0
+            ORDER BY timestamp DESC";
+
+    $stmt2 = $conn->prepare($sql2);
+    if ($stmt2 === false) {
+        error_log("Prepare failed: " . $conn->error);
+    } else {
+        $stmt2->bind_param("s", $username);
+        $stmt2->execute();
+        $result2 = $stmt2->get_result();
+
+        while ($row = $result2->fetch_assoc()) {
+            $notices[] = $row;
+        }
+        $stmt2->close();
+    }
+
+
 
 ?>

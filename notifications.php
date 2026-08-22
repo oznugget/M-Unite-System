@@ -41,8 +41,8 @@
                     <!-- Existing tabs -->
                     <nav aria-label="Notification filters">
                         <button type="button" aria-pressed="true" data-filter="all">All</button>
-                        <button type="button" aria-pressed="false" data-filter="ticket">Ticket</button>
-                        <button type="button" aria-pressed="false" data-filter="ward">Ward</button>
+                        <button type="button" aria-pressed="false" data-filter="report">My Reports</button>
+                        <button type="button" aria-pressed="false" data-filter="ward">My Ward</button>
                         <button type="button" aria-pressed="false" data-filter="general"> General</button>
                     </nav>
 
@@ -84,7 +84,7 @@
                 <h2 id="today-heading" class="">Today</h2>
                 
                 <!--Notification card 1-->    
-                <article class="notif-card unread" data-notification-id="1" data-notif-type="ticket" data-category="water">
+                <article class="notif-card unread" data-notification-id="1" data-notif-type="report" data-category="water">
 
                     <!-- Notification icon -->
                     <div class="notif-icon">
@@ -169,7 +169,7 @@
                 <h2 id="yesterday-heading">Yesterday</h2>
 
                 <!-- Notification card 3 -->
-                <article aria-label="unread" class="notif-card unread" data-notification-id="3" data-notif-type="ticket" data-category="electricity">
+                <article aria-label="unread" class="notif-card unread" data-notification-id="3" data-notif-type="report" data-category="electricity">
 
                     <div class="notif-icon"> <span class="material-symbols-outlined">bolt</span></div>
                     <div class="notif-content">
