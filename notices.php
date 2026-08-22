@@ -14,7 +14,7 @@
     if ($stmt === false) {
         error_log("Prepare failed: " . $conn->error);
     } else {
-        $stmt->bind_param("s", $username); // "s" because username is a string (email)
+        $stmt->bind_param("s", $username); 
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
