@@ -1,0 +1,579 @@
+
+/*------RESET THE  DEFAULT MARGINS SET BY THE BROWSER ---------------*/
+
+*{
+    box-sizing: border-box;
+
+    /*REMOVING THE DEFAULT BROWSER SPACING AROUND ELEMENTS*/
+    margin: 0;
+    padding: 0;
+}
+
+img{
+    /*We are stoping images from overflowing in smaller screens*/
+
+    max-width: 100%;
+
+    /*REMOVES THE GAP UNDERNEATH IMAGES */
+    display: block;
+
+}
+
+ul{
+    /*REMOVE THE DEFAULT BROWSER BULLET POINTS */
+    list-style: none;
+
+}
+
+a{
+    /* REMOVE THE DEFAULT BLUE LINE FOR LINKS SO THAT IT INHERITES AND MATCHES THE THE TEXT COLOUR AROUND IT */
+    color: inherit;
+    text-decoration: none;
+
+}
+
+button{
+    font: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+[hidden]{
+    display: none !important;
+}
+
+a, button:not(:disabled){
+    transition: opacity 0.15s ease;
+}
+
+a:hover, button:not(:disabled):hover{
+    opacity: 0.75;
+}
+
+
+
+/* STYLING THE COLOUR PALATTE OF ENTIRE PAGE, NOT JUST THE BODY CONTENT */
+:root{
+
+    /* 60% COVERAGE - BACKGROUP COLOUR OF THE BODY OF EVERY PAGE */
+    --color-bg: #DCE6F2;
+
+    /* 30% COVERAGE - HEADERS AND FOOTERS */
+    --color-primary: #0E2841;
+
+    /* 10% COVERAGE - TEXT HEADERS AND BUTTONS */
+    --color-accent: #F36E39;
+
+    /* TEXT COLOUR ON TOP OF THE DARK COLOUR */
+    --color-text-on-dark: #FFFFFF;
+
+    /* TEXT COLOUR USED ON TOP OF THE LIGHT COLOUR */
+    --color-text-on-light: #262626;
+}
+
+
+
+/* STYLING THE FONTS */
+:root{
+    
+    --font-heading: 'Merriweather Sans', sans-serif;
+    --font-body: 'TikTok Sans', sans-serif;
+
+}
+
+
+body{
+    font-family: var(--font-body);    
+    color: var(--color-text-on-light);
+    background-color: var(--color-bg);
+
+
+    /* LINE HEIGHT TO CONTROL THE VERTICAL SPACING BETWEEN LINES, A RECOMMENED BASELINE OF: */
+    line-height: 1.5;
+}
+
+
+h1, h2, h3, h4, button {
+
+    font-family: var(--font-heading);
+
+}
+
+
+.visually-hidden{
+
+    /* This is for sighted users when using the ai chatbot */
+
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+
+.site-header{
+
+    background-color: var(--color-primary);
+    color: var(--color-text-on-dark);
+
+
+    display: flex;
+    align-items:center;
+
+    justify-content: space-between;
+
+    padding: 1rem 1.5rem;
+
+}
+
+
+.main-nav ul{
+    
+    display: flex;
+    gap: 1.5rem;
+
+}
+
+.main-nav a{
+
+    font-family: var(--font-body);
+
+}
+
+
+/*HIGHLIGHTS THE PAGE THAT WE ARE CURRENTLY ON USING ARIA-CURRENT DEFINED IN THE REPORTS LINK */
+
+.main-nav a[aria-current="page"]{
+    color: var(--color-accent);
+}
+
+
+.account-icon img{
+
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+
+
+/*======================MAP AND FORM SECTION=========================*/
+
+.reports-page{
+    padding: 2rem 1.5rem;
+
+}
+
+.reports-section{
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.map-container{
+
+    flex: 1 1 400px;
+    min-height: 420px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--color-primary);
+    background-color: #FFFFFF;
+
+}
+
+.map-placeholder-text{
+    color: var(--color-text-on-light);
+    opacity: 0.6;                       /*This makes the the txt fade slightly so it visually reads as a placeholder, not real content */
+
+
+}
+
+.report-form{
+    
+    flex: 1 1 400px;
+
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-primary);
+    padding: 1.5rem;
+
+}
+
+.report-form h2{
+    margin-bottom: 1rem;
+
+}
+
+.form-field{
+    margin-bottom: 1.25rem;
+
+}
+
+.form-field{
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+
+}
+
+.required{
+    color: var(--color-accent);
+    margin-left: 0.15rem;
+}
+
+.form-field input[type = "text"], .form-field select, .form-field textarea{
+
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid var(--color-primary);
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+
+}
+
+.form-field textarea{
+    min-height: 120px;
+    resize: vertical;
+
+}
+
+.location-input-row{
+    display: flex;
+    gap: 0.5rem;
+
+}
+
+.location-input-row input{
+
+    flex: 1;
+}
+
+.use-my-location-btn{
+    white-space: nowrap;
+    padding: 0 0.75rem;
+    color: var(--color-primary);
+
+}
+
+.char-count{
+
+    display: block;
+    text-align: right;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    opacity: 0.7;
+}
+
+.upload-dropzone{
+    border: 1px dashed var(--color-primary);
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.upload-dropzone input[type = "file"]{
+
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.submit-btn{
+    background-color: var(--color-accent);
+    color: var(--color-text-on-dark);
+    padding: 0.75rem 2rem;
+    font-weight: 700;
+}
+
+.submit-btn:disabled{
+    background-color: #999999;
+    cursor: not-allowed;
+}
+
+
+/*=================================== PAST REPORTS ========================= */
+
+.past-reports-header{
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+
+}
+
+.filter-btn{
+
+    border: 1px solid var(--color-primary);
+    padding: 0.5rem 1rem;
+    color: var(--color-primary);
+
+}
+
+.report-cards-list{
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));   /* This means that fit as many 240px+
+                                                                    wide columns as will comfortably fit the screen, and let
+                                                                    them stretch evenly (1fr) to fill any leftover space. */
+
+    gap: 1.25rem;
+}
+
+.report-card{
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-primary);
+    padding: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    transition: background-color 0.15s ease;
+
+}
+
+.report-card:hover{
+    background-color: var(--color-bg);
+}
+
+
+
+.report-card-title{
+    color: var(--color-primary);
+
+}
+
+.report-card-image{
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-bg);
+
+}
+
+.report-card-image img{
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;     /*Crops the image to fit inside the box without distortion */
+}
+
+.no-image-text{
+    opacity: 0.6;
+    font-size: 0.85rem;
+}
+
+.report-card-meta{
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.report-status{
+    font-weight: 700;
+
+}
+
+.report-id{
+    font-size:0.85rem;
+    opacity: 0.7;
+
+}
+
+.report-time{
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.delete-report-btn{
+
+    align-self: flex-end;
+    color: var(--color-accent);
+}
+
+/* ===================== AI MATBOK =================== */
+
+.ai-chat-widget{
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    z-index: 100;
+
+}
+
+.ai-chat-mascot{
+    width: 4.5rem;
+    height: 4.5rem;
+    object-fit: contain;
+}
+
+.ai-chat-prompt{
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-primary);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.ai-chat-icon{
+    background-color: var(--color-accent);
+    color: var(--color-text-on-dark);
+
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+
+    font-size: 1.25rem;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ai-chat-popup{
+    position: fixed;
+    right: 1.5rem;
+    bottom: 5.5rem;
+
+    width: 320px;
+    max-width: calc(100vw - 3rem);   /*Stops the pop up overfollowing off-screen on narrow devices */
+
+
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-primary);
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 100;
+
+
+
+}
+.ai-chat-popup-header{
+    background-color: var(--color-primary);
+    color: var(--color-text-on-dark);
+
+    display: flex;
+    align-items: center;
+     justify-content: space-between;
+
+     padding: 0.75rem 1rem;
+}
+
+.ai-chat-close-btn{
+    color: var(--color-text-on-dark);
+    font-size: 1.25rem;
+
+
+}
+
+.ai-chat-messages{
+
+    flex: 1;
+    min-height: 220px;
+
+    padding: 0.75rem 1rem;
+    overflow-y: auto;
+}
+
+
+.ai-chat-input-row{
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+
+    border-top: 1px solid var(--color-bg);
+
+}
+
+.ai-chat-input-row input{
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid var(--color-primary);
+    font-family: var(--font-body);
+}
+
+.ai-chat-input-row button{
+    background-color: var(--color-accent);
+    color: var(--color-text-on-dark);
+    padding: 0.5rem 1rem;
+}
+
+/*====================== footer ================ */
+
+.site-footer{
+    background-color: var(--color-primary);
+    color: var(--color-text-on-dark);
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+
+    padding: 2.5rem 1.5rem 1.5rem;
+}
+
+.footer-brand{
+    flex: 1 1 240px;
+}
+
+.footer-brand img{
+    width: 8rem;
+    margin-bottom: 0.75rem;
+
+}
+
+.footer-brand p{
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+.footer-col{
+    flex: 1 1 140px;
+}
+
+.footer-col h3{
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.footer-col ul li{
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+
+}
+
+.social-links{
+    display: flex;
+    gap: 0.75rem;
+}
+
+.social-links img{
+    width: 1.5rem;
+    height: 1.5rem;
+
+}
+
+.copyright{
+    width: 100%;
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin-top: 2rem;
+}
