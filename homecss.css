@@ -1,0 +1,218 @@
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 40px;
+  border-bottom: 2px solid #333333;
+  background: #0E2841;
+}
+
+.logo-box {
+  width: 170px;
+  height: 110px;
+  font-weight: bold;
+}
+
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; 
+}
+
+.navbar {
+  display: flex;
+  border-radius: 1px;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+}
+
+.nav-item {
+  padding: 8px 24px;
+  border-right: 1px solid #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.nav-item:last-child {
+  border-right: none;
+}
+
+
+.sign-in-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 1px;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  background: #F36E39;
+
+}
+
+
+#carousel {
+    height: 100vh;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    position: relative;
+    
+}
+
+#carousel img{
+    width: 90%;
+    height: 80%;
+    object-fit: cover;
+    display: block;
+    z-index: -5;
+    justify-self: center;
+    position: relative;
+}
+
+.carousel-text {
+    position: absolute;
+    top: 50%; 
+    left: 2rem;
+    transform: translateY(-50%); 
+    margin-left: 5rem;
+    text-align: left;
+    color: white;
+    padding: 1rem;
+    z-index: 5;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 1.5rem;
+    
+}
+
+.carousel-widgets{
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    bottom: 2rem;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    
+}
+
+.weatherwidget-io {
+    position: absolute;
+    top: 25rem;
+    right: 2rem;
+    left: 80rem;
+    z-index: 5;
+}
+
+
+.mkrpt {
+    position: absolute;
+    bottom: 2rem;
+    left: 80rem;
+    top: 45rem;
+    pointer-events: auto;
+    width: 8rem;
+    height: 3rem;
+    background-color: orangered;
+    color: white;
+}
+
+.site-footer {
+  border-top: 2px solid #262626;
+  background: #0E2841;
+  padding: 35px 40px 15px;
+  margin-top: auto;
+  color: #ffffff;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto 30px;
+}
+
+.footer-col {
+  flex: 1;
+}
+
+.footer-about {
+  flex: 1.4;
+}
+
+.footer-logo-box {
+  width: 70px;
+  height: 40px;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.footer-about p {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.footer-col h4 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.footer-col ul {
+  list-style: none;
+}
+
+.footer-col ul li {
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.social-icons-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 15px;
+  font-size: 13px;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .site-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+  .navbar {
+    width: 100%;
+    justify-content: space-around;
+  }
+  .nav-item {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .steps-grid,
+  .footer-top {
+    flex-direction: column;
+  }
+  .footer-top {
+    gap: 20px;
+  }
+  .social-icons-vertical {
+    flex-direction: row;
+  }
+}

@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+
+    <link rel="stylesheet" href="homecss.css">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
+</head>
+
+
+<body>
+
+    <header class="site-header">
+
+    <div class="logo-box">
+      <img src="logo1.png" alt="M-Unite Logo" class="logo-image">
+      <a href="index.html" class="logo-link"></a>
+    </div>
+
+    <nav class="navbar">
+      <a href="index.html" class="nav-item">Home</a>
+      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="notices.html" class="nav-item">Notices</a>
+      <a href="map.html" class="nav-item">Map</a>
+      <a href="about.html" class="nav-item active">About Us</a>
+    </nav>
+
+    <div class="header-right">
+      <a href="signin.html" class="sign-in-btn">
+        Sign In <i class="fa-regular fa-circle-user"></i>
+      </a>
+    </div>
+    </header>
+
+    
+
+    <section id = "carousel">
+        <img src = mt.jpg alt = "RU Stylish" width = "50%" height = "500px">
+        <div class = "carousel-text">
+            <h1>Sibanye</h1>
+            <p>We Are One</p>   
+        </div>
+
+        <div class = "carousel-widgets">
+            <a class="weatherwidget-io" href="https://forecast7.com/en/n33d3126d53/grahamstown/" data-label_1="MAKHANDA" 
+            data-label_2="WEATHER" data-font="Roboto" data-mode="Current" data-theme="pure" style = "width: 8rem; height:5rem;" >MAKHANDA WEATHER</a>
+            <script>
+            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+            </script>
+            <button class = "mkrpt">Make Report</button>
+        </div>
+    </section>
+
+
+     <!-- FOOTER (Matches Wireframe) -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <!-- Left Info -->
+      <div class="footer-col footer-about">
+        <div class="footer-logo-box">
+            <img src="logo1.png" alt="M-Unite Logo" class="logo-image">
+        </div>
+        <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
+      </div>
+
+      <!-- Pages Column -->
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="reports.html">Reports</a></li>
+          <li><a href="notices.html">Notices</a></li>
+          <li><a href="map.html">Map</a></li>
+          <li><a href="about.html">About Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Connect Column -->
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Report Website Bugs</a></li>
+          <li><a href="#">Volunteer</a></li>
+          <li><a href="mailto:info@munite.co.za">info@munite.co.za</a></li>
+          <li><a href="tel:+27000000000">+27 000000000</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources Column -->
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Terms Of Use</a></li>
+          <li><a href="#">Copyright Notice</a></li>
+        </ul>
+      </div>
+
+     <div class="footer-col footer-socials">
+        <h4>Socials</h4>
+        <div class="social-icons-vertical">
+          <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://github.com" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+          <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+
+  
+    <div class="footer-bottom">
+      <p>&copy; M-Unite 2026</p>
+    </div>
+  </footer>
+</body>
+</html>
