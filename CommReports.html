@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1.0">
+        <title>Reports</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@400;700&family=TikTok+Sans:wght@400;500&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+        <link rel = "stylesheet" href = "ReportStyle.css">
+    </head>
+
+    <body>
+        <!-- HEADER AND NAVIGATION -->
+        <header class = "site-header">
+            <a href = "index.html" class = "logo">
+                <img src = "pictures/logo.png" alt = "M-Unite logo">
+            </a>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="CommReports.html" class="active" aria-current="page">Reports</a></li>
+                    <li><a href="notices.html">Notices</a></li>
+                    <li><a href="map.html">Map</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                </ul>
+            </nav>
+
+            <button class = "account-icon" aria-label = "My Account">
+                <img src = "pictures/account-icon.svg" alt = "">
+            </button>
+
+        </header>
+
+        <!--MAIN CONTENT -->
+        <main class="reports-page">
+
+            <section class = "reports-section">
+                <div class = "map-wrapper">
+                <!--------putting the map here -->
+                <div id = "report-map" class = "map-container" role = "application" aria-label = "Map of Makhanda for report location"></div>
+
+                <p class = "map-hint">Click the map to drop a pin at the fault location</p>
+
+                </div>
+
+                <!--------report form goes here -->
+                <form class = "report-form" novalidate>    <!---turning off the default browser pop ups -->
+                    <h2>Report</h2>
+
+                    <div class = "form-field">
+                        <label for = "location-address">Location address<span class = "required">*</span></label>
+
+                        <div class = "location-input-row">
+                            <input type = "text" id = "location-address" name = "location-address" required>
+                            <button type = "button" class = "use-my-location-btn">Use My Location</button>
+
+                        </div>
+
+                        <!---These fields never get seen or edited by the use
+                            JS will fill them in silently once the pin is dropped
+                            and travel along with the rest of the field until 
+                            submitted to php.-->
+                        <input type = "hidden" id = "place-name" name = "place-name">
+                        <input type = "hidden" id = "house-number" name = "house-number">
+                        <input type = "hidden" id = "road-name" name = "road-name">
+                        <input type = "hidden" id = "ward-number" name = "ward-number">
+
+                    </div>
+
+                    <div class = "form-field">
+                        <label for = "fault-type">Fault Type<span class="required">*</span></label>
+                        <select id = "fault-type" name= "fault-type" required>
+
+                            <option value="" selected disabled>Select Fault Type</option>
+                            <option value="water">Water</option>
+                            <option value="sanitation">Sanitation</option>
+                            <option value="electricity">Electricity</option>
+                            <option value="roads">Road Infrastructure</option>
+                            <option value="parks">Parks and Recreation</option>
+
+                        </select>
+                    </div>
+
+                    <div class = "form-field">
+                        <label for = "fault-description">Fault Desription<span class = "required">*</span></label>
+                        <textarea id = "fault-description" name = "fault-description" maxlength="1300" required></textarea>
+                        <span class = "char-count"><span class = "char-count-current">0</span>/1300 Characters</span>
+                    </div>
+
+                    <div class = "form-field">
+                        <label for = "fault-image">Upload Fault Image</label>
+                        <div class = "upload-dropzone">
+                            <input type = "file" id = "fault-image" name = "fault-image" accept = ".jpg,.jpeg,.png">
+                            <span class = "upload-icon" aria-hidden="true"></span>
+                            <span class = "upload-hint">Click or drag an image here</span>
+                        </div>
+                    </div>
+
+                    <button type = "submit" class = "submit-btn" disabled>Submit Fault</button>
+                    
+                </form>
+            </section>
+            
+
+            <section class = "past-reports">
+                <!---------past reports -->
+                <div class="past-reports-header">
+                    <h2>Past Reports</h2>
+                    <button type="button" class="filter-btn" aria-haspopup="true" aria-expanded="false">
+                    Filter By: <span class="filter-icon" aria-hidden="true"></span>
+                    </button>
+                </div>
+            
+                <ul class="report-cards-list">
+            
+                    <!-- Example report card 1 -->
+                    <li class="report-card" data-status="submitted">
+                    <h3 class="report-card-title">Water and Sanitation Report</h3>
+            
+                    <div class="report-card-image">
+                        <img src="" alt="" hidden>
+                        <p class="no-image-text">No image</p>
+                    </div>
+            
+                    <div class="report-card-meta">
+                        <span class="report-date">Date: 00/00/00</span>
+                        <span class="report-status">Status: Submitted</span>
+                    </div>
+                    <span class="report-id">ID: 0000000</span>
+            
+                    <p class="report-description">
+                        <strong>Description:</strong> There is no water in my res.
+                    </p>
+            
+                    <p class="report-location">
+                        <strong>Location:</strong> Rhodes University.
+                    </p>
+            
+                    <span class="report-time">Time of report: 00:00</span>
+            
+                    <p class="report-comment" hidden>
+                        <strong>Comment:</strong> We heard you calm down
+                    </p>
+            
+                    <button type="button" class="delete-report-btn" hidden aria-label="Delete report">
+                        <span class="bin-icon" aria-hidden="true"></span>
+                    </button>
+                    </li>
+            
+                    <!-- Example report card 2 -->
+                    <li class="report-card" data-status="processing">
+                    <h3 class="report-card-title">Road Works Report</h3>
+            
+                    <div class="report-card-image">
+                        <img src="" alt="" hidden>
+                        <p class="no-image-text">No image</p>
+                    </div>
+            
+                    <div class="report-card-meta">
+                        <span class="report-date">Date: 00/00/00</span>
+                        <span class="report-status">Status: Processing</span>
+                    </div>
+                    <span class="report-id">ID: 0000000</span>
+            
+                    <p class="report-description">
+                        <strong>Description:</strong> I am dying of thirst
+                    </p>
+            
+                    <p class="report-location">
+                        <strong>Location:</strong> Location Sila
+                    </p>
+            
+                    <span class="report-time">Time of report: 00:00</span>
+            
+                    <p class="report-comment" hidden>
+                        <strong>Comment:</strong> Die, there's too many of you alive.
+                    </p>
+            
+                    <button type="button" class="delete-report-btn" hidden aria-label="Delete report">
+                        <span class="bin-icon" aria-hidden="true"></span>
+                    </button>
+                    </li>
+            
+                    <!-- Example report card 3 -->
+                    <li class="report-card" data-status="closed">
+                    <h3 class="report-card-title">Electricity Report</h3>
+            
+                    <div class="report-card-image">
+                        <img src="" alt="" hidden>
+                        <p class="no-image-text">No image</p>
+                    </div>
+            
+                    <div class="report-card-meta">
+                        <span class="report-date">Date: 00/00/00</span>
+                        <span class="report-status">Status: Closed</span>
+                    </div>
+                    <span class="report-id">ID: 0000000</span>
+            
+                    <p class="report-description">
+                        <strong>Description:</strong> The thief cut off my electricity cables i have no power
+                    </p>
+            
+                    <p class="report-location">
+                        <strong>Location:</strong> Hilltop 7
+                    </p>
+            
+                    <span class="report-time">Time of report: 00:00</span>
+            
+                    <p class="report-comment" hidden>
+                        <strong>Comment:</strong> So what did you want us to do? 
+                    </p>
+            
+                    <button type="button" class="delete-report-btn" hidden aria-label="Delete report">
+                        <span class="bin-icon" aria-hidden="true"></span>
+                    </button>
+                    </li>
+            
+                    <!-- Example report card 4 -->
+                    <li class="report-card" data-status="closed">
+                    <h3 class="report-card-title">Stray Animals Report</h3>
+            
+                    <div class="report-card-image">
+                        <img src="" alt="" hidden>
+                        <p class="no-image-text">No image</p>
+                    </div>
+            
+                    <div class="report-card-meta">
+                        <span class="report-date">Date: 00/00/00</span>
+                        <span class="report-status">Status: Closed</span>
+                    </div>
+                    <span class="report-id">ID: 0000000</span>
+            
+                    <p class="report-description">
+                        <strong>Description:</strong> Someone's dog just pooped on my door step
+                    </p>
+            
+                    <p class="report-location">
+                        <strong>Location:</strong> Location Sile
+                    </p>
+            
+                    <span class="report-time">Time of report: 00:00</span>
+            
+                    <p class="report-comment" hidden>
+                        <strong>Comment:</strong> Pop with it ke!
+                    </p>
+            
+                    <button type="button" class="delete-report-btn" hidden aria-label="Delete report">
+                        <span class="bin-icon" aria-hidden="true"></span>
+                    </button>
+                    </li>
+            
+                </ul>
+            </section>
+
+        </main>
+            <!------AI CHATBOT ICON -->
+        <div class="ai-chat-widget">
+            <img src = "makbot_chat.jpeg" alt = "matbok, M-Unite chatbot" class = "ai-chat-mascot">
+            <p class="ai-chat-prompt">Want to chat with Makbot, our AI assistant?</p>
+ 
+            <button type="button" class="ai-chat-icon" aria-haspopup="dialog" aria-expanded="false" aria-controls="ai-chat-popup" aria-label="Chat with Makbot, our AI assistant">
+            ?
+            </button>
+ 
+            <div id="ai-chat-popup" class="ai-chat-popup" role="dialog" aria-label="Makbot AI assistant chat" hidden>
+                <div class="ai-chat-popup-header">
+                <h2>Makbot</h2>
+            <button type="button" class="ai-chat-close-btn" aria-label="Close chat">&times;</button>
+            </div>
+ 
+            <div class="ai-chat-messages">
+                <!-- chat messages will be appended here by JS -->
+            </div>
+ 
+            <form class="ai-chat-input-row">
+                <label for="ai-chat-input" class="visually-hidden">Type your message</label>
+                <input type="text" id="ai-chat-input" name="ai-chat-input" placeholder="Ask a question...">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+  </div>
+
+        <!-------FOOTER -->
+
+        <footer class = "site-footer">
+            <!-----footer content will go here -->
+            <div class="footer-brand">
+                <img src="assets/logo.svg" alt="M-Unite logo">
+                <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
+            </div>
+            
+            <nav class="footer-col" aria-label="Pages">
+                <h3>Pages</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="CommReports.html">Reports</a></li>
+                    <li><a href="notices.html">Notices</a></li>
+                    <li><a href="map.html">Map</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                </ul>
+            </nav>
+            
+            <nav class="footer-col" aria-label="Connect">
+                <h3>Connect</h3>
+                <ul>
+                    <li><a href="report-bug.html">Report Website Bugs</a></li>
+                    <li><a href="volunteer.html">Volunteer</a></li>
+                    <li><a href="mailto:info@munite.co.za">info@munite.co.za</a></li>
+                    <li><a href="tel:+27300300300">+27 300300300</a></li>
+                </ul>
+            </nav>
+            
+            <nav class="footer-col" aria-label="Resources">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                    <li><a href="documentation.html">Documentation</a></li>
+                    <li><a href="terms-of-use.html">Terms Of Use</a></li>
+                    <li><a href="copyright-notice.html">Copyright Notice</a></li>
+                </ul>
+            </nav>
+            
+            <nav class="footer-col" aria-label="Socials">
+                <h3>Socials</h3>
+                <ul class="social-links">
+                    <li>
+                        <a href="https://instagram.com/munite" aria-label="M-Unite on Instagram">
+                        <img src="assets/instagram-icon.svg" alt="">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/munite" aria-label="M-Unite on GitHub">
+                        <img src="assets/github-icon.svg" alt="">
+                    </a>
+                    </li>
+                    <li>
+                        <a href="https://linkedin.com/company/munite" aria-label="M-Unite on LinkedIn">
+                        <img src="assets/linkedin-icon.svg" alt="">
+                    </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <p class="copyright">&copy; M-Unite 2026</p>
+        </footer>
+        
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script src = "ReportScript.js"></script>
+        
+    </body
