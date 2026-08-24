@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
 
+    <script src="homejs.js" defer></script>
     <link rel="stylesheet" href="homecss.css">
+
   <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
 </head>
 
 
 <body>
+
+
 
     <header class="site-header">
 
@@ -21,38 +24,130 @@
     </div>
 
     <nav class="navbar">
-      <a href="index.html" class="nav-item">Home</a>
+      <a href="home.html" class="nav-item">Home</a>
       <a href="reports.html" class="nav-item">Reports</a>
-      <a href="notices.html" class="nav-item">Notices</a>
+      <a href="notification.html" class="nav-item">Notices</a>
       <a href="map.html" class="nav-item">Map</a>
-      <a href="about.html" class="nav-item active">About Us</a>
+      <a href="about_us.html" class="nav-item active">About Us</a>
     </nav>
 
     <div class="header-right">
-      <a href="signin.html" class="sign-in-btn">
+      <a href="account.html" class="sign-in-btn">
         Sign In <i class="fa-regular fa-circle-user"></i>
       </a>
     </div>
     </header>
 
+
+
     
 
-    <section id = "carousel">
-        <img src = mt.jpg alt = "RU Stylish" width = "50%" height = "500px">
-        <div class = "carousel-text">
-            <h1>Sibanye</h1>
-            <p>We Are One</p>   
+    <section id="carousel">
+
+      <div id="carousel-frame">
+
+        <div id="slides">
+          <img class="slide" src="images/mt.jpg" alt="slide1">
+          <img class="slide" src="images/city.jpg" alt="slide2">
+          <img class="slide" src="images/art.jpg" alt="slide3">
+          <img class="slide" src="images/monument.jpg" alt="slide4">
+          <img class="slide" src="images/volunteers.jpg" alt="slide5">
+          <img class="slide" src="images/municipality.jpg" alt="slide6">
         </div>
 
-        <div class = "carousel-widgets">
-            <a class="weatherwidget-io" href="https://forecast7.com/en/n33d3126d53/grahamstown/" data-label_1="MAKHANDA" 
-            data-label_2="WEATHER" data-font="Roboto" data-mode="Current" data-theme="pure" style = "width: 8rem; height:5rem;" >MAKHANDA WEATHER</a>
-            <script>
-            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-            </script>
-            <button class = "mkrpt">Make Report</button>
+        <button class="arrows" id="prev">&#10094;</button>
+        <button class="arrows" id="next">&#10095;</button>
+
+        <div class="carousel-text">
+          <h1>Sibanye</h1>
+          <p>We Are One</p>
         </div>
+
+  
+        <div class="weather-widget-wrap">
+          <a class="weatherwidget-io" href="https://forecast7.com/en/n33d3126d53/grahamstown/" data-label_1="MAKHANDA" 
+          data-label_2="WEATHER" data-font="Roboto" data-mode="Current" data-theme="pure" data-basecolor="transparent">MAKHANDA WEATHER</a>
+        </div>
+        <script>
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+        </script>
+
+        <button class="mkrpt">Make Report</button>
+
+        <div class="dots" id="dotsContainer"></div>
+
+      </div>
+
     </section>
+
+
+    <section id = "localinfo" class = "localinfo">
+      <h2 class = "section-title"> Local Information </h2>
+
+      <div class="localinfo-row">
+
+        <div id = "dams" class = "infocard">
+          <h2> Dam Levels </h2>
+            <h3 class = "damnames">Howieson's Poort Dam </h3>
+            <!---fetch number from municipal officer input and display horizontal bar percentage-->
+            <h3 class = "damnames">Settlers Dam </h3>
+            <!---fetch number from municipal officer input and display horizontal bar percentage-->
+            <h3 class = "damnames">Jamieson and Milner Dams </h3>
+            <!---fetch number from municipal officer input and display horizontal bar percentage-->
+            <h3 class = "damnames">Glen Melville Dam </h3>
+            <!---fetch number from municipal officer input and display horizontal bar percentage-->
+        </div>
+
+        <div class="localinfo-col">
+
+          <div id = "townnotices" class = "infocard">
+            <h2> Town Notices </h2>
+            <a href = "notifications.html"></a>
+            <!--- fetch top notice from municipal officer most recent community wide notices as a box
+            and render the first 3 lines from it. community wide is visible to guest and all other users-->
+          </div>
+
+          <div id = "events" class = "infocard">
+            <h2> Events </h2>
+             <!--- fetch top event from municipal officer most recent events post as a box
+            and render the first 3 lines from it. events are visible to guest and all other users-->
+          </div>
+
+        </div>
+
+      </div>
+     
+    </section>
+
+
+
+
+
+ <section id="informatics">
+
+  <div id="currentissues" class="infomaticsection">
+    <h2>Current Issues</h2>
+    <p>Makhanda is currently facing a water crisis. Makhanda is currently using 18 megalitres a
+      day of water each day – about 180 litres per person. The crippling drought has nearly emptied
+      Settlers' Dam – which supplies about half of that – and it is unlikely to recover until/unless
+      we receive significant rainfall.</p>
+    <a href="notifications.html">Read more -></a>
+  </div>
+
+  <div id="comein" class="infomaticsection">
+    <h2>Where You Come In</h2>
+    <p>Every drop counts. Use 50l a day. Keep taps closed. Take short showers.
+      Flush using grey water. A distribution schedule is being worked on that will get water tankers
+      delivering drinking water to different wards across the City. There will also be collection points,
+      replenished daily, where residents will be able to collect their daily allocation of water.
+    </p>
+    <a href="notifications.html">Read more -></a>
+  </div>
+
+</section>
+
+
+
 
 
      <!-- FOOTER (Matches Wireframe) -->

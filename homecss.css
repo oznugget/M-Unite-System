@@ -1,4 +1,18 @@
+* {
+  box-sizing: border-box;
+}
 
+body {
+  margin: 0;
+  font-family: 'Merriweather Sans', sans-serif;
+  color: #262626;
+}
+
+a {
+  text-decoration: none;
+}
+
+/*header*/
 .site-header {
   display: flex;
   align-items: center;
@@ -33,6 +47,11 @@
   font-size: 14px;
   font-weight: 500;
   color: #ffffff;
+  text-decoration: none;
+}
+
+.nav-item.active{
+  text-decoration: none;
 }
 
 .nav-item:last-child {
@@ -51,77 +70,200 @@
   border: 2px solid #ffffff;
   color: #ffffff;
   background: #F36E39;
+  text-decoration: none;
 
 }
 
+/*----------------------------------------------------------------------*/
+/*section 1*/
 
 #carousel {
-    height: 100vh;
-    margin-left: 1rem;
-    margin-right: 1rem;
-    position: relative;
-    
+  height: calc(100vh - 142px);
+  margin: 0;
 }
 
-#carousel img{
-    width: 90%;
-    height: 80%;
-    object-fit: cover;
-    display: block;
-    z-index: -5;
-    justify-self: center;
-    position: relative;
+
+#carousel-frame {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+#slides {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+  width: 100%;
+  height: 100%;
+  flex: 0 0 100%;
+  object-fit: cover;
+}
+
+.arrows {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  border: none;
+  font-size: 1.5rem;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  z-index: 6;
+}
+
+#prev { 
+  left: 1rem; 
+}
+
+#next { 
+  right: 1rem; 
 }
 
 .carousel-text {
-    position: absolute;
-    top: 50%; 
-    left: 2rem;
-    transform: translateY(-50%); 
-    margin-left: 5rem;
-    text-align: left;
-    color: white;
-    padding: 1rem;
-    z-index: 5;
-    font-family: 'Merriweather Sans', sans-serif;
-    font-size: 1.5rem;
-    
+  position: absolute;
+  top: 60%;
+  left: 2rem;
+  transform: translateY(-50%);
+  margin-left: 5rem;
+  text-align: left;
+  color: white;
+  padding: 1rem;
+  z-index: 5;
+  font-family: 'Merriweather Sans', sans-serif;
+  font-size: 1.9rem;
 }
 
-.carousel-widgets{
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
-    bottom: 2rem;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-end;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    
-}
 
-.weatherwidget-io {
-    position: absolute;
-    top: 25rem;
-    right: 2rem;
-    left: 80rem;
-    z-index: 5;
+.weather-widget-wrap {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 10;
+  width: 8rem; 
+  height: 8rem; 
+  background-color: #fff;
+  background-size:auto;
 }
-
 
 .mkrpt {
-    position: absolute;
-    bottom: 2rem;
-    left: 80rem;
-    top: 45rem;
-    pointer-events: auto;
-    width: 8rem;
-    height: 3rem;
-    background-color: orangered;
-    color: white;
+  position: absolute;
+  bottom: 4.5rem;
+  right: 2rem;
+  width: 8rem;
+  height: 3rem;
+  background-color: orangered;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 10;
 }
 
+
+.dots {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.dot.active {
+  background: #F36E39;
+}
+
+/*----------------------------------------------------------------------*/
+/* section 2*/
+.localinfo {
+  padding: 2rem 5rem;
+  margin: 0 5rem;
+}
+
+.section-title{
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #0E2841;
+}
+
+
+.localinfo-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.localinfo-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/*----------------------------------------------------------------------*/
+
+/*section 3*/
+#informatics {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem 5rem;
+}
+
+.infomaticsection {
+  flex: 1;
+  min-width: 280px;
+}
+
+.infomaticsection:first-child {
+  border-right: 1px solid #cccccc;
+  padding-right: 2rem;
+}
+
+.infomaticsection h2 {
+  margin-bottom: 0.5rem;
+  color: #0E2841;
+}
+
+.infomaticsection p {
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.infomaticsection a {
+  color: #F36E39;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.infocard {
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  padding: 16px 12px;
+  text-align: center;
+  color: #262626;
+}
+
+
+/*footer*/
 .site-footer {
   border-top: 2px solid #262626;
   background: #0E2841;
@@ -173,6 +315,7 @@
 .footer-col ul li {
   margin-bottom: 6px;
   font-size: 13px;
+  color: white;
 }
 
 .social-icons-vertical {
@@ -190,9 +333,10 @@
   font-size: 13px;
 }
 
-/* --- RESPONSIVE --- */
+/*----------------------------------------------------------------------*/
+/* --- RESPONSIVENESS --- */
 @media (max-width: 768px) {
-  .site-header {
+    .site-header {
     flex-direction: column;
     gap: 15px;
     padding: 15px;
@@ -205,7 +349,6 @@
     padding: 8px 10px;
     font-size: 12px;
   }
-  .steps-grid,
   .footer-top {
     flex-direction: column;
   }
@@ -214,5 +357,40 @@
   }
   .social-icons-vertical {
     flex-direction: row;
+  }
+
+  #carousel {
+    height: 70vh;
+  }
+
+  .carousel-text {
+    margin-left: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .weather-widget-wrap {
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .mkrpt {
+    width: 6rem;
+    height: 2.5rem;
+    font-size: 0.8rem;
+    bottom: 3.5rem;
+  }
+
+  .localinfo-row {
+    grid-template-columns: 1fr;
+  }
+
+  #informatics {
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+
+  .localinfo {
+    margin: 0;
+    padding: 1.5rem;
   }
 }
