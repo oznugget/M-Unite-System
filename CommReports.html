@@ -58,7 +58,7 @@
                         <div class = "location-input-row">
                             <input type = "text" id = "location-address" name = "location-address" required>
                             <button type = "button" class = "use-my-location-btn">Use My Location</button>
-
+                            <span class="field-error" id="location-address-error"></span>
                         </div>
 
                         <!---These fields never get seen or edited by the use
@@ -84,12 +84,14 @@
                             <option value="parks">Parks and Recreation</option>
 
                         </select>
+                        <span class="field-error" id="fault-type-error"></span>
                     </div>
 
                     <div class = "form-field">
                         <label for = "fault-description">Fault Desription<span class = "required">*</span></label>
                         <textarea id = "fault-description" name = "fault-description" maxlength="1300" required></textarea>
                         <span class = "char-count"><span class = "char-count-current">0</span>/1300 Characters</span>
+                         <span class="field-error" id="fault-description-error"></span>
                     </div>
 
                     <div class = "form-field">
@@ -98,7 +100,14 @@
                             <input type = "file" id = "fault-image" name = "fault-image" accept = ".jpg,.jpeg,.png">
                             <span class = "upload-icon" aria-hidden="true"></span>
                             <span class = "upload-hint">Click or drag an image here</span>
+
+                            <img class="upload-preview" src="" alt="Preview of the uploaded fault image" hidden>
+                            <span class="upload-filename" hidden></span>
+                            <button type="button" class="remove-image-btn" aria-label="Remove uploaded image" hidden>&times;</button>
+                        
                         </div>
+
+                        <span class="field-error" id="fault-image-error"></span>
                     </div>
 
                     <button type = "submit" class = "submit-btn" disabled>Submit Fault</button>
@@ -111,9 +120,26 @@
                 <!---------past reports -->
                 <div class="past-reports-header">
                     <h2>Past Reports</h2>
+                    <div class="filter-wrapper">
                     <button type="button" class="filter-btn" aria-haspopup="true" aria-expanded="false">
                     Filter By: <span class="filter-icon" aria-hidden="true"></span>
                     </button>
+                     <div id="filter-panel" class="filter-panel" hidden>
+                    <label>
+                    <input type="checkbox" class="filter-checkbox" value="submitted" checked>
+                    Submitted
+                    </label>
+                    <label>
+                    <input type="checkbox" class="filter-checkbox" value="processing" checked>
+                    Processing
+                    </label>
+                    <label>
+                    <input type="checkbox" class="filter-checkbox" value="closed" checked>
+                    Closed
+                    </label>
+                </div>
+                </div>
+      
                 </div>
             
                 <ul class="report-cards-list">
