@@ -1,4 +1,3 @@
-
 /* This code is for dismissing notices, displayig unread notices via the unread toggle btn,
 mark all unread notices as read at once and individual notice must be marked as read once clicked*/
 /* Search will be impplemented in cojunction with php */
@@ -103,67 +102,63 @@ unreadToggle.addEventListener("change", function () {
     }
 });
 
-/* MARK ALL NOTIFICATIONS AS READ */
-const markAllReadButton = document.querySelector(".mark-all-read");
-markAllReadButton.addEventListener("click", function () {
-   
-    const unreadNotifications = document.querySelectorAll(".notif-card.unread");
-    unreadNotifications.forEach(notification => {
-        // Remove the unread class
-        notification.classList.remove("unread");
-        // Remove the unread dot
-        const unreadDot = notification.querySelector(".unread-dot");
-        if (unreadDot) {
-            unreadDot.remove();
-        }
-    });
-
-});
-
-/* Mark individual notice as read when you click on it */
-const notificationCards = document.querySelectorAll(".notif-card");
-// When a notification card is clicked
-notificationCards.forEach(card => {
-    card.addEventListener("click", function () {
-
-        // Check if the notification is unread
-        if (card.classList.contains("unread")) {
-
-            // Change notification to read
-            card.classList.remove("unread");
-
-            // Remove the unread dot
-            const unreadDot = card.querySelector(".unread-dot");
-            if (unreadDot) {
-                unreadDot.remove();
-            }
-        }
-    });
-});
-
 /* FILTER TABS (All / Tickets / Ward / General) */
 const filterButtons = document.querySelectorAll(".notif-type-tab nav button");
+const noNotifications = document.querySelector(".no-notifications");
+
 filterButtons.forEach(button => {
     button.addEventListener("click", function () {
 
-        // Update pressed state on the buttons
-        filterButtons.forEach(btn => btn.setAttribute("aria-pressed", "false"));
+        // Update active tab
+        filterButtons.forEach(btn => {
+            btn.setAttribute("aria-pressed", "false");
+        });
+
         button.setAttribute("aria-pressed", "true");
 
         const selectedType = button.dataset.filter;
+
         const allCards = document.querySelectorAll(".notif-card");
-        const sections = document.querySelectorAll(".today-notices, .yesterday-notices, .earlier-notices");
+        const sections = document.querySelectorAll(
+            ".today-notices, .yesterday-notices, .earlier-notices"
+        );
 
+        let visibleCount = 0;
+
+        // Filter notification cards
         allCards.forEach(card => {
-            const matches = selectedType === "all" || card.dataset.notifType === selectedType;
-            card.style.display = matches ? "flex" : "none";
+
+            const matches =
+                selectedType === "all" ||
+                card.dataset.notifType === selectedType;
+
+            if (matches) {
+                card.style.display = "flex";
+                visibleCount++;
+            } else {
+                card.style.display = "none";
+            }
         });
 
-        // Hide sections that end up with nothing visible
+        // Show/hide date sections
         sections.forEach(section => {
-            const visibleCards = section.querySelectorAll('.notif-card:not([style*="display: none"])');
-            section.style.display = visibleCards.length === 0 ? "none" : "";
+
+            const cards = section.querySelectorAll(".notif-card");
+
+            const hasVisibleCard = Array.from(cards).some(card => {
+                return card.style.display !== "none";
+            });
+
+            section.style.display = hasVisibleCard ? "" : "none";
         });
+
+        // Show "No new messages" if filter has no results
+        if (visibleCount === 0) {
+            noNotifications.hidden = false;
+        } else {
+            noNotifications.hidden = true;
+        }
+
     });
 });
 
@@ -174,15 +169,20 @@ categoryFilter.addEventListener("change", function () {
     const selectedCategory = categoryFilter.value; // "" means "All categories"
     const allCards = document.querySelectorAll(".notif-card");
     const sections = document.querySelectorAll(".today-notices, .yesterday-notices, .earlier-notices");
+    let visibleCount = 0;
 
     allCards.forEach(card => {
         const matches = selectedCategory === "" || card.dataset.category === selectedCategory;
         card.style.display = matches ? "flex" : "none";
+        if (matches) visibleCount++;
     });
 
     // Hide sections that end up with nothing visible
     sections.forEach(section => {
         const visibleCards = section.querySelectorAll('.notif-card:not([style*="display: none"])');
         section.style.display = visibleCards.length === 0 ? "none" : "";
+
     });
+    const noNotifications = document.querySelector(".no-notifications");
+    noNotifications.hidden = visibleCount !== 0;
 });

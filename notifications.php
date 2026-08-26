@@ -1,4 +1,5 @@
 <?php include 'notices.php'; ?>
+
 <!Doctype html>
 <html>
     <head>
@@ -29,9 +30,9 @@
         <main>
             <!--Notifications headers-->
             <section class="filtering-tabs">
-                <h1>My notifications</h1><span name="unread-msgs"> <?php echo $unread_count; ?> unread</span>
+                <h1>My notifications</h1><span id="unread-count" name="unread-msgs"> <?php echo $unread_count; ?> unread</span>
                 <p>See what you've missed out on.</p>
-                <button type="button" class="mark-all-read">Mark all read</button>
+                <a href="notifications.php?mark_all_read=1" class="mark-all-read">Mark all read</a>
 
               <div class="notif-type-tab">
 
@@ -80,253 +81,35 @@
             </section>
 
             <!--Today messages sections-->
+            <?php if (!empty($today_notices)): ?>
             <section class="today-notices" aria-labelledby="today-heading">
-                <h2 id="today-heading" class="">Today</h2>
-                
-                <!--Notification card 1-->    
-                <article class="notif-card unread" data-notification-id="1" data-notif-type="report" data-category="water">
-
-                    <!-- Notification icon -->
-                    <div class="notif-icon">
-                        <span class="material-symbols-outlined">water_drop</span>
-                    </div>
-
-                    <!-- Notification content -->
-                    <div class="notif-content">
-
-                        <header class="notif-header">
-                            <div class="notif-title-row">
-                                <span class="unread-dot"></span>
-                                <h3 class="notif-title">Report #0002 is now In Progress</h3>
-                                <span class="status">In Progress</span>
-                            </div>
-
-                            <span class="time">12 min ago</span>
-                        </header>
-
-                        <p class="notif-msg">
-                            Ward 4 councillor forwarded your burst pipe report on Beaufort Street
-                            to municipal officers.
-                            <a href="">Show more</a>
-                        </p>
-
-                        <footer class="notif-footer">
-                            <span class="notif-category">Water &amp; Sanitation</span>
-                            <span class="notif-separator">·</span>
-                            <span class="notif-author">Ward 4</span>
-                        </footer>
-
-                    </div>
-
-                    <!--The  dismiss (X) button on the far right-->
-                    <button class="dismiss-btn" type="button" aria-label="Dismiss notification">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-
-                </article>
-                    
-                     <!--Notification card 2-->
-                    <article class="notif-card unread" data-notification-id="2" data-notif-type="ward" data-category="water">
-
-                        <div class="notif-icon">
-                            <span class="material-symbols-outlined">water_drop</span>
-                        </div>
-
-                        <div class="notif-content">
-
-                            <header class="notif-header">
-                                <div class="notif-title-row">
-                                    <span class="unread-dot"></span>
-                                    <h3 class="notif-title">Water restrictions remain in effect</h3>
-                                </div>
-
-                                <span class="time">1 hour ago</span>
-                            </header>
-
-                            <p class="notif-msg">
-                                Level 2 water restrictions remain in effect town-wide.
-                                Irrigation only between 18:00 and 06:00.
-                                <a href="">Show more</a>
-                            </p>
-
-                            <footer class="notif-footer">
-                                <span class="notif-category">Water &amp; Sanitation</span>
-                                <span class="notif-separator">·</span>
-                                <span class="notif-author">Cllr N. Mbeki</span>
-                            </footer>
-
-                        </div>
-
-                        <button class="dismiss-btn" type="button" aria-label="Dismiss notification">
-                            <span class="material-symbols-outlined">close</span>
-                        </button>
-
-                    </article>
+                <h2 id="today-heading">Today</h2>
+                <?php foreach ($today_notices as $n) { render_notice_card($n); } ?>
             </section>
+            <?php endif; ?>
 
-            <!-- YESTERDAY SECTION-->
+            <!-- YESTERDAY SECTION -->
+            <?php if (!empty($yesterday_notices)): ?>
             <section class="yesterday-notices">
                 <h2 id="yesterday-heading">Yesterday</h2>
-
-                <!-- Notification card 3 -->
-                <article aria-label="unread" class="notif-card unread" data-notification-id="3" data-notif-type="report" data-category="electricity">
-
-                    <div class="notif-icon"> <span class="material-symbols-outlined">bolt</span></div>
-                    <div class="notif-content">
-
-                        <header class="notif-header">
-                            <div class="notif-title-row">
-                                <span class="unread-dot"></span>
-                                <h3 class="notif-title">
-                                    Your report #0001 has been resolved
-                                </h3>
-                            </div>
-
-                            <span class="time">08 August 2026</span>
-                        </header>
-
-                        <p class="notif-msg">
-                            Electricity light at your house is now resolved.
-                            <a href="">Show more</a>
-                        </p>
-
-                        <footer class="notif-footer">
-                            <span class="notif-category">Electricity</span>
-                            <span class="notif-separator">·</span>
-                            <span class="notif-author">Municipal Communications Officer</span>
-                        </footer>
-
-                    </div>
-
-                    <button class="dismiss-btn" type="button" aria-label="Dismiss notification">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-
-                </article>
-
-                <!-- Notification card 4 -->
-                <article class="notif-card" data-notification-id="4" data-notif-type="general" data-category="general">
-
-                    <div class="notif-icon">
-                        <span class="material-symbols-outlined">water_drop</span>
-                    </div>
-
-                    <div class="notif-content">
-
-                        <header class="notif-header">
-                            <div class="notif-title-row">
-                                <h3 class="notif-title">
-                                    Dam level update: Settlers Dam at 41%
-                                </h3>
-                            </div>
-                            <span class="time">3 hours ago</span>
-                        </header>
-
-                        <p class="notif-msg">
-                            Level 2 water restrictions remain in effect town-wide.
-                            Irrigation permitted only between 18:00 and 06:00.
-                            <a href="">Show more</a>
-                        </p>
-
-                        <footer class="notif-footer">
-                            <span class="notif-category">General</span>
-                            <span class="notif-separator">·</span>
-                            <span class="notif-author">Municipal Communications</span>
-                        </footer>
-
-                    </div>
-
-                    <button class="dismiss-btn" type="button" aria-label="Dismiss notification">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </article>
+                <?php foreach ($yesterday_notices as $n) { render_notice_card($n); } ?>
             </section>
+            <?php endif; ?>
 
-
-            <!-- EARLIER SECTION-->
+            <!-- EARLIER SECTION -->
+            <?php if (!empty($earlier_notices)): ?>
             <section class="earlier-notices" aria-labelledby="earlier-heading">
                 <h2 id="earlier-heading">Earlier</h2>
-
-                <!-- Notification card 5 -->
-                <article aria-label="unread" class="notif-card unread" data-notification-id="5" data-notif-type="general" data-category="general">
-
-                    <div class="notif-icon general-icon">ℹ</div>
-
-                    <div class="notif-content">
-
-                        <header class="notif-header">
-                            <div class="notif-title-row">
-                                <span class="unread-dot"></span>
-                                <h3 class="notif-title">
-                                    Streetlight repairs
-                                </h3>
-                            </div>
-
-                            <span class="time">30 July 2026</span>
-                        </header>
-
-                        <p class="notif-msg">
-                            42 street lights were repaired across town during July.
-                            <a href="">Show more</a>
-                        </p>
-
-                        <footer class="notif-footer">
-                            <span class="notif-category">General</span>
-                            <span class="notif-separator">·</span>
-                            <span class="notif-author">Municipal Officer Communications</span>
-                        </footer>
-
-                    </div>
-
-                    <button class="dismiss-btn" type="button" aria-label="Dismiss notification">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-
-                </article>
-
-
-                <!-- Notification card 6 -->
-                <article class="notif-card" data-notification-id="6" data-notif-type="ward" data-category="general">
-
-                    <div class="notif-icon general-icon">ℹ</div>
-
-                    <div class="notif-content">
-
-                        <header class="notif-header">
-                            <div class="notif-title-row">
-                                <h3 class="notif-title">
-                                    Ward 4 for July Summary published
-                                </h3>
-                            </div>
-
-                            <span class="time">27 July 2026</span>
-                        </header>
-
-                        <p class="notif-msg">
-                            37 faults logged this month, 24 resolved.
-                            Pothole repairs on African Street begin Monday.
-                        </p>
-
-                        <footer class="notif-footer">
-                            <span class="notif-category">General</span>
-                            <span class="notif-separator">·</span>
-                            <span class="notif-author">Ward 4 Councillor</span>
-                        </footer>
-
-                    </div>
-
-                    <button class="dismiss-btn" type="button" aria-label="Dismiss notification">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-
-                </article>
-
+                <?php foreach ($earlier_notices as $n) { render_notice_card($n); } ?>
             </section>
+            <?php endif; ?>
+
             <!--This part should appear when there are no notices-->
-            <p class="no-notifications" hidden>No new messages</p>
+            <p class="no-notifications" <?php echo empty($notices) ? '' : 'hidden'; ?>>No new messages</p>
 
             <!--This part should appear only when there are unread notices-->
             <p class="no-unread-notifications" hidden>No unread notifications</p>
+
         </main>
         <footer>
             <p>&copy; 2026 M-Unite</p>

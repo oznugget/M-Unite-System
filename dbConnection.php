@@ -5,9 +5,8 @@
     $dbname= "kaizenco";
     
     $conn= new mysqli($hostname, $user, $password, $dbname);
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     if($conn->connect_error){
         die("Connection failed" .$conn->connect_error);
-    }else{
-        echo "successfuly connected";
     }
     ?>
