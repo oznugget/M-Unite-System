@@ -18,16 +18,37 @@
       padding: 2rem 1rem;
     }
 
+    /*titles*/
     h1, h2, h3 {
-      font-family: 'Merriweather Sans', sans-serif;
+      font-family: 'Merriweather Sans', sans-serif;   
       font-weight: 700;
     }
+
+
 
     a {
       color: inherit;
       text-decoration: none;
     }
 
+    .form-subtitle {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #555555;
+  margin-top: -1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+/*styles for the green and red text indicating valid and invalid fields under title */
+    .txt-green {
+      color: green;
+      font-weight: 600;
+    }
+
+    .txt-red {
+      color: red;
+      font-weight: 600;
+    }
 
     .registration {
       width: 100%;
@@ -63,24 +84,43 @@
     }
 
     .form-group label {
-      font-size: 0.8rem;
+      font-size: 1rem;
       font-weight: 600;
-      text-transform: uppercase;
       letter-spacing: 0.04em;
       color: #0E2841;
     }
+
+    .iti {
+      width: 100%;    /* phone number width for cdn flag */
+    } 
 
     .form-group input,
     .form-group select,
     .form-group textarea {
       padding: 0.6rem 0.9rem;
-      border: 1px solid #cccccc;
-      border-radius: 1px;
+      border: 3px solid #cccccc;
+      border-radius: 1.2px;
       font-size: 0.95rem;
       background: #ffffff;
       transition: border-color 0.2s, box-shadow 0.2s;
       width: 100%;
     }
+
+    /*validating the input fields using red outlines for invalid and green for valid*/
+
+    .form-group input:user-invalid,
+    .form-group select:user-invalid,
+    .form-group textarea:user-invalid {
+      border-color: red;
+    }
+
+    .form-group input:user-valid,
+    .form-group select:user-valid,
+    .form-group textarea:user-valid {
+      border-color: green;
+    }
+
+    /*shadow for the input fields when user clicks on them*/
 
     .form-group input:focus,
     .form-group select:focus,
@@ -95,56 +135,58 @@
       min-height: 70px;
     }
 
-    .form-actions {
+    .form-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 0.8rem;
       margin-top: 0.5rem;
     }
 
-    .btn {
-      padding: 0.6rem 1.8rem;
-      border: 2px solid #333333;
-      border-radius: 1px;
-      font-weight: 600;
+    #sub, #clr {
+    
       font-size: 0.85rem;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
-      background: #ffffff;
       color: #0E2841;
       flex: 1 1 auto;
       text-align: center;
     }
 
-    .btn-primary {
+    #sub {
       background: #F36E39;
       border-color: #333333;
       color: #ffffff;
+      border: 2px solid #333333;
+      border-radius: 1px;
+      padding: 1.3rem 1.8rem;
+      font-weight: 550;
     }
 
-    .btn-primary:hover {
+    #clr{
+        font-weight: 400;
+        background: #ffffff;
+    }
+
+    #sub:hover {
       background: #d95e2c;
       transform: translateY(-1px);
     }
 
-    .btn-secondary {
-      background: #ffffff;
-      border-color: #333333;
-      color: #0E2841;
-    }
 
-    .btn-secondary:hover {
+    #clr:hover {
       background: #f0f4fa;
     }
+
+    /*responsive design for smaller screens*/
 
     @media (max-width: 480px) {
       .registration {
         padding: 1.5rem 1rem;
       }
-      .form-actions {
+      .form-buttons {
         flex-direction: column;
       }
-      .btn {
+      #sub, #clr {
         width: 100%;
       }
     }
