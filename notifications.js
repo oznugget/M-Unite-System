@@ -3,7 +3,7 @@ mark all unread notices as read at once and individual notice must be marked as 
 /* Search will be impplemented in cojunction with php */
 
 /*NOTIFICATION DISMISSAL*/
-
+/*
 const dismissButtons = document.querySelectorAll(".dismiss-btn");
 // Add click event to each button
 dismissButtons.forEach(button => {
@@ -34,7 +34,7 @@ dismissButtons.forEach(button => {
             noNotifications.hidden = false;
         }
     });
-});
+}); */
 
 /* DISPLAY UNREAD ONLY */
 const unreadToggle = document.querySelector(".unread-toggle input");
@@ -102,6 +102,50 @@ unreadToggle.addEventListener("change", function () {
     }
 });
 
+/* COMBINED FILTERING (tabs + category) */
+let currentType = "all";
+let currentCategory = "";
+let currentSearch = "";
+
+function applyFilters() {
+    const allCards = document.querySelectorAll(".notif-card");
+    const sections = document.querySelectorAll(
+        ".today-notices, .yesterday-notices, .earlier-notices"
+    );
+
+    let visibleCount = 0;
+
+    allCards.forEach(card => {
+        const matchesType =
+            currentType === "all" || card.dataset.notifType === currentType;
+        const matchesCategory = currentCategory === "" || card.dataset.category === currentCategory;
+        
+
+        //search text
+        const titleText = card.querySelector(".notif-title")?.textContent.toLowerCase() || "";
+        const msgText = card.querySelector(".notif-msg")?.textContent.toLowerCase() || "";
+        const matchesSearch =
+            currentSearch === "" ||
+            titleText.includes(currentSearch) ||
+            msgText.includes(currentSearch);
+
+        const shouldShow = matchesType && matchesCategory && matchesSearch;
+
+        card.style.display = shouldShow ? "flex" : "none";
+        if (shouldShow) visibleCount++;
+    });
+
+    sections.forEach(section => {
+        const cards = section.querySelectorAll(".notif-card");
+        const hasVisibleCard = Array.from(cards).some(
+            card => card.style.display !== "none"
+        );
+        section.style.display = hasVisibleCard ? "" : "none";
+    });
+
+    noNotifications.hidden = visibleCount !== 0;
+}
+
 /* FILTER TABS (All / Tickets / Ward / General) */
 const filterButtons = document.querySelectorAll(".notif-type-tab nav button");
 const noNotifications = document.querySelector(".no-notifications");
@@ -109,80 +153,24 @@ const noNotifications = document.querySelector(".no-notifications");
 filterButtons.forEach(button => {
     button.addEventListener("click", function () {
 
-        // Update active tab
-        filterButtons.forEach(btn => {
-            btn.setAttribute("aria-pressed", "false");
-        });
-
+        filterButtons.forEach(btn => btn.setAttribute("aria-pressed", "false"));
         button.setAttribute("aria-pressed", "true");
 
-        const selectedType = button.dataset.filter;
-
-        const allCards = document.querySelectorAll(".notif-card");
-        const sections = document.querySelectorAll(
-            ".today-notices, .yesterday-notices, .earlier-notices"
-        );
-
-        let visibleCount = 0;
-
-        // Filter notification cards
-        allCards.forEach(card => {
-
-            const matches =
-                selectedType === "all" ||
-                card.dataset.notifType === selectedType;
-
-            if (matches) {
-                card.style.display = "flex";
-                visibleCount++;
-            } else {
-                card.style.display = "none";
-            }
-        });
-
-        // Show/hide date sections
-        sections.forEach(section => {
-
-            const cards = section.querySelectorAll(".notif-card");
-
-            const hasVisibleCard = Array.from(cards).some(card => {
-                return card.style.display !== "none";
-            });
-
-            section.style.display = hasVisibleCard ? "" : "none";
-        });
-
-        // Show "No new messages" if filter has no results
-        if (visibleCount === 0) {
-            noNotifications.hidden = false;
-        } else {
-            noNotifications.hidden = true;
-        }
-
+        currentType = button.dataset.filter;
+        applyFilters();
     });
 });
 
 /* CATEGORY FILTER (dropdown) */
 const categoryFilter = document.querySelector(".category-filter");
 categoryFilter.addEventListener("change", function () {
+    currentCategory = categoryFilter.value; // "" means "All categories"
+    applyFilters();
+});
 
-    const selectedCategory = categoryFilter.value; // "" means "All categories"
-    const allCards = document.querySelectorAll(".notif-card");
-    const sections = document.querySelectorAll(".today-notices, .yesterday-notices, .earlier-notices");
-    let visibleCount = 0;
-
-    allCards.forEach(card => {
-        const matches = selectedCategory === "" || card.dataset.category === selectedCategory;
-        card.style.display = matches ? "flex" : "none";
-        if (matches) visibleCount++;
-    });
-
-    // Hide sections that end up with nothing visible
-    sections.forEach(section => {
-        const visibleCards = section.querySelectorAll('.notif-card:not([style*="display: none"])');
-        section.style.display = visibleCards.length === 0 ? "none" : "";
-
-    });
-    const noNotifications = document.querySelector(".no-notifications");
-    noNotifications.hidden = visibleCount !== 0;
+/* SEARCH */
+const searchInput = document.querySelector(".notification-search input");
+searchInput.addEventListener("input", function () {
+    currentSearch = searchInput.value.trim().toLowerCase();
+    applyFilters();
 });

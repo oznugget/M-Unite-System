@@ -4,6 +4,8 @@ include 'dbConnection.php';
 
 $username = $_SESSION['user_id'] ?? 'funi@gmail.com';
 
+
+//Change notices to read
 if (isset($_GET['mark_read'])) {
     $notice_id = $_GET['mark_read'];
     $sql1 = "UPDATE notices SET is_read = 1 WHERE notice_id = ? AND username = ?";
@@ -17,6 +19,7 @@ if (isset($_GET['mark_read'])) {
 
 }
 
+//change all unread notices to read.
 if (isset($_GET['mark_all_read'])) {
     $sql = "UPDATE notices SET is_read = 1 WHERE username = ?";
     $stmt = $conn->prepare($sql);
@@ -29,7 +32,20 @@ if (isset($_GET['mark_all_read'])) {
 
 }
 
-// Unread count (unchanged)
+//dismissal of notices, when the notice is dismissed it only disappears in the web pge.
+if (isset($_GET['dismiss'])) {
+    $notice_id = $_GET['dismiss'];
+    $sql3 = "UPDATE notices SET is_dismissed = 1 WHERE notice_id = ? AND username = ?";
+    $stmt3 = $conn->prepare($sql3);
+    $stmt3->bind_param("is", $notice_id, $username);
+    $stmt3->execute();
+    $stmt3->close();
+
+    header("Location: notifications.php");
+    exit;
+}
+
+// Display cuont of all unread notices.
 $unread_count = 0;
 $sql = "SELECT COUNT(*) AS unread_count FROM notices WHERE username = ? AND is_read = 0";
 $stmt = $conn->prepare($sql);
@@ -44,7 +60,7 @@ if ($stmt === false) {
     $stmt->close();
 }
 
-// Fetch notices — now including timestamp, category, status, author
+// Display all notices from the database related to the user 
 $notices = [];
 $sql2 = "SELECT n.notice_id, n.title, n.content, n.notif_type, n.ward_id, wc.username, n.is_read, n.is_dismissed,n.created_at,
          sc.category_name as category ,ac.name AS councillor_name, ac.surname AS councillor_surname
@@ -87,7 +103,7 @@ foreach ($notices as $n) {
     }
 }
 
-// "12 min ago" / "1 hour ago" / date fallback
+// time display on notice "min ago" / "hour ago" / date fallback
 function format_notice_time($timestamp) {
     $diff = time() - strtotime($timestamp);
     if ($diff < 60) return "Just now";
@@ -99,7 +115,7 @@ function format_notice_time($timestamp) {
     return date('d F Y', strtotime($timestamp));
 }
 
-// Icon per category — match keys to your actual category values
+// Icon per category , must be matched withe icoons to be used on front end
 function get_notice_icon($category) {
     $icons = [
         'water'       => 'water_drop',
@@ -151,7 +167,8 @@ function render_notice_card($n) {
             </footer>
         </div>
 
-        <button class="dismiss-btn" type="button" aria-label="Dismiss notification">
+        <button class="dismiss-btn" type="button" aria-label="Dismiss notification"
+            onclick="event.stopPropagation(); window.location.href='notifications.php?dismiss=<?php echo $n['notice_id']; ?>'">
             <span class="material-symbols-outlined">close</span>
         </button>
     </article>

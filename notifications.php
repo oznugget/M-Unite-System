@@ -68,11 +68,13 @@
                     <!-- Category -->
                     <select class="category-filter" aria-label="Filter by category">
                         <option value="">All categories</option>
-                        <option value="electricity">Electricity</option>
-                        <option value="water">Water & Sanitation</option>
-                        <option value="roads">Roads</option>
-                        <option value="waste">Waste Management</option>
-                        <option value="general">General</option>
+                        <option value="Electricity">Electricity</option>
+                        <option value="Water & Sanitation">Water & Sanitation</option>
+                        <option value="Roads">Roads</option>
+                        <option value="Waste Management">Waste Management</option>
+                        <option value="Animals">Animals</option>
+                        <option value="Vandalism">Vandalism</option>
+                        <option value="Transport">Transport</option>
                     </select>
 
                 </div>
