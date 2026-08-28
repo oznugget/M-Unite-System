@@ -137,35 +137,40 @@ a {
   padding: 1rem;
   z-index: 5;
   font-family: 'Merriweather Sans', sans-serif;
-  font-size: 1.9rem;
+  font-size: 2.2rem;
 }
 
 
 .weather-widget-wrap {
   position: absolute;
-  top: 2rem;
-  right: 2rem;
+  top: 10rem;
+  right: 8rem;
   z-index: 10;
   width: 8rem; 
-  height: 8rem; 
+  height: auto; 
   background-color: #fff;
-  background-size:auto;
 }
 
 .mkrpt {
   position: absolute;
   bottom: 4.5rem;
-  right: 2rem;
-  width: 8rem;
-  height: 3rem;
-  background-color: orangered;
+  right: 8rem;
+  z-index: 10;
+  width: auto;                   
+  height: auto;                 
+  white-space: nowrap;          
+  display: inline-flex;         
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  padding: 0.8rem 1.8rem;        
+  border-radius: 4px;
+  background-color: #F36E39;
   color: white;
-  border: none;
+  border: 1px solid white;
   cursor: pointer;
   font-weight: bold;
-  z-index: 10;
 }
-
 
 .dots {
   position: absolute;
@@ -374,10 +379,12 @@ a {
   }
 
   .mkrpt {
-    width: 6rem;
-    height: 2.5rem;
-    font-size: 0.8rem;
-    bottom: 3.5rem;
+    bottom: 2rem;
+    right: 1rem;
+    width: auto;                 
+    height: auto;                
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;       
   }
 
   .localinfo-row {
@@ -393,4 +400,34 @@ a {
     margin: 0;
     padding: 1.5rem;
   }
+
+  
+  .weather-widget-wrap {
+    top: 1rem;
+    right: 1rem;
+    width: 6.5rem;
+  }
+
+  .mkrpt {
+    bottom: 2rem;
+    right: 1rem;
+    font-size: 0.85rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  /* Tablets & Small Laptops (Max Width: 1024px) */
+@media (max-width: 1024px) {
+  .weather-widget-wrap {
+    top: 4rem;
+    right: 2rem;
+  }
+
+  .mkrpt {
+    bottom: 3.5rem;
+    right: 2rem;
+    padding: 1rem 2.5rem;
+  }
+}
+
+
 }
