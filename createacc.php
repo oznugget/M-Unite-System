@@ -34,22 +34,23 @@
 
       
       <div class="form-group">
-        <label for="email">Email Address </label>
-        <input type="email" id="email" name="email" maxlength="255" required />
-      </div>
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" maxlength="255" required />
+
+      <?php if (isset($_GET['error']) && $_GET['error'] === 'email_domain'): ?>
+        <span style="color: #d9534f; font-size: 0.82rem; margin-top: 4px; font-weight: 600; display: block;">
+          Municipal roles require a different email address.
+        </span>
+      <?php endif; ?>
+    </div>
 
       
       <div class="form-group">
         <label for="contact">Contact   </label>
-        <input type="tel" id="contact" name="contact"pattern="[1-9][0-9]{1}\s?[0-9]{3}\s?[0-9]{4}" required />
+        <input type="tel" id="contact" name="contact" pattern="[1-9][0-9]{1}\s?[0-9]{3}\s?[0-9]{4}" required />
       </div>
 
-      <div class="form-group">
-        <label for="addr">Physical Address  </label>
-        <textarea id="addr" name="addr" rows="3" required></textarea>
-      </div>
-
-
+      
       <div class="form-group">
         <label for="urole">User Role  </label>
         <select id="urole" name="userrole" required>
@@ -57,14 +58,44 @@
           <option value="1">Community Member</option>
           <option value="2">Ward Councillor</option>
           <option value="3">Municipal Officer</option>
-          <option value="4">Systems Administrator</option>
+          <option value="4">System Admin</option>
         </select>
       </div>
+
+      <div class="form-group autocomplete-wrapper" id="address-container">
+        <label for="addr">Physical Address (Makhanda)</label>
+        <input type="text" id="addr" name="addr" placeholder="Type street or area in Makhanda..." autocomplete="off" required />
+        <ul id="suggestions" class="suggestions-list"></ul>
+      </div>
+
+      <!-- Hidden address components extracted automatically -->
+      <input type="hidden" id="lat" name="lat">
+      <input type="hidden" id="lon" name="lon">
+      <input type="hidden" id="street_number" name="street_number">
+      <input type="hidden" id="street_name" name="street_name">
+      <input type="hidden" id="suburb" name="suburb">
+
+
+
+    <!-- optional division field for Municipal Officers -->
+      <div class="form-group" id="division-container" style="display: none;">
+      <label for="division">Division <span style="font-weight: normal; font-size: 12px; color: #666;"></span></label>
+      <select id="division" name="division">
+        <option value="">Select Division</option>
+        <option value="Electricity">Electricity</option>
+        <option value="Water & Sanitation">Water & Sanitation</option>
+        <option value="Roads">Roads</option>
+        <option value="Animals">Animals</option>
+        <option value="Transport">Transport</option>
+        <option value="Vandalism">Vandalism</option>
+        <option value="Waste Management">Waste Management</option>
+      </select>
+    </div>
 
 
       <div class="form-group">
         <label for="pword">Password  </label>
-        <input type="password" id="pword" name="pword" maxlength="35" required />
+        <input type="password" id="pword" name="pword" maxlength="20" required />
       </div>
 
       <div class="form-buttons">

@@ -177,6 +177,41 @@
       background: #f0f4fa;
     }
 
+    /*optional division field for municipal officers*/
+    .autocomplete-wrapper {
+  position: relative;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  border-top: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 1000;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.suggestions-list li {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.suggestions-list li:hover {
+  background-color: #0E2841;
+  color: #ffffff;
+}
+/*============================================================*/
+
     /*responsive design for smaller screens*/
 
     @media (max-width: 480px) {
