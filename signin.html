@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In | M-Unite</title>
+    <link rel="stylesheet" href="signincss.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    
+    <!-- <?php 
+    session_start();
+    require "dbConnection.php"; 
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        die('Invalid request method');
+    }
+
+    if (!isset($_POST['email'], $_POST['pword'])) {
+        die('Email address and password are required');
+    }
+
+    $email = trim($_POST['email']);
+    $pword = trim($_POST['pword']);
+
+    if ($email === '' || $pword === '') {
+        die('Email address and password cannot be empty');
+    }
+
+    $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+    if !(filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "$email is not a valid email format.";
+    }
+
+    $comment1 = "Failed login";
+    $comment2 = "Successful login";
+    $timestamp = date('Y-m-d H:i:s');
+    $reason1 = "Email address not found";
+    $reason2 = "Used valid login details";
+    $reason3 = "Used Wrong password";
+
+    $logtrailTableExists = false;
+    $checkTable = $conn->query("SHOW TABLES LIKE 'systems_activities'");
+    if ($checkTable && $checkTable->num_rows > 0) {
+        $logtrailTableExists = true;
+    }
+
+    $sql = "SELECT * FROM myusers WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        die("Prepare failed: " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        if ($logtrailTableExists) {
+            $sqllogt1 = "INSERT INTO systems_activities (activity_id, email, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $stmt1 = $conn->prepare($sqllogt1);
+
+            if ($stmt1 !== false) {
+                $stmt1->bind_param("siss", $email, $action_type_id, $start_session, $end_session);
+                $stmt1->execute();
+                $stmt1->close();
+            }
+        }
+
+        $stmt->close();
+
+        header("Location: signin.php");
+        exit();
+    }
+
+    $row = $result->fetch_assoc();
+    $stmt->close();
+
+    if (password_verify($pword, $row['pword'])) {
+        session_regenerate_id(true);
+
+        if ($logtrailTableExists) {
+            $sqllogt = "INSERT INTO logtrails (username, comment, attempttime, reason) VALUES (?, ?, ?, ?)";
+            $stmt2 = $conn->prepare($sqllogt);
+
+            if ($stmt2 !== false) {
+                $stmt2->bind_param("ssss", $uname, $comment2, $timestamp, $reason2);
+                $stmt2->execute();
+                $stmt2->close();
+            }
+        }
+
+        echo "<p>Welcome " . htmlspecialchars($row['firstname'])  . "</p>";
+
+        switch ($row['role']) {
+            case "Administrator":
+            case "2":
+                echo "<p><a href=\"signup.html\"><button>Add a new record</button></a></p>";
+                echo "<p><a href=\"displayusers.php\"><button>Display all users</button></a></p>";
+                echo "<p><a href=\"incidents_reporting.html\"><button>Report incidentss</button></a></p>";
+                echo "<p><a href=\"simple_report.php\"><button>View Reported incidentss</button></a></p>";
+                echo "<p><a href=\"signin.html\"><button>Back to Login</button></a></p>";
+                break;
+
+            case "Councillor":
+            case "1":
+                echo "<p><a href=\"displayusers.php\"><button>Display all users</button></a></p>";
+                echo "<p><a href=\"incidents_reporting.html\"><button>Report incidentss</button></a></p>";
+                echo "<p><a href=\"simple_report.php\"><button>View Reported incidentss</button></a></p>";
+                echo "<p><a href=\"signin.html\"><button>Back to Login</button></a></p>";
+                break;
+
+            case "Resident":
+            case "3":
+                echo "<p><a href=\"incidents_reporting.html\"><button>Report incidentss</button></a></p>";
+                echo "<p><a href=\"simple_report.php\"><button>View Reported incidentss</button></a></p>";
+                echo "<p><a href=\"signin.html\"><button>Back to Login</button></a></p>";
+                break;
+
+            case "Guest":
+            case "4":
+                echo "<p><a href=\"incidents_reporting.html\"><button>Make a report</button></a></p>";
+                echo "<p><a href=\"signin.html\"><button>Back to Login</button></a></p>";
+                break;
+
+            default:
+                echo "<p>Access level not recognized. Please contact administrator.</p>";
+                echo "<p><a href=\"signin.html\"><button>Back to Login</button></a></p>";
+                break;
+        }
+    } else {
+        if ($logtrailTableExists) {
+            $sqllogt1 = "INSERT INTO logtrails (username, comment, attempttime, reason) VALUES (?, ?, ?, ?)";
+            $stmt1 = $conn->prepare($sqllogt1);
+
+            if ($stmt1 !== false) {
+                $stmt1->bind_param("ssss", $uname, $comment1, $timestamp, $reason3);
+                $stmt1->execute();
+                $stmt1->close();
+            }
+        }
+
+        echo "<p>Login failed. Invalid password.</p>";
+        echo "<p><a href=\"signin.html\"><button>Back to Login</button></a></p>";
+    }
+
+    $conn->close();
+    ?>
+    ?> -->
+</head>
+
+<body>
+
+    <!--  SIGN-IN FORM   -->
+    <div class="registration">
+        <h2>Sign In</h2>
+
+        <form class="reg-form" action="" method="post">
+         
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="" required />
+            </div>
+
+            <div class="form-group">
+                <label for="pword">Password</label>
+                <input type="password" id="pword" name="pword" placeholder="" required />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+
+           
+            <div class="register-link">
+                Don't have an account? <a href="createacc.html">Register Now</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+        <div class="footer-top">
+            <!-- Left Info -->
+            <div class="footer-col footer-about">
+                <div class="footer-logo-box">
+                    <img src="logo1.png" alt="M-Unite Logo" class="logo-image" />
+                </div>
+                <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
+            </div>
+
+            <!-- Pages -->
+            <div class="footer-col">
+                <h4>Pages</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                    <li><a href="notices.html">Notices</a></li>
+                    <li><a href="map.html">Map</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                </ul>
+            </div>
+
+            <!-- Connect -->
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="#">Report Website Bugs</a></li>
+                    <li><a href="#">Volunteer</a></li>
+                    <li><a href="mailto:info@munite.co.za">info@munite.co.za</a></li>
+                    <li><a href="tel:+27000000000">+27 000000000</a></li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Terms Of Use</a></li>
+                    <li><a href="#">Copyright Notice</a></li>
+                </ul>
+            </div>
+
+            <!-- Socials -->
+            <div class="footer-col footer-socials">
+                <h4>Socials</h4>
+                <div class="social-icons-vertical">
+                    <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://github.com" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                    <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; M-Unite 2026</p>
+        </div>
+    </footer>
+
+</body>
+</html>
