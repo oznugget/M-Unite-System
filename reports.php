@@ -7,18 +7,22 @@ require_once __DIR__ . '/db_connect.php'; // expects $conn (mysqli)
 
 // Only unassigned reports show on this dashboard — once linked to a
 // ticket, ticket_id is set and the report drops off this list.
-$sql = "SELECT 
-            report_id AS id, 
-            category_id, 
-            description, 
-            CONCAT(street_number, ' ', street_name, ', ', surburb) AS address, 
-            timestamp,
-            current_status AS status
-        FROM reports
-        WHERE ticket_id IS NULL
-        ORDER BY timestamp DESC";
+$sql = "SELECT report_id AS id, category_id, description,
+        CONCAT(street_number, ' ', street_name, ', ', surburb) AS address,
+        timestamp, current_status AS status
+    FROM reports
+    WHERE ticket_id IS NULL AND ward_id = ?
+    ORDER BY timestamp DESC";
 
-$result = $conn->query($sql);
+$ward_id = $_SESSION['ward_id'] ?? null;
+if (!$ward_id) {
+    die('No ward set for this session.'); // or redirect to a login page
+}
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('i', $ward_id);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">

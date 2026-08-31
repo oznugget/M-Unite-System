@@ -2,13 +2,21 @@
 session_start();
 require_once __DIR__ . '/db_connect.php';
 
-$sql = "SELECT t.id, t.title, t.description, t.fault_type, t.status, t.created_at,
-               COUNT(r.id) AS report_count
-        FROM tickets t
-        LEFT JOIN reports r ON r.ticket_id = t.id
-        GROUP BY t.id
-        ORDER BY t.created_at DESC";
-$result = $conn->query($sql);
+$sql = "SELECT t.ticket_id AS id, t.title, t.description, t.category_id AS fault_type,
+        t.current_status AS status, t.date_created AS created_at, COUNT(r.report_id) AS report_count
+    FROM tickets t
+    LEFT JOIN reports r ON r.ticket_id = t.ticket_id
+    WHERE t.ward_id = ?
+    GROUP BY t.ticket_id
+    ORDER BY t.date_created DESC";
+$ward_id = $_SESSION['ward_id'] ?? null;
+if (!$ward_id) {
+    die('No ward set for this session.'); // or redirect to a login page
+}
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('i', $ward_id);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -39,7 +47,7 @@ $result = $conn->query($sql);
                 <p><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 120, '…')) ?></p>
                 <div class="ticket-card-bottom">
                     <span><?= htmlspecialchars($row['fault_type'] ?? 'Mixed') ?></span>
-                    <span><?= date('d M Y', strtotime($row['created_at'])) ?></span>
+                    <span><?= $row['created_at'] ? date('d M Y', strtotime($row['created_at'])) : '—' ?></span>
                 </div>
             </a>
         <?php endwhile; ?>
