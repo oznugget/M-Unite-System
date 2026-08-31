@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Councillor Dashboard | M-Unite</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- HEADER (restricted page — not part of the public navbar) -->
+  <header class="site-header">
+    <div class="logo-box">
+      <a href="index.html" class="logo-link">Logo</a>
+    </div>
+
+    <nav class="navbar">
+      <a href="index.html" class="nav-item">Home</a>
+      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="notices.html" class="nav-item">Notices</a>
+      <a href="map.html" class="nav-item">Map</a>
+      <a href="about.html" class="nav-item">About Us</a>
+    </nav>
+
+    <div class="header-right">
+      <a href="signin.html" class="sign-in-btn">
+        Cllr. Account <i class="fa-regular fa-circle-user"></i>
+      </a>
+    </div>
+  </header>
+
+  <main class="about-container">
+
+    <!-- 1. Heading -->
+    <section class="content-section text-center">
+      <span class="access-badge"><i class="fa-solid fa-lock"></i> Ward Councillor Access Only</span>
+      <h1 id="heading">Councillor Dashboard</h1>
+      <p class="subtitle" style="margin-top:-15px;">Review resident reports, combine duplicates into tickets, and send them to the municipal officer</p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-inbox"></i></div>
+          <div>
+            <div class="stat-label">New Reports</div>
+            <div class="stat-value" id="stat-new-reports">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-file-pen"></i></div>
+          <div>
+            <div class="stat-label">Draft Tickets</div>
+            <div class="stat-value" id="stat-draft">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-paper-plane"></i></div>
+          <div>
+            <div class="stat-label">Sent to Officer</div>
+            <div class="stat-value" id="stat-sent">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <div>
+            <div class="stat-label">Resolved Tickets</div>
+            <div class="stat-value" id="stat-resolved">0</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Shared search / category filter -->
+    <section class="content-section" style="margin-bottom: 0;">
+      <div class="dashboard-toolbar">
+        <div class="toolbar-filters">
+          <input type="text" id="search-input" placeholder="Search by title, area, or ID...">
+          <select id="filter-category">
+            <option value="all">All Categories</option>
+            <option value="water">Water Leak</option>
+            <option value="road">Road Defect</option>
+            <option value="electrical">Electrical Fault</option>
+            <option value="sanitation">Sanitation</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. REPORTS SECTION -->
+    <section class="content-section">
+      <h2 class="dashboard-section-title">
+        <i class="fa-solid fa-inbox"></i> Incoming Reports
+        <span class="count-pill" id="reports-count">0</span>
+      </h2>
+      <p class="dashboard-section-desc">Raw reports submitted directly by residents. Select one or more describing the same issue and turn them into a ticket to action with the municipal officer.</p>
+
+      <select id="filter-report-status" style="margin-bottom:14px; border:1px solid #cccccc; border-radius:6px; padding:8px 12px; font-size:13px; font-family:inherit;">
+        <option value="all">All Reports</option>
+        <option value="new">New</option>
+        <option value="dismissed">Dismissed</option>
+        <option value="converted">Converted to Ticket</option>
+      </select>
+
+      <div class="action-bar" id="report-action-bar">
+        <span id="report-selection-text">0 reports selected</span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline-light btn-small" id="clear-report-selection">Clear</button>
+          <button class="btn btn-accent btn-small" id="create-ticket-btn">
+            <i class="fa-solid fa-ticket"></i> Create Ticket
+          </button>
+        </div>
+      </div>
+
+      <div class="ticket-list" id="report-list"></div>
+      <div class="empty-state" id="report-empty-state" style="display:none;">No reports match your filters.</div>
+    </section>
+
+    <!-- 4. TICKETS SECTION (created from reports, sent to municipal officer) -->
+    <section class="content-section">
+      <h2 class="dashboard-section-title">
+        <i class="fa-solid fa-ticket"></i> Tickets
+        <span class="count-pill" id="tickets-count">0</span>
+      </h2>
+      <p class="dashboard-section-desc">Tickets created from one or more reports. Every send, recall, and status change is logged in the ticket's activity log below.</p>
+
+      <select id="filter-ticket-status" style="margin-bottom:14px; border:1px solid #cccccc; border-radius:6px; padding:8px 12px; font-size:13px; font-family:inherit;">
+        <option value="all">All Tickets</option>
+        <option value="draft">Draft (not yet sent)</option>
+        <option value="sent">Sent to Officer</option>
+        <option value="progress">In Progress</option>
+        <option value="resolved">Resolved</option>
+        <option value="dismissed">Dismissed</option>
+      </select>
+
+      <div class="ticket-list" id="ticket-list"></div>
+      <div class="empty-state" id="ticket-empty-state" style="display:none;">No tickets match your filters.</div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-col footer-about">
+        <div class="footer-logo-box">Logo</div>
+        <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="reports.html">Reports</a></li>
+          <li><a href="notices.html">Notices</a></li>
+          <li><a href="map.html">Map</a></li>
+          <li><a href="about.html">About Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Report Website Bugs</a></li>
+          <li><a href="#">Volunteer</a></li>
+          <li><a href="mailto:info@munite.co.za">info@munite.co.za</a></li>
+          <li><a href="tel:+27000000000">+27 000000000</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Terms Of Use</a></li>
+          <li><a href="#">Copyright Notice</a></li>
+        </ul>
+      </div>
+      <div class="footer-col footer-socials">
+        <h4>Socials</h4>
+        <div class="social-icons-vertical">
+          <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://github.com" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+          <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; M-Unite 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    // ============================================================
+    // DATA MODEL (in-memory prototype — swap for real API calls)
+    // reports  : raw resident submissions. status: new | dismissed | converted
+    // tickets  : created by the councillor from 1+ reports. status: draft | sent | progress | resolved | dismissed
+    // Every ticket keeps a "history" log so every action is traceable.
+    // ============================================================
+
+    let nextTicketId = 2004;
+
+    let reports = [
+      { id: 1006, title: "Overflowing bin area", category: "sanitation", area: "Extension 9", reporter: "Buhle S.", date: "2026-08-16", status: "new", note: null,
+        comments: [{ author: "Buhle S.", isCouncillor: false, date: "16 Aug", text: "Bins haven't been collected in two weeks." }] },
+      { id: 1007, title: "No water supply for 3 days", category: "water", area: "Vukani", reporter: "Zanele R.", date: "2026-08-16", status: "new", note: null,
+        comments: [{ author: "Zanele R.", isCouncillor: false, date: "16 Aug", text: "Whole street has been without water since Thursday." }] },
+      { id: 1008, title: "Streetlights flickering", category: "electrical", area: "Grahamstown East", reporter: "Luyanda F.", date: "2026-08-15", status: "new", note: null,
+        comments: [] },
+      { id: 1009, title: "Road surface eroded after rain", category: "road", area: "Sunnyside", reporter: "Kagiso M.", date: "2026-08-14", status: "dismissed", note: "Dismissed — minor surface wear only, doesn't meet repair threshold yet.",
+        comments: [{ author: "Kagiso M.", isCouncillor: false, date: "14 Aug", text: "Road surface is breaking up near the turnoff." }] },
+      { id: 1010, title: "Blocked storm drain", category: "sanitation", area: "Hooggenoeg", reporter: "Amahle D.", date: "2026-08-13", status: "new", note: null,
+        comments: [{ author: "Amahle D.", isCouncillor: false, date: "13 Aug", text: "Drain is fully blocked, water pooling on the road when it rains." }] },
+      { id: 1004, title: "Power line down after storm", category: "electrical", area: "Fingo Village", reporter: "Ayanda P.", date: "2026-08-19", status: "converted", note: null,
+        comments: [{ author: "Ayanda P.", isCouncillor: false, date: "19 Aug", text: "Line is down across the road, please send someone urgently." }] }
+    ];
+
+    let tickets = [
+      {
+        id: 2001, title: "Burst pipe / water gushing — High Street CBD", category: "water", area: "High Street, CBD",
+        reportIds: [1001, 1002], reporters: ["Thabo M.", "Lindiwe K."], status: "sent", createdDate: "2026-08-18",
+        comments: [
+          { author: "Thabo M.", isCouncillor: false, date: "18 Aug", text: "Water has been running down the street since this morning, getting worse." },
+          { author: "Lindiwe K.", isCouncillor: false, date: "18 Aug", text: "Same spot outside the corner shop, quite a lot of pressure." }
+        ],
+        history: [
+          { date: "18 Aug", text: "Ticket created from reports #1001, #1002" },
+          { date: "19 Aug", text: "Sent to Municipal Officer" }
+        ]
+      },
+      {
+        id: 2002, title: "Pothole near school / causing traffic — Joza", category: "road", area: "Joza",
+        reportIds: [1003, 1005], reporters: ["Sipho N.", "Nomvula T."], status: "resolved", createdDate: "2026-08-17",
+        comments: [
+          { author: "Sipho N.", isCouncillor: false, date: "17 Aug", text: "Cars are swerving into oncoming traffic to avoid it, dangerous near the school gate." },
+          { author: "Cllr. Office", isCouncillor: true, date: "18 Aug", text: "Logged with roads department, temporary warning cones placed this week." }
+        ],
+        history: [
+          { date: "17 Aug", text: "Ticket created from reports #1003, #1005" },
+          { date: "17 Aug", text: "Sent to Municipal Officer" },
+          { date: "19 Aug", text: "Status changed to In Progress" },
+          { date: "20 Aug", text: "Status changed to Resolved" }
+        ]
+      },
+      {
+        id: 2003, title: "Power line down after storm", category: "electrical", area: "Fingo Village",
+        reportIds: [1004], reporters: ["Ayanda P."], status: "draft", createdDate: "2026-08-19",
+        comments: [
+          { author: "Ayanda P.", isCouncillor: false, date: "19 Aug", text: "Line is down across the road, please send someone urgently." }
+        ],
+        history: [
+          { date: "19 Aug", text: "Ticket created from report #1004" }
+        ]
+      }
+    ];
+
+    let selectedReportIds = new Set();
+    let openReportDetailId = null;
+    let openTicketDetailId = null;
+
+    const categoryLabels = { water: "Water Leak", road: "Road Defect", electrical: "Electrical Fault", sanitation: "Sanitation" };
+    const reportStatusLabels = { new: "New", dismissed: "Dismissed", converted: "Converted to Ticket" };
+    const ticketStatusLabels = { draft: "Draft", sent: "Sent to Officer", progress: "In Progress", resolved: "Resolved", dismissed: "Dismissed" };
+
+    function logHistory(ticket, text) {
+      ticket.history.push({ date: "Just now", text });
+    }
+
+    // ---------- STATS ----------
+    function renderStats() {
+      document.getElementById('stat-new-reports').textContent = reports.filter(r => r.status === 'new').length;
+      document.getElementById('stat-draft').textContent = tickets.filter(t => t.status === 'draft').length;
+      document.getElementById('stat-sent').textContent = tickets.filter(t => t.status === 'sent' || t.status === 'progress').length;
+      document.getElementById('stat-resolved').textContent = tickets.filter(t => t.status === 'resolved').length;
+    }
+
+    // ---------- SHARED FILTER HELPERS ----------
+    function getSharedFilters() {
+      return {
+        search: document.getElementById('search-input').value.trim().toLowerCase(),
+        category: document.getElementById('filter-category').value
+      };
+    }
+
+    // ---------- REPORTS ----------
+    function renderReportActionBar() {
+      const bar = document.getElementById('report-action-bar');
+      const text = document.getElementById('report-selection-text');
+      const btn = document.getElementById('create-ticket-btn');
+      if (selectedReportIds.size > 0) {
+        bar.classList.add('visible');
+        text.textContent = `${selectedReportIds.size} report${selectedReportIds.size > 1 ? 's' : ''} selected`;
+        btn.innerHTML = selectedReportIds.size > 1
+          ? `<i class="fa-solid fa-object-group"></i> Merge into One Ticket`
+          : `<i class="fa-solid fa-ticket"></i> Create Ticket`;
+      } else {
+        bar.classList.remove('visible');
+      }
+    }
+
+    function renderReports() {
+      const { search, category } = getSharedFilters();
+      const statusFilter = document.getElementById('filter-report-status').value;
+
+      const filtered = reports.filter(r => {
+        const matchesSearch = !search || r.title.toLowerCase().includes(search) || r.area.toLowerCase().includes(search) || String(r.id).includes(search);
+        const matchesCat = category === 'all' || r.category === category;
+        const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
+        return matchesSearch && matchesCat && matchesStatus;
+      });
+
+      const list = document.getElementById('report-list');
+      const empty = document.getElementById('report-empty-state');
+      list.innerHTML = "";
+      empty.style.display = filtered.length === 0 ? 'block' : 'none';
+      document.getElementById('reports-count').textContent = reports.length;
+
+      filtered.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'ticket-card' + (r.status === 'converted' ? ' is-converted' : '');
+
+        const commentsHtml = r.comments.map(c => `
+          <div class="comment">
+            <div class="comment-author ${c.isCouncillor ? 'is-councillor' : ''}">${c.author}<span class="comment-date">${c.date}</span></div>
+            <div class="comment-text">${c.text}</div>
+          </div>
+        `).join("") || `<p style="font-size:13px; color:#999; margin-bottom:10px;">No comments yet.</p>`;
+
+        const convertedNote = r.status === 'converted'
+          ? `<p class="merged-note"><i class="fa-solid fa-arrow-right"></i> Included in Ticket #${tickets.find(t => t.reportIds.includes(r.id))?.id ?? '?'}</p>` : '';
+        const dismissedNote = r.status === 'dismissed' && r.note
+          ? `<p class="merged-note">${r.note}</p>` : '';
+
+        card.innerHTML = `
+          <div class="ticket-top">
+            <input type="checkbox" class="ticket-checkbox" data-report-id="${r.id}" ${selectedReportIds.has(r.id) ? 'checked' : ''} ${r.status !== 'new' ? 'disabled' : ''}>
+            <div class="ticket-main" data-report-toggle="${r.id}">
+              <div class="ticket-id">#${r.id}</div>
+              <div class="ticket-title">${r.title}</div>
+              <div class="ticket-meta">
+                <span class="badge badge-${r.category}">${categoryLabels[r.category]}</span>
+                <span class="status-badge status-${r.status}">${reportStatusLabels[r.status]}</span>
+                <span><i class="fa-solid fa-location-dot"></i> ${r.area}</span>
+                <span><i class="fa-solid fa-user"></i> ${r.reporter}</span>
+                <span><i class="fa-solid fa-calendar"></i> ${r.date}</span>
+              </div>
+            </div>
+            <div class="ticket-actions">
+              <button class="btn btn-ghost btn-small" data-report-toggle="${r.id}"><i class="fa-solid fa-comments"></i> Details</button>
+              ${r.status === 'new' ? `<button class="btn btn-danger btn-small" data-dismiss-report="${r.id}"><i class="fa-solid fa-ban"></i> Dismiss</button>` : ''}
+              ${r.status === 'dismissed' ? `<button class="btn btn-ghost btn-small" data-restore-report="${r.id}"><i class="fa-solid fa-rotate-left"></i> Restore</button>` : ''}
+            </div>
+          </div>
+          <div class="ticket-details ${openReportDetailId === r.id ? 'open' : ''}" id="report-details-${r.id}">
+            ${convertedNote}${dismissedNote}
+            <div class="comment-list">${commentsHtml}</div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      attachReportEvents();
+      renderReportActionBar();
+    }
+
+    function attachReportEvents() {
+      document.querySelectorAll('[data-report-id]').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          const id = Number(e.target.dataset.reportId);
+          if (e.target.checked) selectedReportIds.add(id); else selectedReportIds.delete(id);
+          renderReportActionBar();
+        });
+      });
+
+      document.querySelectorAll('[data-report-toggle]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          const id = Number(e.currentTarget.dataset.reportToggle);
+          openReportDetailId = openReportDetailId === id ? null : id;
+          renderReports();
+        });
+      });
+
+      document.querySelectorAll('[data-dismiss-report]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = Number(e.currentTarget.dataset.dismissReport);
+          const r = reports.find(rep => rep.id === id);
+          r.status = 'dismissed';
+          r.note = `Dismissed on ${new Date().toLocaleDateString()}.`;
+          selectedReportIds.delete(id);
+          renderReports();
+        });
+      });
+
+      document.querySelectorAll('[data-restore-report]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = Number(e.currentTarget.dataset.restoreReport);
+          const r = reports.find(rep => rep.id === id);
+          r.status = 'new';
+          r.note = null;
+          renderReports();
+        });
+      });
+    }
+
+    // Create a ticket from the selected reports (works for 1 or many)
+    document.getElementById('create-ticket-btn').addEventListener('click', () => {
+      if (selectedReportIds.size < 1) return;
+      const chosen = reports.filter(r => selectedReportIds.has(r.id));
+
+      const categories = new Set(chosen.map(r => r.category));
+      if (categories.size > 1) {
+        const proceed = confirm("These reports are in different categories. Create one ticket anyway?");
+        if (!proceed) return;
+      }
+
+      const primary = chosen[0];
+      const newTicket = {
+        id: nextTicketId++,
+        title: primary.title,
+        category: primary.category,
+        area: primary.area,
+        reportIds: chosen.map(r => r.id),
+        reporters: [...new Set(chosen.map(r => r.reporter))],
+        status: 'draft',
+        createdDate: new Date().toLocaleDateString(),
+        comments: chosen.flatMap(r => r.comments),
+        history: []
+      };
+      logHistory(newTicket, `Ticket created from report${chosen.length > 1 ? 's' : ''} #${chosen.map(r => r.id).join(', #')}`);
+
+      chosen.forEach(r => { r.status = 'converted'; });
+      tickets.unshift(newTicket);
+      selectedReportIds.clear();
+      openTicketDetailId = newTicket.id;
+      renderAll();
+    });
+
+    document.getElementById('clear-report-selection').addEventListener('click', () => {
+      selectedReportIds.clear();
+      renderReports();
+    });
+
+    // ---------- TICKETS ----------
+    function renderTickets() {
+      const { search, category } = getSharedFilters();
+      const statusFilter = document.getElementById('filter-ticket-status').value;
+
+      const filtered = tickets.filter(t => {
+        const matchesSearch = !search || t.title.toLowerCase().includes(search) || t.area.toLowerCase().includes(search) || String(t.id).includes(search);
+        const matchesCat = category === 'all' || t.category === category;
+        const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
+        return matchesSearch && matchesCat && matchesStatus;
+      });
+
+      const list = document.getElementById('ticket-list');
+      const empty = document.getElementById('ticket-empty-state');
+      list.innerHTML = "";
+      empty.style.display = filtered.length === 0 ? 'block' : 'none';
+      document.getElementById('tickets-count').textContent = tickets.length;
+
+      filtered.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'ticket-card is-official';
+
+        const commentsHtml = t.comments.map(c => `
+          <div class="comment">
+            <div class="comment-author ${c.isCouncillor ? 'is-councillor' : ''}">${c.author}<span class="comment-date">${c.date}</span></div>
+            <div class="comment-text">${c.text}</div>
+          </div>
+        `).join("") || `<p style="font-size:13px; color:#DCE6F2; margin-bottom:10px;">No comments yet.</p>`;
+
+        const historyHtml = t.history.map(h => `<li><span class="activity-date">${h.date}</span>${h.text}</li>`).join("");
+
+        let actionButtons = `<button class="btn btn-outline-light btn-small" data-ticket-toggle="${t.id}"><i class="fa-solid fa-comments"></i> Details</button>`;
+        if (t.status === 'draft') {
+          actionButtons += `
+            <button class="btn btn-accent btn-small" data-send-ticket="${t.id}"><i class="fa-solid fa-paper-plane"></i> Send to Municipal Officer</button>
+            <button class="btn btn-danger btn-small" data-dissolve-ticket="${t.id}"><i class="fa-solid fa-arrow-rotate-left"></i> Dissolve Ticket</button>`;
+        } else if (t.status === 'sent') {
+          actionButtons += `<button class="btn btn-outline-light btn-small" data-recall-ticket="${t.id}"><i class="fa-solid fa-rotate-left"></i> Recall</button>`;
+        } else if (t.status === 'resolved' || t.status === 'dismissed') {
+          actionButtons += `<button class="btn btn-outline-light btn-small" data-reopen-ticket="${t.id}"><i class="fa-solid fa-rotate-right"></i> Reopen</button>`;
+        }
+
+        const statusSelect = (t.status === 'sent' || t.status === 'progress')
+          ? `
+            <label style="font-size:12px; color:#DCE6F2; display:block; margin-bottom:4px;">Update status:</label>
+            <select data-status-select="${t.id}">
+              <option value="sent" ${t.status === 'sent' ? 'selected' : ''}>Sent to Officer</option>
+              <option value="progress" ${t.status === 'progress' ? 'selected' : ''}>In Progress</option>
+              <option value="resolved">Resolved</option>
+              <option value="dismissed">Dismissed</option>
+            </select>`
+          : '';
+
+        card.innerHTML = `
+          <div class="ticket-top">
+            <div class="ticket-main" data-ticket-toggle="${t.id}" style="flex:1;">
+              <div class="ticket-id">#${t.id}</div>
+              <div class="ticket-title">${t.title}</div>
+              <div class="ticket-meta">
+                <span class="badge badge-${t.category}">${categoryLabels[t.category]}</span>
+                <span class="status-badge status-${t.status}">${ticketStatusLabels[t.status]}</span>
+                <span><i class="fa-solid fa-location-dot"></i> ${t.area}</span>
+                <span><i class="fa-solid fa-users"></i> ${t.reporters.length} resident${t.reporters.length > 1 ? 's' : ''}</span>
+                <span><i class="fa-solid fa-calendar"></i> ${t.createdDate}</span>
+              </div>
+            </div>
+            <div class="ticket-actions">${actionButtons}</div>
+          </div>
+
+          <div class="ticket-details ${openTicketDetailId === t.id ? 'open' : ''}" id="ticket-details-${t.id}">
+            <p class="merged-note"><i class="fa-solid fa-object-group"></i> Created from report${t.reportIds.length > 1 ? 's' : ''} #${t.reportIds.join(', #')} — reported by ${t.reporters.join(', ')}</p>
+
+            ${statusSelect}
+
+            <label style="font-size:12px; color:#DCE6F2; display:block; margin:10px 0 4px;">Activity log:</label>
+            <ul class="activity-log">${historyHtml}</ul>
+
+            <div class="comment-list">${commentsHtml}</div>
+
+            <div class="comment-form">
+              <input type="text" placeholder="Reply as ward councillor..." data-comment-input="${t.id}">
+              <button class="btn btn-accent btn-small" data-comment-submit="${t.id}">Post</button>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      attachTicketEvents();
+    }
+
+    function attachTicketEvents() {
+      document.querySelectorAll('[data-ticket-toggle]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          const id = Number(e.currentTarget.dataset.ticketToggle);
+          openTicketDetailId = openTicketDetailId === id ? null : id;
+          renderTickets();
+        });
+      });
+
+      document.querySelectorAll('[data-send-ticket]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = Number(e.currentTarget.dataset.sendTicket);
+          const t = tickets.find(tk => tk.id === id);
+          t.status = 'sent';
+          logHistory(t, 'Sent to Municipal Officer');
+          renderAll();
+        });
+      });
+
+      document.querySelectorAll('[data-recall-ticket]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = Number(e.currentTarget.dataset.recallTicket);
+          const t = tickets.find(tk => tk.id === id);
+          t.status = 'draft';
+          logHistory(t, 'Recalled from Municipal Officer (back to draft)');
+          renderAll();
+        });
+      });
+
+      document.querySelectorAll('[data-reopen-ticket]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = Number(e.currentTarget.dataset.reopenTicket);
+          const t = tickets.find(tk => tk.id === id);
+          const previousStatus = ticketStatusLabels[t.status];
+          t.status = 'sent';
+          logHistory(t, `Reopened (was ${previousStatus}) — back with Municipal Officer`);
+          renderAll();
+        });
+      });
+
+      document.querySelectorAll('[data-dissolve-ticket]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = Number(e.currentTarget.dataset.dissolveTicket);
+          const t = tickets.find(tk => tk.id === id);
+          const proceed = confirm(`Dissolve Ticket #${t.id}? Its ${t.reportIds.length} report(s) will return to Incoming Reports.`);
+          if (!proceed) return;
+          t.reportIds.forEach(rid => {
+            const r = reports.find(rep => rep.id === rid);
+            if (r) { r.status = 'new'; r.note = null; }
+          });
+          tickets = tickets.filter(tk => tk.id !== id);
+          renderAll();
+        });
+      });
+
+      document.querySelectorAll('[data-status-select]').forEach(sel => {
+        sel.addEventListener('click', (e) => e.stopPropagation());
+        sel.addEventListener('change', (e) => {
+          const id = Number(e.target.dataset.statusSelect);
+          const t = tickets.find(tk => tk.id === id);
+          const newStatus = e.target.value;
+          t.status = newStatus;
+          logHistory(t, `Status changed to ${ticketStatusLabels[newStatus]}`);
+          renderAll();
+        });
+      });
+
+      document.querySelectorAll('[data-comment-submit]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = Number(e.currentTarget.dataset.commentSubmit);
+          const input = document.querySelector(`[data-comment-input="${id}"]`);
+          const text = input.value.trim();
+          if (!text) return;
+          const t = tickets.find(tk => tk.id === id);
+          t.comments.push({ author: "Cllr. Office", isCouncillor: true, date: "Just now", text });
+          input.value = "";
+          renderTickets();
+        });
+      });
+    }
+
+    // ---------- GLOBAL EVENTS ----------
+    function renderAll() {
+      renderReports();
+      renderTickets();
+      renderStats();
+    }
+
+    document.getElementById('search-input').addEventListener('input', renderAll);
+    document.getElementById('filter-category').addEventListener('change', renderAll);
+    document.getElementById('filter-report-status').addEventListener('change', renderReports);
+    document.getElementById('filter-ticket-status').addEventListener('change', renderTickets);
+
+    renderAll();
+  </script>
+
+</body>
+</html>
