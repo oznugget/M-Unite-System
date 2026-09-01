@@ -2,7 +2,8 @@
 
 include "dbConnection.php";
 
-// Function to display error messages in a styled format
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
 function showError($message) {
     die("
     <div style='background: #DCE6F2; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: Arial, sans-serif;'>
@@ -30,12 +31,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
    // Standard required fields
     if (empty($firstname) || empty($surname) || empty($email) || empty($contact) || empty($role) || empty($password)) {
-        die("All required fields must be completed.");
+        showError("All required fields must be completed.");
     }
 
     // Require physical address  if user is a Community Member
     if ($role === "Community Member" && empty($physAdd)) {
-        die("Physical address is required for Community Members.");
+        showError("Physical address is required for Community Members.");
     }
 
     if($role != "Community Member" && substr((strrchr($email, "@")), 1) != "makana.gov.za") {
@@ -73,47 +74,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
 
-    $username = $email; // Using email as username
+    $username = $email;
+    $is_registered = 1;
+    $active_status = 1;
 
-    //Filling in accounts table
-    $stmt = $conn->prepare("INSERT INTO accounts(username, password, phone_number, name, surname, role, is_registered, active_status)
-        VALUES (?,?,?,?,?,?,?,?)");
+    // Begin Database Transaction
+    $conn->begin_transaction();
 
-    if ($stmt === false) {
-        showError("Prepare failed" . $conn->error);
-    }else{
-        $is_registered = 1;
-        $active_status = 1;
-    }
-
-    $stmt->bind_param("ssssssii", $username, $hash_pword, $contact, $firstname, $surname, $role, $is_registered, $active_status);
-    
-    if ($stmt->execute()) {
-
+    try {
+        // 1. Insert into Accounts
+        $stmt = $conn->prepare("INSERT INTO accounts (username, password, phone_number, name, surname, role, is_registered, active_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssii", $username, $hash_pword, $contact, $firstname, $surname, $role, $is_registered, $active_status);
+        $stmt->execute();
+        $stmt->close();
 
 
     //Filling in community member table
     if ($role === "Community Member") {
         $stmt2 = $conn->prepare("INSERT INTO community_member(username, ward_id, street_number, street_name, suburb) 
             VALUES (?,?,?,?,?)");
-
-    if ($stmt2 === false) {
-        showError("Prepare failed" . $conn->error);
-    }
-    
-    if($stmt2){
         $stmt2->bind_param("sisss", $username, $ward_id, $street_number, $street_name, $suburb);
         $stmt2->execute();
         $stmt2->close();
-    }
+    
 
     //Filling in ward councillor table
     } else if ($role === "Ward councillor") {
         $stmt3 = $conn->prepare("INSERT INTO ward_councillors(username, ward_id) VALUES (?,?)");
-
-        if ($stmt3 === false) {
-            showError("Prepare failed" . $conn->error);
-        }
         $stmt3->bind_param("si", $username, $ward_id);
         $stmt3->execute();
         $stmt3->close();
@@ -122,36 +109,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //Filling in municipal officer table
     }else if ($role === "Municipal Officer") {
         $stmt4 = $conn->prepare("INSERT INTO municipal_officers(username, division) VALUES (?,?)");
-
-        if( $stmt4 === false) {
-            showError("Prepare failed" . $conn->error);
-        }
         $stmt4->bind_param("ss", $username, $division);
         $stmt4->execute();
         $stmt4->close();
 
-    } else if ($role === "Systems Administrator") {
+    } else if ($role === "System Admin") {
         $stmt5 = $conn->prepare("INSERT INTO system_admins(username) VALUES (?)");
-
-        if ($stmt5 === false) {
-            showError("Prepare failed" . $conn->error);
-        }
         $stmt5->bind_param("s", $username);
         $stmt5->execute();
         $stmt5->close();
     }
 
+        $action_type_id   = 1; // 1 = Registration Action
+        $ip_address       = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $timestamp        = date('Y-m-d H:i:s');
+        $is_authenticated = 1;
 
-       header("Location: signin.html?registration=success");
+       
+        $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
+     
+        $stmtLog->bind_param("sisssi", $username, $action_type_id, $ip_address, $timestamp, $timestamp, $is_authenticated);
+        $stmtLog->execute();
+        $stmtLog->close();
+
+        // Commit all changes if no exceptions occurred
+        $conn->commit();
+
+        // Redirect after successful commit
+        header("Location: signin.html?registration=success");
         exit();
-    } else {
-        echo "<a href='signup.html'>Back to Signup </a><br>";
-        showError("Record could not be created" . $stmt->error);
-    }
 
-    $stmt->close();
+    } catch (Exception $e) {
+        // Rollback any database changes if an query fails
+        $conn->rollback();
+        showError("Registration failed due to a database error: " . $e->getMessage());
+    }
 }
 
 $conn->close();
-?>
+?>   
 

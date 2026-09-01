@@ -5,6 +5,69 @@
       font-family: 'TikTok Sans', Arial, sans-serif;
     }
 
+    /*header*/
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 40px;
+  border-bottom: 2px solid #333333;
+  background: #0E2841;
+}
+
+.logo-box {
+  width: 170px;
+  height: 110px;
+  font-weight: bold;
+}
+
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; 
+}
+
+.navbar {
+  display: flex;
+  border-radius: 1px;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+}
+
+.nav-item {
+  padding: 8px 24px;
+  border-right: 1px solid #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.nav-item.active{
+  text-decoration: none;
+}
+
+.nav-item:last-child {
+  border-right: none;
+}
+
+
+.sign-in-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 1px;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  background: #F36E39;
+  text-decoration: none;
+
+}
+
+
     body {
       background: #DCE6F2;
       color: #222222;
@@ -210,7 +273,46 @@
   background-color: #0E2841;
   color: #ffffff;
 }
+
 /*============================================================*/
+/*password visibility toggle button styles*/
+
+
+.registration .reg-form .password-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.registration .reg-form .password-wrapper input {
+  width: 100%;
+  padding-right: 2.8rem;
+}
+
+.registration .reg-form .password-wrapper .toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.registration .reg-form .password-wrapper .toggle-btn:hover svg {
+  stroke: #F36E39;
+}
+
+/*============================================================*/
+
 
     /*responsive design for smaller screens*/
 
