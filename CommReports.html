@@ -49,7 +49,7 @@
                 </div>
 
                 <!--------report form goes here -->
-                <form class = "report-form" novalidate>    <!---turning off the default browser pop ups -->
+                <form class = "report-form" novalidate action = "process-report.php" method = "POST" enctype="multipart/form-data">    <!---turning off the default browser pop ups -->
                     <h2>Report</h2>
 
                     <div class = "form-field">
@@ -69,6 +69,7 @@
                         <input type = "hidden" id = "house-number" name = "house-number">
                         <input type = "hidden" id = "road-name" name = "road-name">
                         <input type = "hidden" id = "ward-number" name = "ward-number">
+                        <input type="hidden" id="suburb" name="suburb">
 
                     </div>
 
@@ -76,12 +77,13 @@
                         <label for = "fault-type">Fault Type<span class="required">*</span></label>
                         <select id = "fault-type" name= "fault-type" required>
 
-                            <option value="" selected disabled>Select Fault Type</option>
-                            <option value="water">Water</option>
-                            <option value="sanitation">Sanitation</option>
-                            <option value="electricity">Electricity</option>
-                            <option value="roads">Road Infrastructure</option>
-                            <option value="parks">Parks and Recreation</option>
+                            <option value="Electricity">Electricity</option>
+                            <option value="Water &amp; Sanitation">Water &amp; Sanitation</option>
+                            <option value="Roads">Roads</option>
+                            <option value="Animals">Animals</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Vandalism">Vandalism</option>
+                            <option value="Waste Management">Waste Management</option>
 
                         </select>
                         <span class="field-error" id="fault-type-error"></span>
