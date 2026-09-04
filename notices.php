@@ -4,11 +4,10 @@ include 'dbConnection.php';
 
 $username = $_SESSION['user_id'] ?? 'funi@gmail.com';
 
-
-//Change notices to read
+// Change notices to read
 if (isset($_GET['mark_read'])) {
     $notice_id = $_GET['mark_read'];
-    $sql1 = "UPDATE notices SET is_read = 1 WHERE notice_id = ? AND username = ?";
+    $sql1 = "UPDATE notice_status SET is_read = 1 WHERE notice_id = ? AND username = ?";
     $stmt1 = $conn->prepare($sql1);
     $stmt1->bind_param("is", $notice_id, $username);
     $stmt1->execute();
@@ -16,12 +15,11 @@ if (isset($_GET['mark_read'])) {
 
     header("Location: notifications.php");
     exit;
-
 }
 
-//change all unread notices to read.
+// Change all unread notices to read
 if (isset($_GET['mark_all_read'])) {
-    $sql = "UPDATE notices SET is_read = 1 WHERE username = ?";
+    $sql = "UPDATE notice_status SET is_read = 1 WHERE username = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -29,13 +27,12 @@ if (isset($_GET['mark_all_read'])) {
 
     header("Location: notifications.php");
     exit;
-
 }
 
-//dismissal of notices, when the notice is dismissed it only disappears in the web pge.
+// Dismissal of notices
 if (isset($_GET['dismiss'])) {
     $notice_id = $_GET['dismiss'];
-    $sql3 = "UPDATE notices SET is_dismissed = 1 WHERE notice_id = ? AND username = ?";
+    $sql3 = "UPDATE notice_status SET is_dismissed = 1 WHERE notice_id = ? AND username = ?";
     $stmt3 = $conn->prepare($sql3);
     $stmt3->bind_param("is", $notice_id, $username);
     $stmt3->execute();
@@ -45,9 +42,9 @@ if (isset($_GET['dismiss'])) {
     exit;
 }
 
-// Display cuont of all unread notices.
+// Display count of all unread notices
 $unread_count = 0;
-$sql = "SELECT COUNT(*) AS unread_count FROM notices WHERE username = ? AND is_read = 0";
+$sql = "SELECT COUNT(*) AS unread_count FROM notice_status WHERE username = ? AND is_read = 0";
 $stmt = $conn->prepare($sql);
 if ($stmt === false) {
     error_log("Prepare failed: " . $conn->error);
@@ -60,22 +57,36 @@ if ($stmt === false) {
     $stmt->close();
 }
 
-// Display all notices from the database related to the user 
+// Fetch all applicable notices
 $notices = [];
-$sql2 = "SELECT n.notice_id, n.title, n.content, n.notif_type, n.ward_id, wc.username, n.is_read, n.is_dismissed,n.created_at,
-         sc.category_name as category ,ac.name AS councillor_name, ac.surname AS councillor_surname
-         FROM notices n 
-         LEFT JOIN service_categories sc on n.category_id = sc.category_id
+$sql2 = "SELECT n.notice_id, n.title, n.content, n.notif_type, n.ward_id, 
+                n.is_alert, n.expires_at, n.resolved_at, n.created_at,
+                wc.username AS councillor_username,
+                COALESCE(ns.is_read, 0) AS is_read,
+                COALESCE(ns.is_dismissed, 0) AS is_dismissed,
+                sc.category_name AS category,
+                ac.name AS councillor_name, ac.surname AS councillor_surname
+         FROM notices n
+         LEFT JOIN service_categories sc ON n.category_id = sc.category_id
          LEFT JOIN wards w ON n.ward_id = w.ward_id
          LEFT JOIN ward_councillors wc ON n.ward_id = wc.ward_id
-         LEFT JOIN accounts ac on ac.username =wc.username
-         WHERE n.username = ? AND is_dismissed = 0
+         LEFT JOIN accounts ac ON ac.username = wc.username
+         LEFT JOIN notice_status ns ON ns.notice_id = n.notice_id AND ns.username = ?
+         WHERE (
+                (n.notif_type = 'report' AND n.username = ?)
+             OR (n.notif_type = 'ward' AND n.ward_id = (
+                    SELECT cm.ward_id FROM community_member cm WHERE cm.username = ?
+                ))
+             OR (n.notif_type = 'general')
+         )
+         AND COALESCE(ns.is_dismissed, 0) = 0
          ORDER BY n.created_at DESC";
+
 $stmt2 = $conn->prepare($sql2);
 if ($stmt2 === false) {
     error_log("Prepare failed: " . $conn->error);
 } else {
-    $stmt2->bind_param("s", $username);
+    $stmt2->bind_param("sss", $username, $username, $username);
     $stmt2->execute();
     $result2 = $stmt2->get_result();
     while ($row = $result2->fetch_assoc()) {
@@ -84,26 +95,50 @@ if ($stmt2 === false) {
     $stmt2->close();
 }
 
-// Split into Today / Yesterday / Earlier
-$today_notices = [];
-$yesterday_notices = [];
-$earlier_notices = [];
-
-$today_str = date('Y-m-d');
-$yesterday_str = date('Y-m-d', strtotime('-1 day'));
+// Categorization Collections
+$safety_alerts = [];
+$personal_notices = [];
+$townwide_notices = [];
 
 foreach ($notices as $n) {
-    $noticeDate = date('Y-m-d', strtotime($n['created_at']));
-    if ($noticeDate === $today_str) {
-        $today_notices[] = $n;
-    } elseif ($noticeDate === $yesterday_str) {
-        $yesterday_notices[] = $n;
+    if (!empty($n['is_alert']) && $n['is_alert'] == 1) {
+        $safety_alerts[] = $n;
+    } elseif ($n['notif_type'] === 'report') {
+        $personal_notices[] = $n;
     } else {
-        $earlier_notices[] = $n;
+        $townwide_notices[] = $n;
     }
 }
 
-// time display on notice "min ago" / "hour ago" / date fallback
+// Helper to partition arrays by time buckets (Today / Yesterday / Earlier)
+function partition_by_date($notice_list) {
+    $today = [];
+    $yesterday = [];
+    $earlier = [];
+    $today_str = date('Y-m-d');
+    $yesterday_str = date('Y-m-d', strtotime('-1 day'));
+
+    foreach ($notice_list as $n) {
+        $noticeDate = date('Y-m-d', strtotime($n['created_at']));
+        if ($noticeDate === $today_str) {
+            $today[] = $n;
+        } elseif ($noticeDate === $yesterday_str) {
+            $yesterday[] = $n;
+        } else {
+            $earlier[] = $n;
+        }
+    }
+
+    return [
+        'today' => $today,
+        'yesterday' => $yesterday,
+        'earlier' => $earlier
+    ];
+}
+
+$personal_grouped = partition_by_date($personal_notices);
+$townwide_grouped = partition_by_date($townwide_notices);
+
 function format_notice_time($timestamp) {
     $diff = time() - strtotime($timestamp);
     if ($diff < 60) return "Just now";
@@ -115,7 +150,6 @@ function format_notice_time($timestamp) {
     return date('d F Y', strtotime($timestamp));
 }
 
-// Icon per category , must be matched withe icoons to be used on front end
 function get_notice_icon($category) {
     $icons = [
         'water'       => 'water_drop',
@@ -124,20 +158,21 @@ function get_notice_icon($category) {
         'waste'       => 'delete',
         'general'     => 'info',
     ];
-    return $icons[$category] ?? 'notifications';
+    return $icons[strtolower($category)] ?? 'notifications';
 }
 
-// Outputs one <article class="notif-card"> for a given row
 function render_notice_card($n) {
     $unreadClass = $n['is_read'] == 0 ? 'unread' : '';
+    $alertClass = !empty($n['is_alert']) && $n['is_alert'] == 1 ? 'alert-card' : '';
     $icon = get_notice_icon($n['category']);
     $time = format_notice_time($n['created_at']);
     $councillorFullName = trim(($n['councillor_name'] ?? '') . ' ' . ($n['councillor_surname'] ?? ''));
     ?>
-    <article class="notif-card <?php echo $unreadClass; ?>"
+    <article class="notif-card <?php echo $unreadClass . ' ' . $alertClass; ?>"
              data-notification-id="<?php echo $n['notice_id']; ?>"
              data-notif-type="<?php echo htmlspecialchars($n['notif_type']); ?>"
              data-category="<?php echo htmlspecialchars($n['category']); ?>"
+             data-is-alert="<?php echo $n['is_alert'] ?? 0; ?>"
              onclick="window.location.href='notifications.php?mark_read=<?php echo $n['notice_id']; ?>'">
 
         <div class="notif-icon">
@@ -151,7 +186,6 @@ function render_notice_card($n) {
                         <span class="unread-dot"></span>
                     <?php endif; ?>
                     <h3 class="notif-title"><?php echo htmlspecialchars($n['title']); ?></h3>
-                    
                 </div>
                 <span class="time"><?php echo $time; ?></span>
             </header>
@@ -160,7 +194,7 @@ function render_notice_card($n) {
 
             <footer class="notif-footer">
                 <span class="notif-category"><?php echo htmlspecialchars(ucfirst($n['category'])); ?></span>
-                <?php if (!empty($n['username'])): ?>
+                <?php if (!empty($councillorFullName)): ?>
                     <span class="notif-separator">·</span>
                     <span class="notif-author"><?php echo htmlspecialchars($councillorFullName); ?></span>
                 <?php endif; ?>
