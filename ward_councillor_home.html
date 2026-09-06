@@ -7,7 +7,6 @@
 
     <script src="homejs.js" defer></script>
     <link rel="stylesheet" href="homecss.css">
-    <link rel="stylesheet" href="header_footer.css">
 
   <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
 </head>
@@ -15,31 +14,30 @@
 
 <body>
 
+
+
     <header class="site-header">
 
     <div class="logo-box">
-      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
-      <a href="home.html" class="logo-link"></a>
+      <img src="logo1.png" alt="M-Unite Logo" class="logo-image">
+      <a href="index.html" class="logo-link"></a>
     </div>
 
     <nav class="navbar">
-      <a href="home.html" class="nav-item-active">Home</a>
-      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="home.html" class="nav-item">Home</a>
+      <a href="test_login.php" class="nav-item">Reports</a>
+      <a href="tickets.php" class="nav-item">Notices</a>
       <a href="notification.html" class="nav-item">Notices</a>
-      <a href="map.php" class="nav-item">Map</a>
-      <a href="about_us.html" class="nav-item">About Us</a>
+      <a href="map.html" class="nav-item">Map</a>
+      <a href="about_us.html" class="nav-item active">About Us</a>
     </nav>
 
-    <div class="header-right">
-            <a href="signin.html" class="sign-in-btn">
-                Sign In <i class="fa-regular fa-circle-user"></i>
-            </a>
-        </div>
     </header>
 
 
 
-  
+    
+
     <section id="carousel">
 
       <div id="carousel-frame">
@@ -79,43 +77,27 @@
       </div>
 
     </section>
-    
-    <section id="about" class="step-card">
-      <div class="about-content">
-        <img src="images/reporttimeline.png" alt="M-Unite Logo" class="logo-image-about">
-      </div>
-    </section>
+
 
     <section id = "localinfo" class = "localinfo">
       <h2 class = "section-title"> Local Information </h2>
 
       <div class="localinfo-row">
 
-        <div id = "dams" class = "infocard">
-          <h2> Dam Levels </h2>
-            <h3 class = "damnames">Howieson's Poort Dam </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
-            <h3 class = "damnames">Settlers Dam </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
-            <h3 class = "damnames">Jamieson and Milner Dams </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
-            <h3 class = "damnames">Glen Melville Dam </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
-        </div>
+        
 
         <div class="localinfo-col">
 
           <div id = "townnotices" class = "infocard">
-            <h2> Town Notices </h2>
-            <a href = "notifications.html"></a>
-            <!--- fetch top notice from municipal officer most recent community wide notices as a box
-            and render the first 3 lines from it. community wide is visible to guest and all other users-->
+            <h2> Reports </h2>
+            <a href = "test_login.php"></a>
+        
           </div>
 
           <div id = "events" class = "infocard">
-            <h2> Events </h2>
-             <!--- fetch top event from municipal officer most recent events post as a box
-            and render the first 3 lines from it. events are visible to guest and all other users-->
+            <h2> Tickets </h2>
+            <a href = "test_login.php"></a>
+            
           </div>
 
         </div>
@@ -128,28 +110,7 @@
 
 
 
- <section id="informatics">
 
-  <div id="currentissues" class="infomaticsection">
-    <h2>Current Issues</h2>
-    <p>Makhanda is currently facing a water crisis. Makhanda is currently using 18 megalitres a
-      day of water each day – about 180 litres per person. The crippling drought has nearly emptied
-      Settlers' Dam – which supplies about half of that – and it is unlikely to recover until/unless
-      we receive significant rainfall.</p>
-    <a href="notifications.html">Read more -></a>
-  </div>
-
-  <div id="comein" class="infomaticsection">
-    <h2>Where You Come In</h2>
-    <p>Every drop counts. Use 50l a day. Keep taps closed. Take short showers.
-      Flush using grey water. A distribution schedule is being worked on that will get water tankers
-      delivering drinking water to different wards across the City. There will also be collection points,
-      replenished daily, where residents will be able to collect their daily allocation of water.
-    </p>
-    <a href="notifications.html">Read more -></a>
-  </div>
-
-</section>
 
 
 

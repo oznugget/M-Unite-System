@@ -50,17 +50,41 @@ body {
 }
 .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 12px; }
 #selection-count { color: var(--muted); font-size: 0.9rem; }
-#type-filter {
+#type-filter, #group-by-filter {
     padding: 6px 10px;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 1px;
     background: white;
 }
+
+#add-existing-btn {
+    background: white;
+    color: var(--navy);
+    border: 1px solid var(--navy);
+}
+#add-existing-btn:disabled {
+    color: var(--muted);
+    border-color: var(--border);
+    cursor: not-allowed;
+    background: white;
+}
+
+.group-header {
+    margin: 14px 2px 2px;
+    padding: 4px 0 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--navy-light);
+    border-bottom: 1px solid var(--border);
+}
+.group-header:first-child { margin-top: 0; }
 
 button {
     cursor: pointer;
     border: none;
-    border-radius: 6px;
+    border-radius: 1px;
     font-weight: 600;
     padding: 8px 16px;
 }
@@ -88,7 +112,7 @@ button {
     gap: 10px;
     background: white;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 1px;
     padding: 8px 10px;
     font-size: 0.85rem;
     transition: background 0.15s;
@@ -145,7 +169,7 @@ button {
     width: 100%;
     padding: 8px 10px;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 1px;
     font-family: inherit;
 }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
@@ -160,7 +184,7 @@ button {
 .ticket-card {
     background: white;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 1px;
     padding: 16px;
     text-decoration: none;
     color: var(--text);
@@ -181,11 +205,11 @@ button {
 }
 
 /* ---------- Ticket detail ---------- */
-.ticket-detail { padding: 24px; max-width: 900px; margin: 0 auto; }
+.ticket-detail { padding: 24px; max-width: 1200px; margin: 0 auto; }
 .ticket-detail-header {
     background: white;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 1px;
     padding: 20px;
     margin-bottom: 20px;
 }
@@ -196,7 +220,7 @@ button {
     margin-top: 20px;
     background: white;
     border: 1px dashed var(--orange);
-    border-radius: 8px;
+    border-radius: 1px;
     padding: 16px;
 }
 .add-reports-panel.hidden { display: none; }

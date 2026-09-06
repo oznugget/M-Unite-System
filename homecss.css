@@ -1,78 +1,5 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: 'Merriweather Sans', sans-serif;
-  color: #262626;
-}
-
-a {
-  text-decoration: none;
-}
-
-/*header*/
-.site-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 40px;
-  border-bottom: 2px solid #333333;
-  background: #0E2841;
-}
-
-.logo-box {
-  width: 170px;
-  height: 110px;
-  font-weight: bold;
-}
-
-.logo-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; 
-}
-
-.navbar {
-  display: flex;
-  border-radius: 1px;
-  overflow: hidden;
-  border: 2px solid #ffffff;
-}
-
-.nav-item {
-  padding: 8px 24px;
-  border-right: 1px solid #ffffff;
-  font-size: 14px;
-  font-weight: 500;
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.nav-item.active{
-  text-decoration: none;
-}
-
-.nav-item:last-child {
-  border-right: none;
-}
 
 
-.sign-in-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 18px;
-  border-radius: 1px;
-  font-size: 14px;
-  font-weight: bold;
-  border: 2px solid #ffffff;
-  color: #ffffff;
-  background: #F36E39;
-  text-decoration: none;
-
-}
 
 /*----------------------------------------------------------------------*/
 /*section 1*/
@@ -226,6 +153,18 @@ a {
 /*----------------------------------------------------------------------*/
 
 /*section 3*/
+
+.step-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: #ffffff;
+  position: relative;
+  align-items: center;
+
+}
+
 #informatics {
   display: flex;
   gap: 2rem;

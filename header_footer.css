@@ -1,0 +1,218 @@
+/* --- GENERAL & RESET --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'TikTok Sans', Arial, sans-serif;
+}
+
+body {
+  background: #DCE6F2;
+  color: #222222;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'TikTok Sans', sans-serif;
+}
+
+h1, h2, h3, .logo-box, .stat-value {
+  font-family: 'Merriweather Sans', sans-serif;
+  font-weight: 700;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- HEADER & NAVIGATION --- */
+.site-header {
+  background: radial-gradient(circle, #3f5f7a 0%, #0e2841 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: stretch; /* Allows the navbar to stretch from top to bottom edge */
+  justify-content: space-between;
+  padding: 0 1.5rem; 
+  height: 80px; /* Explicit height replaces the removed vertical padding */
+}
+
+/* Keeps logo and sign-in button vertically centered, preventing them from stretching */
+.site-header > :not(.navbar) {
+  align-self: center;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  height: 120px; /* Keeps it slightly smaller than the 80px header */
+  width: 150px; /* Explicit width prevents it from pushing the nav */
+  flex-shrink: 0; /* Prevents the browser from squishing the logo box */
+}
+
+/* Update your existing .logo-image rule */
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Ensures the logo scales without distortion */
+  object-position: left center; /* Aligns the logo cleanly to the left */
+}
+
+
+
+.navbar {
+  display: flex;
+  gap: 0;
+  font-size: 18px;
+}
+
+.nav-item, 
+.nav-item-active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 130px; /* Forces all items to share this exact width regardless of text length */
+  height: 100%; /* Fills the vertical space of the header */
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.nav-item-active {    /*for the current page to be highlighted in the navbar*/
+  color: #F36E39;
+  font-weight: bold;
+
+}
+
+.nav-item:hover {
+  background-color: #F36E39;
+  color: #ffffff;
+  
+
+}
+
+.nav-item-active:hover {
+  background-color: #F36E39;
+  color: #ffffff;
+  border-radius: 1px;
+}
+
+.account-icon img {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.sign-in-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 1px;
+  border: 1px solid #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background: #0E2841;
+  transition: background-color 0.5s ease, color 0.5s ease, border 0.5s ease;
+}
+
+.sign-in-btn:hover {
+  background-color: #F36E39;
+  color: #ffffff;
+  border: 1px solid #F36E39;
+}
+
+/* --- FOOTER --- */
+
+.site-footer {
+  border-top: 2px solid #262626;
+  background: #0E2841;
+  padding: 35px 40px 15px;
+  margin-top: auto;
+  color: #ffffff;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto 30px;
+}
+
+.footer-col {
+  flex: 1;
+}
+
+.footer-about {
+  flex: 1.4;
+}
+
+.footer-logo-box {
+  width: 70px;
+  height: 40px;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.footer-about p {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.footer-col h4 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.footer-col ul {
+  list-style: none;
+}
+
+.footer-col ul li {
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.social-icons-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 15px;
+  font-size: 13px;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .site-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+  .navbar {
+    width: 100%;
+    justify-content: space-around;
+  }
+  .nav-item {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .steps-grid,
+  .footer-top {
+    flex-direction: column;
+  }
+  .footer-top {
+    gap: 20px;
+  }
+  .social-icons-vertical {
+    flex-direction: row;
+  }
+}

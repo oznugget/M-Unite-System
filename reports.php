@@ -7,7 +7,7 @@ require_once __DIR__ . '/db_connect.php'; // expects $conn (mysqli)
 
 // Only unassigned reports show on this dashboard — once linked to a
 // ticket, ticket_id is set and the report drops off this list.
-$sql = "SELECT report_id AS id, category_id, description,
+$sql = "SELECT report_id AS id, category_id, description, street_name,
         CONCAT(street_number, ' ', street_name, ', ', surburb) AS address,
         timestamp, current_status AS status
     FROM reports
@@ -23,6 +23,16 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $ward_id);
 $stmt->execute();
 $result = $stmt->get_result();
+
+// Open tickets in this ward, for the "Add to Existing Ticket" dropdown
+$open_tickets_stmt = $conn->prepare(
+    "SELECT ticket_id, title, category_id FROM tickets
+     WHERE ward_id = ? AND current_status != 'Closed'
+     ORDER BY date_created DESC"
+);
+$open_tickets_stmt->bind_param('i', $ward_id);
+$open_tickets_stmt->execute();
+$open_tickets = $open_tickets_stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -49,6 +59,11 @@ $result = $stmt->get_result();
         <span id="selection-count">0 selected</span>
     </div>
     <div class="toolbar-right">
+        <select id="group-by-filter">
+            <option value="">No grouping</option>
+            <option value="street">Group by street</option>
+            <option value="category">Group by category</option>
+        </select>
         <select id="type-filter">
             <option value="">All types</option>
             <?php
@@ -58,6 +73,7 @@ $result = $stmt->get_result();
             }
             ?>
         </select>
+        <button id="add-existing-btn" class="btn-secondary" disabled>Add to Existing Ticket</button>
         <button id="create-ticket-btn" disabled>Create Ticket from Selected</button>
     </div>
 </div>
@@ -65,7 +81,7 @@ $result = $stmt->get_result();
 <div class="report-list" id="report-list">
     <?php if ($result && $result->num_rows > 0): ?>
         <?php while ($row = $result->fetch_assoc()): ?>
-            <div class="report-row" data-type="<?= htmlspecialchars($row['category_id']) ?>" data-id="<?= $row['id'] ?>">
+            <div class="report-row" data-type="<?= htmlspecialchars($row['category_id']) ?>" data-street="<?= htmlspecialchars($row['street_name']) ?>" data-id="<?= $row['id'] ?>">
                 <input type="checkbox" class="report-checkbox" value="<?= $row['id'] ?>">
                 <span class="badge badge-<?= strtolower(str_replace(' ', '-', $row['status'])) ?>"><?= htmlspecialchars($row['status']) ?></span>
                 <span class="report-type"><?= htmlspecialchars($row['category_id']) ?></span>
@@ -94,6 +110,31 @@ $result = $stmt->get_result();
         <div class="modal-actions">
             <button id="modal-cancel" class="btn-secondary">Cancel</button>
             <button id="modal-submit" class="btn-primary">Create Ticket</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add to Existing Ticket Modal -->
+<div id="existing-ticket-modal" class="modal-overlay hidden">
+    <div class="modal">
+        <h2>Add to Existing Ticket</h2>
+        <p id="existing-modal-report-count"></p>
+        <label for="existing-ticket-select">Ticket</label>
+        <select id="existing-ticket-select">
+            <?php if ($open_tickets && $open_tickets->num_rows > 0): ?>
+                <?php while ($t = $open_tickets->fetch_assoc()): ?>
+                    <option value="<?= $t['ticket_id'] ?>">
+                        #<?= $t['ticket_id'] ?> — <?= htmlspecialchars($t['title']) ?> (<?= htmlspecialchars($t['category_id'] ?? 'Mixed') ?>)
+                    </option>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <option value="" disabled selected>No open tickets in your ward yet</option>
+            <?php endif; ?>
+        </select>
+
+        <div class="modal-actions">
+            <button id="existing-modal-cancel" class="btn-secondary">Cancel</button>
+            <button id="existing-modal-submit" class="btn-primary" <?= (!$open_tickets || $open_tickets->num_rows === 0) ? 'disabled' : '' ?>>Add Reports</button>
         </div>
     </div>
 </div>
