@@ -64,7 +64,7 @@
   padding: 1rem;
   z-index: 5;
   font-family: 'Merriweather Sans', sans-serif;
-  font-size: 2.2rem;
+  font-size: 2.8rem;
 }
 
 
@@ -123,6 +123,41 @@
   background: #F36E39;
 }
 
+.greeting-banner {
+  text-align: left;
+  padding: 1.2rem 1rem 0.4rem;
+}
+
+.greeting-banner h2 {
+  font-family: 'Merriweather Sans', sans-serif;
+  font-weight: 700;
+  color: #0E2841;
+  font-size: 1.4rem;
+}
+
+.login-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #d4edda;
+  color: #155724;
+  border-left: 4px solid #28a745;
+  padding: 12px 22px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  z-index: 9999;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.login-toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 /*----------------------------------------------------------------------*/
 /* section 2*/
 .localinfo {

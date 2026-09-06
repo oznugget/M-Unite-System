@@ -198,7 +198,7 @@ if ($action === 'geocode') {
             <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image" />
         </div>
         <nav class="navbar">
-            <a href="home.html" class="nav-item-active">Home</a>
+            <a href="home.php" class="nav-item-active">Home</a>
             <a href="reports.html" class="nav-item">Reports</a>
             <a href="notification.html" class="nav-item">Notices</a>
             <a href="map.php" class="nav-item">Map</a>
