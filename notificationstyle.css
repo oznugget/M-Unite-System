@@ -492,14 +492,21 @@ header nav a[aria-current="page"] {
 }
 
 /*Appears only when there are no unread notices*/
-.no-unread-notifications {
+.group-empty-message {
     text-align: center;
-    margin: 3rem 0;
+    margin: 1.5rem 0;
     font-family: "TikTok Sans", sans-serif;
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #4A4A46;
 }
 
+.single-tab-empty-message {
+    text-align: center;
+    margin: 1.5rem 0;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.95rem;
+    color: #4A4A46;
+}
 /* RESPONSIVE DESIGN*/
 
 /* TABLET / small laptop */

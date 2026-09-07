@@ -81,7 +81,9 @@
             <!-- 2. PERSONAL NOTICES -->
             <section class="notice-group personal-group" data-group="personal">
                 <h2 class="group-title">Personal Updates</h2>
-                
+
+                <p class="group-empty-message" <?php echo empty($personal_notices) ? '' : 'hidden'; ?>>No new messages</p>
+
                 <?php if (!empty($personal_grouped['today'])): ?>
                 <div class="time-bucket today-notices">
                     <h3>Today</h3>
@@ -108,6 +110,8 @@
             <section class="notice-group townwide-group" data-group="townwide">
                 <h2 class="group-title">Town-Wide Notices</h2>
 
+                <p class="group-empty-message" <?php echo empty($townwide_notices) ? '' : 'hidden'; ?>>No new messages</p>
+
                 <?php if (!empty($townwide_grouped['today'])): ?>
                 <div class="time-bucket today-notices">
                     <h3>Today</h3>
@@ -129,10 +133,14 @@
                 </div>
                 <?php endif; ?>
             </section>
-
-            <!-- Empty State Fallbacks -->
+            
+            <!-- Single flat empty-state, used only when a specific tab (Reports/Ward/General) is active -->
+            <p class="single-tab-empty-message" hidden>No new messages</p>
+            <!-- Empty State Fallbacks 
             <p class="no-notifications" <?php echo empty($notices) ? '' : 'hidden'; ?>>No new messages</p>
-            <p class="no-unread-notifications" hidden>No unread notifications</p>
+            <p class="no-unread-notifications" hidden>No unread notifications</p>-->
+
+
         </main>
         <footer>
             <p>&copy; 2026 M-Unite</p>
