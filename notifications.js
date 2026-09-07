@@ -107,6 +107,7 @@ function applyFilters() {
         alertGroup.style.display = hasVisibleCard ? "" : "none";
     }
 
+    
 
 // Event Listeners
 unreadToggle.addEventListener("change", applyFilters);

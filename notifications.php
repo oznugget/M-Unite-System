@@ -1,11 +1,11 @@
-<?php include 'notices.php'; ?>
+<?php include 'notices_data.php'; ?>
 
 <!Doctype html>
 <html>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>My Notices</title>
+        <title>My Notifications</title>
         <link rel="stylesheet" href="notificationstyle.css">
 
         <!-- Google Fonts -->
@@ -57,12 +57,13 @@
                         <select class="category-filter" aria-label="Filter by category">
                             <option value="">All categories</option>
                             <option value="Electricity">Electricity</option>
-                            <option value="Water & Sanitation">Water & Sanitation</option>
+                            <option value="Water & Sanitation">Water</option>
                             <option value="Roads">Roads</option>
                             <option value="Waste Management">Waste Management</option>
+                            <option value="Water & Sanitation">Sanitation</option>
                             <option value="Animals">Animals</option>
                             <option value="Vandalism">Vandalism</option>
-                            <option value="Transport">Transport</option>
+                            <option value="Transport">Enviromental Issues</option>
                         </select>
                     </div>
                 </div>
