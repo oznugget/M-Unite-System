@@ -145,6 +145,28 @@ header nav a[aria-current="page"] {
     font-size: 1rem;
     color: #4A4A46;
 }
+/*alert styling*/
+.notif-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.alert-badge {
+    flex-shrink: 0;
+    background-color: #FCEBEB;
+    color: #A32D2D;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.notif-card.alert-card {
+    background-color: #ffffff;
+}
 
 @media (max-width: 640px) {
     #notif-header {

@@ -1,4 +1,10 @@
-<?php include 'public_notices_data.php'; ?>
+<?php include 'public_notices_data.php'; 
+
+include 'alert_banner_data.php';
+include 'alert_banner.php';
+
+$active_alerts = get_active_alerts($conn); // public scope, no username
+?>
 
 <!Doctype html>
 <html>
@@ -7,6 +13,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Public Notices</title>
         <link rel="stylesheet" href="public_notices.css">
+        <link rel="stylesheet" href="alert_banner.css">
 
         <!-- Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +22,7 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
     </head>
     <body>
+        
         <header id="notif-header">
             <p>Logo M-Unite</p>
             <nav>
@@ -25,6 +33,7 @@
                 <a href="">About Us</a>
             </nav>
         </header>
+        <?php render_alert_banner($active_alerts); ?>
         <main>
             <section class="public-notices-intro">
                 <h1>Town notices</h1>
@@ -56,8 +65,10 @@
 
             <p class="no-notices" <?php echo empty($public_notices) ? '' : 'hidden'; ?>>No notices right now</p>
         </main>
+
         <footer>
             <p>&copy; 2026 M-Unite</p>
         </footer>
+        <script src="alert_banner.js"></script>
     </body>
 </html>

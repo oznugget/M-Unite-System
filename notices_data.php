@@ -186,6 +186,9 @@ function render_notice_card($n) {
                         <span class="unread-dot"></span>
                     <?php endif; ?>
                     <h3 class="notif-title"><?php echo htmlspecialchars($n['title']); ?></h3>
+                    <?php if (!empty($n['is_alert']) && $n['is_alert'] == 1): ?>
+                        <span class="alert-badge">Alert</span>
+                    <?php endif; ?>
                 </div>
                 <span class="time"><?php echo $time; ?></span>
             </header>

@@ -507,6 +507,18 @@ header nav a[aria-current="page"] {
     font-size: 0.95rem;
     color: #4A4A46;
 }
+/*Safety alert*/
+.alert-badge {
+    flex-shrink: 0;
+    background-color: #FCEBEB;
+    color: #A32D2D;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
 /* RESPONSIVE DESIGN*/
 
 /* TABLET / small laptop */

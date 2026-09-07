@@ -86,8 +86,11 @@ function render_public_notice_card($n) {
     $icon = get_notice_icon($n['category']);
     $time = format_notice_time($n['created_at']);
     $councillorFullName = trim(($n['councillor_name'] ?? '') . ' ' . ($n['councillor_surname'] ?? ''));
+    $isAlert = !empty($n['is_alert']) && $n['is_alert'] == 1;
+    $alertClass = $isAlert ? 'alert-card' : '';
     ?>
-    <article class="notif-card"
+    <article class="notif-card <?php echo $alertClass; ?>"
+             id="notice-<?php echo $n['notice_id']; ?>"
              data-notification-id="<?php echo $n['notice_id']; ?>"
              data-category="<?php echo htmlspecialchars($n['category']); ?>">
 
@@ -97,7 +100,12 @@ function render_public_notice_card($n) {
 
         <div class="notif-content">
             <header class="notif-header">
-                <h3 class="notif-title"><?php echo htmlspecialchars($n['title']); ?></h3>
+                <div class="notif-title-row">
+                    <h3 class="notif-title"><?php echo htmlspecialchars($n['title']); ?></h3>
+                    <?php if ($isAlert): ?>
+                        <span class="alert-badge">Alert</span>
+                    <?php endif; ?>
+                </div>
                 <span class="time"><?php echo $time; ?></span>
             </header>
 
