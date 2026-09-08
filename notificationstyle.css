@@ -42,6 +42,55 @@ header nav a[aria-current="page"] {
     color: #F36E39;
 }
 
+/*Icons ay nav bar*/
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Bell Notification Icon Button */
+.notif-bell-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  color: #ffffff;
+  border-radius: 4px;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.notif-bell-btn .material-symbols-outlined {
+  font-size: 26px;
+}
+
+.notif-bell-btn:hover,
+.notif-bell-btn.active-bell {
+  color: #F36E39;
+}
+
+/* Badge overlay on top of bell icon */
+.bell-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: #F36E39;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 5px;
+  line-height: 1;
+}
+
+/* Adjust sign-in / account button for Material Symbols alignment */
+.sign-in-btn .material-symbols-outlined {
+  font-size: 20px;
+  vertical-align: middle;
+}
+
 /*FILTERING TABS*/
 .filtering-tabs {
     padding: 2rem;
@@ -519,6 +568,103 @@ header nav a[aria-current="page"] {
     text-transform: uppercase;
     letter-spacing: 0.02em;
 }
+
+/* READ MORE LINK BUTTON */
+.read-more-btn {
+    background: none;
+    border: none;
+    color: #0E2841;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 0.25rem;
+    text-decoration: underline;
+}
+
+.read-more-btn:hover {
+    color: #F36E39;
+}
+
+/* MODAL POPUP STYLES */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(14, 40, 65, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-card {
+    background-color: #ffffff;
+    width: 90%;
+    max-width: 580px;
+    max-height: 85vh;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: #6B6B67;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close-btn:hover {
+    background-color: #DCE6F2;
+    color: #0E2841;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-right: 2rem;
+}
+
+.modal-header-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-body {
+    font-size: 0.95rem;
+    color: #262626;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+    white-space: pre-wrap; /* Preserves paragraph line breaks */
+}
+
 /* RESPONSIVE DESIGN*/
 
 /* TABLET / small laptop */

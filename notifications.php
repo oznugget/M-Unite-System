@@ -1,30 +1,51 @@
 <?php include 'notices_data.php'; ?>
 
 <!Doctype html>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>My Notifications</title>
+        
         <link rel="stylesheet" href="notificationstyle.css">
+        <link rel="stylesheet" href="header_footer.css">
 
         <!-- Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@400;500;600;700&family=TikTok+Sans:opsz,wght@12..36,400;12..36,500;12..36,600;12..36,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
     </head>
     <body>
-        <header id="notif-header">
-            <p>Logo M-Unite</p>
-            <nav>
-                <a href="">Home</a>
-                <a href="">Reports</a>
-                <a href="" aria-current="page">Notices</a>
-                <a href="">Map</a>
-                <a href="">About Us</a>
+        <header class="site-header">
+            <div class="logo-box">
+                <img src="logo_1.png" alt="M-Unite Logo" class="logo-image">
+                <a href="home.php" class="logo-link"></a>
+            </div>
+
+            <nav class="navbar">
+                <a href="home.php" class="nav-item">Home</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+                <a href="public_notices.php" class="nav-item-active">Notices</a>
+                <a href="map.php" class="nav-item">Map</a>
+                <a href="about_us.html" class="nav-item">About Us</a>
             </nav>
+            <div class="header-right">
+                    <!-- Active Bell Icon for Personal Notifications -->
+                    <a href="notifications.php" class="notif-bell-btn active-bell" aria-label="Personal Notifications">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <?php if (isset($unread_count) && $unread_count > 0): ?>
+                            <span class="bell-badge"><?php echo $unread_count; ?></span>
+                        <?php endif; ?>
+                    </a>
+
+                    <!-- Account Button -->
+                    <a href="account.html" class="sign-in-btn">
+                        Account <span class="material-symbols-outlined">account_circle</span>
+                    </a>
+                </div>
         </header>
+
         <main>
             <!-- Filter Section -->
             <section class="filtering-tabs">
@@ -135,17 +156,43 @@
                 <?php endif; ?>
             </section>
             
-            <!-- Single flat empty-state, used only when a specific tab (Reports/Ward/General) is active -->
             <p class="single-tab-empty-message" hidden>No new messages</p>
-            <!-- Empty State Fallbacks 
-            <p class="no-notifications" <?php echo empty($notices) ? '' : 'hidden'; ?>>No new messages</p>
-            <p class="no-unread-notifications" hidden>No unread notifications</p>-->
-
-
         </main>
-        <footer>
-            <p>&copy; 2026 M-Unite</p>
+
+        <footer class="site-footer">
+            <div class="footer-bottom">
+                <p>&copy; M-Unite 2026</p>
+            </div>
         </footer>
+
         <script src="notifications.js"></script>
+
+        <!-- Notice Modal Overlay -->
+        <div id="notice-modal-overlay" class="modal-overlay" aria-hidden="true">
+            <div class="modal-card" role="dialog" aria-modal="true">
+                <button type="button" class="modal-close-btn" onclick="closeNoticeModal()" aria-label="Close notice">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+                <div class="modal-header">
+                    <div class="notif-icon">
+                        <span class="material-symbols-outlined" id="modal-icon">notifications</span>
+                    </div>
+                    <div class="modal-header-info">
+                        <h2 id="modal-title" class="notif-title"></h2>
+                        <span id="modal-time" class="time"></span>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <p id="modal-content"></p>
+                </div>
+                <footer class="notif-footer" id="modal-footer">
+                    <span id="modal-category" class="notif-category"></span>
+                    <span id="modal-author-wrapper">
+                        <span class="notif-separator">·</span>
+                        <span id="modal-author" class="notif-author"></span>
+                    </span>
+                </footer>
+            </div>
+        </div>
     </body>
 </html>

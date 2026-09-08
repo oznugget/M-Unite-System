@@ -14,6 +14,7 @@ $active_alerts = get_active_alerts($conn); // public scope, no username
         <title>Public Notices</title>
         <link rel="stylesheet" href="public_notices.css">
         <link rel="stylesheet" href="alert_banner.css">
+        <link rel="stylesheet" href="header_footer.css">
 
         <!-- Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,16 +24,32 @@ $active_alerts = get_active_alerts($conn); // public scope, no username
     </head>
     <body>
         
-        <header id="notif-header">
-            <p>Logo M-Unite</p>
-            <nav>
-                <a href="">Home</a>
-                <a href="">Reports</a>
-                <a href="" aria-current="page">Notices</a>
-                <a href="">Map</a>
-                <a href="">About Us</a>
+        <header class="site-header">
+            <div class="logo-box">
+                <img src="logo_1.png" alt="M-Unite Logo" class="logo-image">
+                <a href="home.php" class="logo-link"></a>
+            </div>
+
+            <nav class="navbar">
+                <a href="home.php" class="nav-item">Home</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+                <a href="public_notices.php" class="nav-item-active" aria-current="page">Notices</a>
+                <a href="map.php" class="nav-item">Map</a>
+                <a href="about_us.html" class="nav-item">About Us</a>
             </nav>
+            <div class="header-right">
+                <!-- Notification Bell -->
+                <a href="notifications.php" class="notif-bell-btn" aria-label="Personal Notifications">
+                    <span class="material-symbols-outlined">notifications</span>
+                </a>
+
+                <!-- Account Button -->
+                <a href="account.html" class="sign-in-btn">
+                    Account <span class="material-symbols-outlined">account_circle</span>
+                </a>
+            </div>
         </header>
+
         <?php render_alert_banner($active_alerts); ?>
         <main>
             <section class="public-notices-intro">
@@ -70,5 +87,33 @@ $active_alerts = get_active_alerts($conn); // public scope, no username
             <p>&copy; 2026 M-Unite</p>
         </footer>
         <script src="alert_banner.js"></script>
+        <script src="notifications.js"></script>
+        <!-- Notice Modal Overlay -->
+        <div id="notice-modal-overlay" class="modal-overlay" aria-hidden="true">
+            <div class="modal-card" role="dialog" aria-modal="true">
+                <button type="button" class="modal-close-btn" onclick="closeNoticeModal()" aria-label="Close notice">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+                <div class="modal-header">
+                    <div class="notif-icon">
+                        <span class="material-symbols-outlined" id="modal-icon">notifications</span>
+                    </div>
+                    <div class="modal-header-info">
+                        <h2 id="modal-title" class="notif-title"></h2>
+                        <span id="modal-time" class="time"></span>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <p id="modal-content"></p>
+                </div>
+                <footer class="notif-footer" id="modal-footer">
+                    <span id="modal-category" class="notif-category"></span>
+                    <span id="modal-author-wrapper">
+                        <span class="notif-separator">·</span>
+                        <span id="modal-author" class="notif-author"></span>
+                    </span>
+                </footer>
+            </div>
+        </div>
     </body>
 </html>

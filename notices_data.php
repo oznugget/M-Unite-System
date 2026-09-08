@@ -4,10 +4,14 @@ include 'dbConnection.php';
 
 $username = $_SESSION['user_id'] ?? 'funi@gmail.com';
 
-// Change notices to read
+// Change notice to read
 if (isset($_GET['mark_read'])) {
-    $notice_id = $_GET['mark_read'];
-    $sql1 = "UPDATE notice_status SET is_read = 1 WHERE notice_id = ? AND username = ?";
+    $notice_id = (int)$_GET['mark_read'];
+    
+    $sql1 = "INSERT INTO notice_status (notice_id, username, is_read) 
+            VALUES (?, ?, 1) 
+            ON DUPLICATE KEY UPDATE is_read = 1";
+            
     $stmt1 = $conn->prepare($sql1);
     $stmt1->bind_param("is", $notice_id, $username);
     $stmt1->execute();
@@ -17,17 +21,6 @@ if (isset($_GET['mark_read'])) {
     exit;
 }
 
-// Change all unread notices to read
-if (isset($_GET['mark_all_read'])) {
-    $sql = "UPDATE notice_status SET is_read = 1 WHERE username = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $stmt->close();
-
-    header("Location: notifications.php");
-    exit;
-}
 
 // Dismissal of notices
 if (isset($_GET['dismiss'])) {
@@ -43,6 +36,7 @@ if (isset($_GET['dismiss'])) {
 }
 
 // Display count of all unread notices
+/*
 $unread_count = 0;
 $sql = "SELECT COUNT(*) AS unread_count FROM notice_status WHERE username = ? AND is_read = 0";
 $stmt = $conn->prepare($sql);
@@ -56,6 +50,7 @@ if ($stmt === false) {
     $unread_count = $row['unread_count'];
     $stmt->close();
 }
+*/
 
 // Fetch all applicable notices
 $notices = [];
@@ -95,12 +90,37 @@ if ($stmt2 === false) {
     $stmt2->close();
 }
 
+// Change all unread notices to read
+// Change all applicable notices to read for this user
+if (isset($_GET['mark_all_read'])) {
+    foreach ($notices as $n) {
+        $nid = $n['notice_id'];
+        $sql = "INSERT INTO notice_status (notice_id, username, is_read) 
+                VALUES (?, ?, 1) 
+                ON DUPLICATE KEY UPDATE is_read = 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("is", $nid, $username);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    header("Location: notifications.php");
+    exit;
+}
+
 // Categorization Collections
 $safety_alerts = [];
 $personal_notices = [];
 $townwide_notices = [];
+$unread_count = 0;
 
 foreach ($notices as $n) {
+    // 1. Calculate unread count
+    if ((int)$n['is_read'] === 0) {
+        $unread_count++;
+    }
+
+    // 2. Categorize notice
     if (!empty($n['is_alert']) && $n['is_alert'] == 1) {
         $safety_alerts[] = $n;
     } elseif ($n['notif_type'] === 'report') {
@@ -167,12 +187,23 @@ function render_notice_card($n) {
     $icon = get_notice_icon($n['category']);
     $time = format_notice_time($n['created_at']);
     $councillorFullName = trim(($n['councillor_name'] ?? '') . ' ' . ($n['councillor_surname'] ?? ''));
+
+    // Text truncation logic
+    $fullContent = $n['content'];
+    $maxLength = 150;
+    $isLongText = mb_strlen($fullContent) > $maxLength;
+    $displayContent = $isLongText ? mb_substr($fullContent, 0, $maxLength) . '...' : $fullContent;
     ?>
     <article class="notif-card <?php echo $unreadClass . ' ' . $alertClass; ?>"
              data-notification-id="<?php echo $n['notice_id']; ?>"
              data-notif-type="<?php echo htmlspecialchars($n['notif_type']); ?>"
              data-category="<?php echo htmlspecialchars($n['category']); ?>"
              data-is-alert="<?php echo $n['is_alert'] ?? 0; ?>"
+             data-full-title="<?php echo htmlspecialchars($n['title']); ?>"
+             data-full-content="<?php echo htmlspecialchars($fullContent); ?>"
+             data-time="<?php echo htmlspecialchars($time); ?>"
+             data-icon="<?php echo htmlspecialchars($icon); ?>"
+             data-author="<?php echo htmlspecialchars($councillorFullName); ?>"
              onclick="window.location.href='notifications.php?mark_read=<?php echo $n['notice_id']; ?>'">
 
         <div class="notif-icon">
@@ -193,7 +224,12 @@ function render_notice_card($n) {
                 <span class="time"><?php echo $time; ?></span>
             </header>
 
-            <p class="notif-msg"><?php echo htmlspecialchars($n['content']); ?></p>
+            <p class="notif-msg">
+                <?php echo htmlspecialchars($displayContent); ?>
+                <?php if ($isLongText): ?>
+                    <button type="button" class="read-more-btn" onclick="event.stopPropagation(); openNoticeModal(this.closest('.notif-card'));">Read more</button>
+                <?php endif; ?>
+            </p>
 
             <footer class="notif-footer">
                 <span class="notif-category"><?php echo htmlspecialchars(ucfirst($n['category'])); ?></span>

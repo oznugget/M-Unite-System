@@ -88,11 +88,22 @@ function render_public_notice_card($n) {
     $councillorFullName = trim(($n['councillor_name'] ?? '') . ' ' . ($n['councillor_surname'] ?? ''));
     $isAlert = !empty($n['is_alert']) && $n['is_alert'] == 1;
     $alertClass = $isAlert ? 'alert-card' : '';
+
+    // Text truncation logic
+    $fullContent = $n['content'];
+    $maxLength = 150;
+    $isLongText = mb_strlen($fullContent) > $maxLength;
+    $displayContent = $isLongText ? mb_substr($fullContent, 0, $maxLength) . '...' : $fullContent;
     ?>
     <article class="notif-card <?php echo $alertClass; ?>"
              id="notice-<?php echo $n['notice_id']; ?>"
              data-notification-id="<?php echo $n['notice_id']; ?>"
-             data-category="<?php echo htmlspecialchars($n['category']); ?>">
+             data-category="<?php echo htmlspecialchars($n['category']); ?>"
+             data-full-title="<?php echo htmlspecialchars($n['title']); ?>"
+             data-full-content="<?php echo htmlspecialchars($fullContent); ?>"
+             data-time="<?php echo htmlspecialchars($time); ?>"
+             data-icon="<?php echo htmlspecialchars($icon); ?>"
+             data-author="<?php echo htmlspecialchars($councillorFullName); ?>">
 
         <div class="notif-icon">
             <span class="material-symbols-outlined"><?php echo $icon; ?></span>
@@ -109,7 +120,12 @@ function render_public_notice_card($n) {
                 <span class="time"><?php echo $time; ?></span>
             </header>
 
-            <p class="notif-msg"><?php echo htmlspecialchars($n['content']); ?></p>
+            <p class="notif-msg">
+                <?php echo htmlspecialchars($displayContent); ?>
+                <?php if ($isLongText): ?>
+                    <button type="button" class="read-more-btn" onclick="openNoticeModal(this.closest('.notif-card'));">Read more</button>
+                <?php endif; ?>
+            </p>
 
             <footer class="notif-footer">
                 <span class="notif-category"><?php echo htmlspecialchars(ucfirst($n['category'])); ?></span>
