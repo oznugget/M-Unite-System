@@ -177,11 +177,15 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
      <!-- FOOTER (Matches Wireframe) -->
   <footer class="site-footer">
+
+    <img src="images/footer_img_responsive.png" alt="Makhanda skyline" class="footer-skyline-mobile">
+
+
     <div class="footer-top">
       <!-- Left Info -->
       <div class="footer-col footer-about">
         <div class="footer-logo-box">
-            <img src="logo1.png" alt="M-Unite Logo" class="logo-image">
+            <img src="images\logo_1.png" alt="M-Unite Logo" class="footer-logo">
         </div>
         <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
       </div>
@@ -237,5 +241,3 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
   </footer>
 </body>
 </html>
-
-?>
