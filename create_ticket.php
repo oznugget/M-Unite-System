@@ -2,6 +2,7 @@
 session_start();
 header('Content-Type: text/plain');
 require_once 'db_connect.php';
+require_once 'log_helper.php';
 
 $title = trim($_POST['title'] ?? '');
 $description = trim($_POST['description'] ?? '');
@@ -100,6 +101,8 @@ try {
     }
 
     $conn->commit();
+
+    log_activity($conn, $username, 'TICKET_CREATE');
 
     echo "SUCCESS:" . $ticket_id;
 } catch (Exception $e) {

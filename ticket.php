@@ -62,6 +62,15 @@ if ($type_filter !== null) {
 }
 $stmt2->execute();
 $candidate_reports = $stmt2->get_result();
+
+// Comments already posted on this ticket
+$stmt3 = $conn->prepare("SELECT comment_id, username, comment_text, created_at
+                          FROM comments WHERE ticket_id = ? ORDER BY created_at DESC");
+$stmt3->bind_param('i', $ticket_id);
+$stmt3->execute();
+$comments = $stmt3->get_result();
+
+$current_username = $_SESSION['username'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -82,7 +91,17 @@ $candidate_reports = $stmt2->get_result();
 
 <div class="ticket-detail">
     <div class="ticket-detail-header">
-        <span class="badge badge-<?= strtolower(str_replace(' ', '-', $ticket['current_status'])) ?>"><?= htmlspecialchars($ticket['current_status']) ?></span>
+        <div class="status-row">
+            <span class="badge badge-<?= strtolower(str_replace(' ', '-', $ticket['current_status'])) ?>" id="current-status-badge"><?= htmlspecialchars($ticket['current_status']) ?></span>
+            <div class="status-control">
+                <select id="status-select">
+                    <?php foreach (['Pending', 'In Progress', 'Resolved', 'Closed'] as $status): ?>
+                        <option value="<?= $status ?>" <?= $status === $ticket['current_status'] ? 'selected' : '' ?>><?= $status ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <button id="update-status-btn" class="btn-primary" disabled>Update Status</button>
+            </div>
+        </div>
         <h2><?= htmlspecialchars($ticket['title']) ?></h2>
         <p><?= nl2br(htmlspecialchars($ticket['description'])) ?></p>
         <div class="ticket-meta">
@@ -127,10 +146,34 @@ $candidate_reports = $stmt2->get_result();
         </div>
         <button id="confirm-add-btn" class="btn-primary" disabled>Add Selected Reports</button>
     </div>
+
+    <h3>Comments (<?= $comments->num_rows ?>)</h3>
+    <div class="comment-list" id="comment-list">
+        <?php if ($comments->num_rows > 0): ?>
+            <?php while ($row = $comments->fetch_assoc()): ?>
+                <div class="comment-row">
+                    <div class="comment-meta">
+                        <span class="comment-username"><?= htmlspecialchars($row['username']) ?></span>
+                        <span class="comment-time"><?= date('d M Y, H:i', strtotime($row['created_at'])) ?></span>
+                    </div>
+                    <p class="comment-text"><?= nl2br(htmlspecialchars($row['comment_text'])) ?></p>
+                </div>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <p class="empty-state" id="comment-empty-state">No comments yet.</p>
+        <?php endif; ?>
+    </div>
+
+    <form id="add-comment-form" class="add-comment-form">
+        <textarea id="comment-text" name="comment_text" rows="3" placeholder="Add a comment..." required></textarea>
+        <button id="comment-submit-btn" type="submit" class="btn-primary">Post Comment</button>
+    </form>
 </div>
 
 <script>
 const TICKET_ID = <?= $ticket_id ?>;
+const CURRENT_STATUS = <?= json_encode($ticket['current_status']) ?>;
+const CURRENT_USERNAME = <?= json_encode($current_username) ?>;
 </script>
 <script src="ticket_detail.js"></script>
 </body>

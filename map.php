@@ -196,6 +196,8 @@ if ($action === 'geocode') {
     <header class="site-header">
         <div class="logo-box">
             <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image" />
+            <a href="home.html" class="logo-link"></a>
+
         </div>
         <nav class="navbar">
             <a href="home.html" class="nav-item-active">Home</a>

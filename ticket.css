@@ -145,6 +145,7 @@ button {
 .badge-resolved { background: #d3f2dc; color: #1f7a3d; }
 .badge-closed { background: #e3e6e9; color: #55606b; }
 .badge-open { background: #ffe3cc; color: #a15b1a; }
+.badge-pending { background: #ffe3cc; color: #a15b1a; }
 
 .empty-state { color: var(--muted); padding: 40px; text-align: center; }
 
@@ -216,6 +217,23 @@ button {
 .ticket-detail-header h2 { margin: 8px 0; color: var(--navy); }
 .ticket-meta { display: flex; gap: 20px; color: var(--muted); font-size: 0.85rem; margin-top: 10px; }
 .ticket-detail h3 { color: var(--navy); }
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.status-control { display: flex; align-items: center; gap: 8px; }
+.status-control select {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 1px;
+    background: white;
+}
+.status-control button { padding: 6px 14px; }
+
 .add-reports-panel {
     margin-top: 20px;
     background: white;

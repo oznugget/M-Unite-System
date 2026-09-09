@@ -40,16 +40,30 @@ $open_tickets = $open_tickets_stmt->get_result();
 <meta charset="UTF-8">
 <title>Incoming Reports — M-Unite Councillor View</title>
 <link rel="stylesheet" href="tickets.css">
+<link rel="stylesheet" href="header_footer.css">
 </head>
 <body>
 
-<header class="topbar">
-    <h1>Incoming Reports</h1>
-    <nav>
-        <a href="reports.php" class="active">Reports</a>
-        <a href="tickets.php">Tickets</a>
+<header class="site-header">
+
+    <div class="logo-box">
+      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
+      <a href="home.html" class="logo-link"></a>
+    </div>
+
+    <nav class="navbar">
+      <a href="reports.php" class="nav-item-active">Incoming Reports</a>
+      <a href="tickets.php" class="nav-item">Tickets</a>
+      <a href="notification.php" class="nav-item">Notices</a>
+      <a href="map.php" class="nav-item">Map</a>
     </nav>
-</header>
+
+    <div class="header-right">
+           
+        <i class="fa-regular fa-circle-user"></i>
+            
+        </div>
+    </header>
 
 <div class="toolbar">
     <div class="toolbar-left">
