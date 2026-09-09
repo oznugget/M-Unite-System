@@ -102,7 +102,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
     <section id="about" class="step-card">
       <div class="about-content">
-        <img src="images/reporttimeline.png" alt="M-Unite Logo" class="logo-image-about">
+        <img src="images/reporttimeline.png" alt="M-Unite Logo" class="logo-image-about" height = "600" width = "1000">
       </div>
     </section>
 
@@ -171,14 +171,17 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
 </section>
 
-
+<div>
+  <p></p>
+</div>
 
 
 
      <!-- FOOTER (Matches Wireframe) -->
   <footer class="site-footer">
 
-    <img src="images/footer_img_responsive.png" alt="Makhanda skyline" class="footer-skyline-mobile">
+    <img src="images/footerimgresponsive1.png" alt="Makhanda skyline" class="footer-skyline-mobile">
+    <img src = "images/footer_img.png" alt = "Makhanda skyline" id = "footerimg">
 
 
     <div class="footer-top">
