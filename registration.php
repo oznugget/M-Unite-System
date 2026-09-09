@@ -61,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Pre-check for duplicate email and duplicate phone number before
     // attempting the insert, so we can give a precise, friendly message
     // without ever needing to inspect the raw SQL error text.
+    $username = $email;
     $checkStmt = $conn->prepare("SELECT username, phone_number FROM accounts WHERE username = ? OR phone_number = ? LIMIT 1");
     $checkStmt->bind_param("ss", $username, $contact);
     $checkStmt->execute();
@@ -77,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
 
-    $username = $email;
+  
     $is_registered = 1;
     $active_status = 1;
 

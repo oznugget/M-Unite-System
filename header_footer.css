@@ -172,9 +172,10 @@ a {
   margin-bottom: 12px;
 }
 
-.footer-about p {
+.footer-about p, .footer-bottom p {
   font-size: 12px;
   line-height: 1.4;
+  color: #ffffff;
 }
 
 .footer-col h4 {

@@ -5,68 +5,6 @@
       font-family: 'TikTok Sans', Arial, sans-serif;
     }
 
-    /*header*/
-.site-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 40px;
-  border-bottom: 2px solid #333333;
-  background: #0E2841;
-}
-
-.logo-box {
-  width: 170px;
-  height: 110px;
-  font-weight: bold;
-}
-
-.logo-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; 
-}
-
-.navbar {
-  display: flex;
-  border-radius: 1px;
-  overflow: hidden;
-  border: 2px solid #ffffff;
-}
-
-.nav-item {
-  padding: 8px 24px;
-  border-right: 1px solid #ffffff;
-  font-size: 14px;
-  font-weight: 500;
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.nav-item.active{
-  text-decoration: none;
-}
-
-.nav-item:last-child {
-  border-right: none;
-}
-
-
-.sign-in-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 18px;
-  border-radius: 1px;
-  font-size: 14px;
-  font-weight: bold;
-  border: 2px solid #ffffff;
-  color: #ffffff;
-  background: #F36E39;
-  text-decoration: none;
-
-}
-
 
     body {
       background: #DCE6F2;
@@ -75,10 +13,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
       font-family: 'TikTok Sans', sans-serif;
-      padding: 2rem 1rem;
     }
 
     /*titles*/
@@ -94,19 +29,8 @@
       text-decoration: none;
     }
 
-    .form-subtitle {
-  text-align: center;
-  font-size: 0.85rem;
-  color: #555555;
-  margin-top: -1.2rem;
-  margin-bottom: 1.5rem;
-}
 
 /*styles for the green and red text indicating valid and invalid fields under title */
-    .txt-green {
-      color: green;
-      font-weight: 600;
-    }
 
     .txt-red {
       color: red;
@@ -118,9 +42,10 @@
       max-width: 560px;
       background: #ffffff;
       border: 1px solid #cccccc;
-      border-radius: 1px;
+      border-radius: 3px;
       padding: 2rem 2.2rem 2.5rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      margin: 3rem auto;
     }
 
     .registration h2 {
@@ -144,6 +69,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.2rem;
+
     }
 
     .form-group label {
@@ -161,8 +87,8 @@
     .form-group select,
     .form-group textarea {
       padding: 0.6rem 0.9rem;
-      border: 3px solid #cccccc;
-      border-radius: 1.2px;
+      border: 2px solid #cccccc;
+      border-radius: 3px;
       font-size: 0.95rem;
       background: #ffffff;
       transition: border-color 0.2s, box-shadow 0.2s;
@@ -175,13 +101,10 @@
     .form-group select:user-invalid,
     .form-group textarea:user-invalid {
       border-color: red;
+      background-color: #fff5f5;
+
     }
 
-    .form-group input:user-valid,
-    .form-group select:user-valid,
-    .form-group textarea:user-valid {
-      border-color: green;
-    }
 
     /*shadow for the input fields when user clicks on them*/
 
@@ -191,6 +114,12 @@
       outline: none;
       border-color: #0E2841;
       box-shadow: 0 0 0 3px rgba(14, 40, 65, 0.12);
+    }
+
+    .form-group input.invalid,
+    .form-group select.invalid {
+      border-color: red !important;
+      background-color: #fff5f5 !important;
     }
 
     .form-group textarea {
@@ -213,16 +142,18 @@
       color: #0E2841;
       flex: 1 1 auto;
       text-align: center;
+      padding: 1.3rem 1.8rem;
+      border: 2px solid #333333;
+      border-radius: 3px;
+      width: 5rem;
     }
 
     #sub {
       background: #F36E39;
       border-color: #333333;
       color: #ffffff;
-      border: 2px solid #333333;
-      border-radius: 1px;
-      padding: 1.3rem 1.8rem;
       font-weight: 550;
+      margin-left: 2.5rem;
     }
 
     #clr{
@@ -344,7 +275,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   padding: 10px 14px;
-  border-radius: 2px;
+  border-radius: 3px;
   margin-bottom: 1rem;
 }
 

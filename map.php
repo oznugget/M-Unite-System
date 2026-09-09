@@ -207,7 +207,7 @@ if ($action === 'geocode') {
             <a href="about_us.html" class="nav-item">About Us</a>
         </nav>
         <div class="header-right">
-            <a href="signin.html" class="sign-in-btn">
+            <a href="signin.php" class="sign-in-btn">
                 Sign In <i class="fa-regular fa-circle-user"></i>
             </a>
         </div>

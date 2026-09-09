@@ -11,6 +11,13 @@ window.intlTelInput(input, {
   utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@23.1.0/build/js/utils.js"
 });
 
+input.addEventListener('input', () => {
+  if (input.value.startsWith('0')) {
+    input.value = input.value.replace(/^0+/, '');
+  }
+});
+
+
 //===============================================================================================================/
 // Live Address Autocomplete bounded to Makhanda
 
@@ -120,6 +127,7 @@ function applyAddress(display, lat, lon, num, street, suburb, ward) {
 }
 
 
+
 //===============================================================================================================/
 
 //for municipal officer to choose division
@@ -165,12 +173,14 @@ roleSelect.addEventListener('change', handleRoleChange);
 roleSelect.addEventListener('change', updateSubmitState);
 handleRoleChange();
 
+
+
 //===============================================================================================================/
 
 //toggling password visibility
-function togglePassword() {
-  const input = document.getElementById("myInput");
-  const icon = document.getElementById("eyeIcon");
+function togglePassword(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
 
   const openEye = `
     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -191,10 +201,15 @@ function togglePassword() {
   }
 }
 
+
+
 //===============================================================================================================/
 //password feedback as user typed
 const pwdInput = document.getElementById('myInput');
+const confirmMyInput = document.getElementById('confirmMyInput');
 const pwdFeedback = document.getElementById('pwd-feedback');
+const confirmFeedback = document.getElementById('confirm-pwd-feedback');
+
  
 const passwordRules = [
     { label: 'At least 8 characters', test: v => v.length >= 8 },
@@ -206,6 +221,10 @@ const passwordRules = [
 function isPasswordValid(value) {
     return passwordRules.every(rule => rule.test(value));
 }
+
+function doPasswordsMatch() {
+    return pwdInput.value !== '' && pwdInput.value === confirmMyInput.value;
+}
  
 function renderPasswordFeedback() {
     const value = pwdInput.value;
@@ -213,9 +232,18 @@ function renderPasswordFeedback() {
         const passed = rule.test(value);
         return `<li class="${passed ? 'valid' : 'invalid'}">${passed ? '✓' : '✗'} ${rule.label}</li>`;
     }).join('');
+
+    // Check if passwords match
+    if (confirmPwdInput.value.length > 0) {
+        const matches = doPasswordsMatch();
+        confirmFeedback.innerHTML = `<li class="${matches ? 'valid' : 'invalid'}">${matches ? '✓' : '✗'} Passwords match</li>`;
+    } else {
+        confirmFeedback.innerHTML = '';
+    }
 }
  
 pwdInput.addEventListener('input', renderPasswordFeedback);
+confirmMyInput.addEventListener('input', renderPasswordFeedback);
 renderPasswordFeedback(); // show the checklist (all red) before the user starts typing
  
 //===============================================================================================================/
@@ -225,30 +253,43 @@ renderPasswordFeedback(); // show the checklist (all red) before the user starts
 const submitBtn = document.getElementById('sub');
 
 function updateSubmitState() {
-    const firstname = document.getElementById('firstname');
-    const surname = document.getElementById('surname');
-    const email = document.getElementById('email');
-    const contact = document.getElementById('contact');
-    const role = document.getElementById('urole');
+  const firstname = document.getElementById('firstname');
+  const surname = document.getElementById('surname');
+  const emailInput = document.getElementById('email');
+  const contact = document.getElementById('contact');
+  const roleSelect = document.getElementById('urole');
 
-    const basicFieldsValid =
-        firstname.value.trim() !== '' &&
-        surname.value.trim() !== '' &&
-        email.checkValidity() &&
-        contact.checkValidity() &&
-        role.value !== '';
+  // Check standard email format
+  const emailVal = emailInput.value.trim().toLowerCase();
+  const standardEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isEmailValidFormat = standardEmailRegex.test(emailVal);
 
-    const passwordValid = isPasswordValid(pwdInput.value);
+  // Validate official role domain requirement (@makana.gov.za)
+  const isOfficialRole = roleSelect.value !== '' && roleSelect.value !== '1';
+  const isOfficialDomainValid = !isOfficialRole || emailVal.endsWith('@makana.gov.za');
 
-    // Address is only required for Community Members, and only counts as
-    // valid once a suggestion has actually been picked (street_number set)
-    let addressValid = true;
-    if (role.value === '1') {
-        addressValid = document.getElementById('street_number').value !== '';
-    }
+  const basicFieldsValid =
+    firstname.value.trim() !== '' &&
+    surname.value.trim() !== '' &&
+    isEmailValidFormat &&
+    isOfficialDomainValid &&
+    contact.checkValidity() &&
+    roleSelect.value !== '';
 
-    submitBtn.disabled = !(basicFieldsValid && passwordValid && addressValid);
+  const passwordValid = isPasswordValid(pwdInput.value);
+  const passwordsMatch = doPasswordsMatch();
+
+  // Validate physical address selection for Community Members
+  let addressValid = true;
+  if (roleSelect.value === '1') {
+    addressValid = document.getElementById('street_number').value !== '';
+  }
+
+  submitBtn.disabled = !(basicFieldsValid && passwordValid && passwordsMatch && addressValid);
 }
+
+confirmMyInput.addEventListener('input', updateSubmitState);
+
 
 // Re-check on every relevant change
 ['firstname', 'surname', 'email', 'contact', 'urole'].forEach(id => {
@@ -263,18 +304,83 @@ updateSubmitState(); // run once on load
 //===============================================================================================================/
 
 
-regForm.addEventListener('submit', (e) => {
+if (regForm) {
+  regForm.addEventListener('submit', (e) => {
     if (!isPasswordValid(pwdInput.value)) {
-        e.preventDefault();
-        alert('Your password needs to meet all the requirements listed under the password field.');
-        pwdInput.focus();
+      e.preventDefault();
+      alert('Your password needs to meet all the requirements listed under the password field.');
+      pwdInput.focus();
+      return;
     }
 
+    if (!doPasswordsMatch()) {
+      e.preventDefault();
+      alert('Passwords do not match.');
+      confirmMyInput.focus();
+      return;
+    }
 
-     const isCommunityMember = roleSelect.value === '1';
+    const isCommunityMember = roleSelect.value === '1';
     if (isCommunityMember && !document.getElementById('street_number').value) {
-        e.preventDefault();
-        alert('Please select your address from the suggestion list so we can capture your street number and ward correctly.');
-        addrInput.focus();
+      e.preventDefault();
+      alert('Please select your address from the suggestion list so we can capture your street number and ward correctly.');
+      addrInput.focus();
     }
+  });
+}
+
+/*=======================================================================================================================*/
+/*check if email and role match */
+const emailInput = document.getElementById('email');
+const emailFeedback = document.getElementById('email-feedback');
+function validateEmailField() {
+  const emailVal = emailInput.value.trim().toLowerCase();
+  const selectedRole = roleSelect.value;
+
+  if (emailVal === '') {
+    emailFeedback.innerHTML = '';
+    emailInput.classList.remove('invalid');
+    return false;
+  }
+
+  // Check basic email structure
+  const standardEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!standardEmailRegex.test(emailVal)) {
+    emailFeedback.innerHTML = '<li class="invalid">✗ Enter a valid email address</li>';
+    emailInput.classList.add('invalid');
+    return false;
+  }
+
+  // Official role domain check (@makana.gov.za)
+  const isOfficialRole = selectedRole !== '' && selectedRole !== '1';
+  const isMakanaDomain = emailVal.endsWith('@makana.gov.za');
+
+  if (isOfficialRole && !isMakanaDomain) {
+    emailFeedback.innerHTML = '<li class="invalid">✗ The provided email address cannot be used for the selected</li>';
+    emailInput.classList.add('invalid');
+    return false;
+  }
+
+  // Clear message and red styling when valid
+  emailFeedback.innerHTML = '';
+  emailInput.classList.remove('invalid');
+  return true;
+}
+
+
+
+// Triggers as soon as the user exits/tabs away from the email field
+const regForm = document.getElementById('regForm');
+
+emailInput.addEventListener('input', () => {
+  validateEmailField();
+  updateSubmitState();
+});
+
+// Re-evaluate if the user switches roles after typing an email
+roleSelect.addEventListener('change', () => {
+  if (emailInput.value.trim() !== '') {
+    validateEmailField();
+  }
+  updateSubmitState();
 });

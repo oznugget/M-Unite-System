@@ -14,7 +14,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
     <script src="homejs.js" defer></script>
     <link rel="stylesheet" href="homecss.css">
     <link rel="stylesheet" href="header_footer.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
 </head>
 
@@ -23,9 +23,10 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
     <header class="site-header">
 
-    <div class="logo-box">
+      <div class="logo-box">
+      <a href="home.php" class="logo-link">
       <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
-      <a href="home.php" class="logo-link"></a>
+      </a>
     </div>
 
     <nav class="navbar">
@@ -70,6 +71,10 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         <button class="arrows" id="next">&#10095;</button>
 
         <div class="carousel-text">
+        <?php if ($isLoggedIn): ?>
+            <p>Welcome <?php echo $firstname .'<br>';?></p>
+        <?php endif; ?>
+        
           <h1>Sibanye</h1>
           <p>We Are One</p>
         </div>
@@ -84,7 +89,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
         </script>
 
-        <button class="mkrpt">Make Report</button>
+        <a href = "reports.php"><button class="mkrpt">Make Report</button></a>
     
         <div class="dots" id="dotsContainer"></div>
 
@@ -94,15 +99,10 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
     
        </section>
 
-    <?php if ($isLoggedIn): ?>
-      <section id="greeting" class="greeting-banner">
-        <h2>Hello, <?php echo $firstname; ?>!</h2>
-      </section>
-    <?php endif; ?>
 
     <section id="about" class="step-card">
       <div class="about-content">
-        <img src="images/timeline3.png" alt="M-Unite Logo" class="logo-image-about">
+        <img src="images/timeline3.png" alt="M-Unite Logo" class="logo-image-about"  >
       </div>
     </section>
 
@@ -177,7 +177,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
 
 
-     <!-- FOOTER (Matches Wireframe) -->
+     <!-- FOOTER -->
   <footer class="site-footer">
 
     <img src="images/footerimgresponsive1.png" alt="Makhanda skyline" class="footer-skyline-mobile">

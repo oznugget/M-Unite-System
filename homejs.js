@@ -7,7 +7,7 @@
     const totalSlides = originalSlides.length;
     const AUTOPLAY_DELAY = 5000; // 5 seconds per slide
 
-    // ---- Clone first and last slides for seamless looping ----
+ 
     const firstClone = originalSlides[0].cloneNode(true);
     const lastClone = originalSlides[totalSlides - 1].cloneNode(true);
     firstClone.classList.add('clone');
