@@ -59,23 +59,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         switch ($row['role']) {
                             case "Community Member":
                             case "1":
-                                header("Location: home.html");
+                                header("Location: home.php?login=success");
                                 exit();
 
                             case "Ward Councillor":
                             case "Ward councillor":
                             case "2":
-                                header("Location: home.html");
+                                header("Location: home.php?login=success");
                                 exit();
 
                             case "Municipal Officer":
                             case "3":
-                                header("Location: home.html");
+                                header("Location: home.php?login=success");
                                 exit();
 
                             case "System Admin":
                             case "4":
-                                header("Location: home.html");
+                                header("Location: home.php?login=success");
                                 exit();
 
                             default:
@@ -111,6 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="signincss.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script src="signinjs.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
@@ -127,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <nav class="navbar">
-      <a href="home.html" class="nav-item">Home</a>
+      <a href="home.php" class="nav-item">Home</a>
       <a href="reports.html" class="nav-item">Reports</a>
       <a href="notification.html" class="nav-item">Notices</a>
       <a href="map.html" class="nav-item">Map</a>
@@ -148,11 +149,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="registration">
         <h2>Sign In</h2>
 
-        <?php if (!empty($error)): ?>
+                <?php if (!empty($error)): ?>
             <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center; font-size: 14px;">
                 <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
+
+        <?php if (isset($_GET['registration']) && $_GET['registration'] === 'success'): ?>
+            <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center; font-size: 14px;">
+                <p>Account created successfully! Please sign in below.</p>
+            </div>
+        <?php endif; ?>
+
 
         <form class="reg-form" action="" method="post">
          

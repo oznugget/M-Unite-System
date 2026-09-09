@@ -1,19 +1,14 @@
 <?php
+session_start();
 
 include "dbConnection.php";
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
 function showError($message) {
-    die("
-    <div style='background: #DCE6F2; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: Arial, sans-serif;'>
-        <div style='background: #ffffff; padding: 30px; border-radius: 4px; border-top: 5px solid #d9534f; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 450px; text-align: center;'>
-            <h3 style='color: #d9534f; margin: 0 0 12px 0; font-size: 1.3rem;'>Registration Failed</h3>
-            <p style='color: #444444; font-size: 14px; line-height: 1.5; margin-bottom: 20px;'>{$message}</p>
-            <a href='signup.html' style='display: inline-block; padding: 10px 20px; background: #0E2841; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 2px; font-size: 13px;'>← Back to Signup</a>
-        </div>
-    </div>
-    ");
+    // Send the user back to the same registration form with the friendly
+    // message attached, instead of dying on a separate page.
+    header("Location: createacc.php?error=" . urlencode($message));
+    exit();
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -30,19 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $division = !empty($_POST["division"]) ? trim($_POST["division"]) : null;
 
    // Standard required fields
-    if (empty($firstname) || empty($surname) || empty($email) || empty($contact) || empty($role) || empty($password)) {
-        showError("All required fields must be completed.");
-    }
-
-    // Require physical address  if user is a Community Member
-    if ($role === "Community Member" && empty($physAdd)) {
-        showError("Physical address is required for Community Members.");
-    }
-
-    if($role != "Community Member" && substr((strrchr($email, "@")), 1) != "makana.gov.za") {
-        header("Location: createacc.php?error=email_domain");
-        exit();
-    }
 
     //for splitting the physical address into street number, street name and suburb
     $lat           = $_POST["lat"] ?? "";
@@ -50,28 +32,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $street_number = $_POST["street_number"] ?? "";
     $street_name   = $_POST["street_name"] ?? "";
     $suburb        = $_POST["suburb"] ?? "";
+   
+    // Require physical address  if user is a Community Member
+    if ($role === "Community Member" && empty($physAdd)) {
+        showError("Physical address is required for Community Members.");
+    }
+
+    // Default to '0' rather than rejecting registration if no number was found
+    if ($street_number === null || $street_number === "") {
+        $street_number = "0";
+    }
+
+        if ($role !== "Community Member" && strtolower(substr(strrchr($email, "@") ?: "", 1)) !== "makana.gov.za") {
+        showError("Cannot create an account of this role with the given email address.");
+    }
 
 
-    //Determining ward id via Mapit API using the provided latitude and longitude- default being 1
-    $ward_id = 1; 
-        if (!empty($lat) && !empty($lon)) {
-            $mapit_url = "https://mapit.code4sa.org/point/4326/{$lon},{$lat}?type=WD";
-            $opts = ["http" => ["header" => "User-Agent: MakhandaWardApp/1.0\r\n", "timeout" => 3]];
-            $res = @file_get_contents($mapit_url, false, stream_context_create($opts));
-            
-            if ($res) {
-                $ward_data = json_decode($res, true);
-                if (!empty($ward_data)) {
-                    $first_ward = reset($ward_data);
-                    if (isset($first_ward['name'])) {
-                        preg_match('/\d+/', $first_ward['name'], $matches);
-                        if (isset($matches[0])) {
-                            $ward_id = (int)$matches[0];
-                        }
-                    }
-                }
-            }
+       // Ward is now extracted client-side (from the same Nominatim response
+    // used for address autocomplete) and submitted via the hidden ward_id
+    // field — no separate server-side MapIt API call, so registration is
+    // no longer blocked by a third-party API timing out or being unreachable.
+    $ward_id = isset($_POST["ward_id"]) && ctype_digit($_POST["ward_id"]) ? (int)$_POST["ward_id"] : 1;
+
+    if ($role === "Community Member" && empty($_POST["ward_id"])) {
+        error_log("No ward_id submitted for {$email} (lat={$lat}, lon={$lon}). Defaulting to ward_id=1.");
+    }
+
+        // Pre-check for duplicate email and duplicate phone number before
+    // attempting the insert, so we can give a precise, friendly message
+    // without ever needing to inspect the raw SQL error text.
+    $checkStmt = $conn->prepare("SELECT username, phone_number FROM accounts WHERE username = ? OR phone_number = ? LIMIT 1");
+    $checkStmt->bind_param("ss", $username, $contact);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    $existing = $result->fetch_assoc();
+    $checkStmt->close();
+
+    if ($existing) {
+        if ($existing['username'] === $username) {
+            showError("An account with this email address already exists. Please <a href='signin.php' style='color:#0E2841; font-weight:bold;'>sign in</a> instead, or use a different email.");
+        } else {
+            showError("An account with this contact number already exists. Please use a different number, or contact support if this is a mistake.");
         }
+    }
 
 
     $username = $email;
@@ -120,29 +123,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt5->close();
     }
 
-        $action_type_id   = 1; // 1 = Registration Action
+        $action_type_id   = 7; // 7 = Account Creation Success
         $ip_address       = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
         $timestamp        = date('Y-m-d H:i:s');
         $is_authenticated = 1;
 
-       
-        $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
-     
-        $stmtLog->bind_param("sisssi", $username, $action_type_id, $ip_address, $timestamp, $timestamp, $is_authenticated);
-        $stmtLog->execute();
-        $stmtLog->close();
+        $stmtLog = $conn->prepare("INSERT INTO system_activities (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
+
+        if ($stmtLog) {
+            $stmtLog->bind_param("sisssi", $username, $action_type_id, $ip_address, $timestamp, $timestamp, $is_authenticated);
+            $stmtLog->execute();
+            $stmtLog->close();
+        }
 
         // Commit all changes if no exceptions occurred
         $conn->commit();
 
         // Redirect after successful commit
-        header("Location: signin.html?registration=success");
+        header("Location: signin.php?registration=success");
         exit();
 
-    } catch (Exception $e) {
-        // Rollback any database changes if an query fails
+        } catch (mysqli_sql_exception $e) {
+        // Rollback any database changes if a query fails
         $conn->rollback();
-        showError("Registration failed due to a database error: " . $e->getMessage());
+
+        // Always log the real technical detail for developers — this NEVER
+        // reaches the user, only the server log.
+        error_log("Registration DB error [" . $e->getCode() . "]: " . $e->getMessage());
+
+        // MySQL error code 1062 = duplicate entry on a unique key.
+        // The pre-check above catches this in the normal case; this only
+        // fires on a rare race condition (two identical submissions at once).
+        // We deliberately do NOT inspect $e->getMessage() here.
+        if ($e->getCode() === 1062) {
+            showError("An account with this email address or contact number already exists. Please use different details, or sign in if this is your account.");
+        } else {
+            // Every other DB failure gets one flat, generic message —
+            // no error code, no SQL text, ever shown to the user.
+            showError("Something went wrong while creating your account. Please try again, and contact support if the problem continues.");
+        }
+    } catch (Exception $e) {
+        // Catch-all for non-DB exceptions (e.g. unexpected runtime errors)
+        $conn->rollback();
+        error_log("Registration unexpected error: " . $e->getMessage());
+        showError("Something went wrong while creating your account. Please try again.");
     }
 }
 

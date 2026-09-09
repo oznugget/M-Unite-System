@@ -123,12 +123,30 @@ a {
 /* --- FOOTER --- */
 
 .site-footer {
-  border-top: 2px solid #262626;
-  background: #0E2841;
-  padding: 35px 40px 15px;
+  position: relative;
   margin-top: auto;
-  color: #ffffff;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-top: 20rem;
 }
+
+.footer-skyline-mobile,
+#footerimg {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.footer-skyline-mobile {
+  display: none;
+}
+
+
 
 .footer-top {
   display: flex;
@@ -146,8 +164,8 @@ a {
   flex: 1.4;
 }
 
-.footer-logo-box {
-  width: 70px;
+.footer-logo {
+  width: 120px;
   height: 40px;
   font-size: 13px;
   font-weight: bold;
@@ -173,6 +191,7 @@ a {
 .footer-col ul li {
   margin-bottom: 6px;
   font-size: 13px;
+  color: white;
 }
 
 .social-icons-vertical {
@@ -189,6 +208,7 @@ a {
   padding-top: 15px;
   font-size: 13px;
 }
+
 
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
@@ -209,10 +229,43 @@ a {
   .footer-top {
     flex-direction: column;
   }
-  .footer-top {
-    gap: 20px;
+ 
+  .site-footer {
+  height: auto;
+  padding-top: 60px;
+  margin-top: 10rem;
   }
+
+  .footer-skyline-mobile {
+    display: block;
+    width: 100%;
+    height: 118%;
+  }
+
+  #footerimg{
+    display: none;
+  }
+
+
+  /* Stack the columns vertically and center them */
+  .footer-top {
+    flex-direction: column;
+    align-items: center; 
+    text-align: center;
+    gap: 30px;
+  }
+
+  /* Center the logo and about text */
+  .footer-about {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Change social icons from a vertical list to a horizontal row */
   .social-icons-vertical {
     flex-direction: row;
+    justify-content: center;
+    gap: 20px;
   }
 }

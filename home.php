@@ -1,3 +1,9 @@
+<?php
+session_start();
+
+$isLoggedIn = isset($_SESSION['username']);
+$firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,22 +25,28 @@
 
     <div class="logo-box">
       <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
-      <a href="home.html" class="logo-link"></a>
+      <a href="home.php" class="logo-link"></a>
     </div>
 
     <nav class="navbar">
-      <a href="home.html" class="nav-item-active">Home</a>
+      <a href="home.php" class="nav-item-active">Home</a>
       <a href="reports.html" class="nav-item">Reports</a>
       <a href="notification.html" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
       <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
 
-    <div class="header-right">
-            <a href="signin.html" class="sign-in-btn">
-                Sign In <i class="fa-regular fa-circle-user"></i>
-            </a>
-        </div>
+      <div class="header-right">
+      <?php if ($isLoggedIn): ?>
+        <a href="account.html" class="sign-in-btn">
+          <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php else: ?>
+        <a href="signin.php" class="sign-in-btn">
+          Sign In <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php endif; ?>
+    </div>
     </header>
 
 
@@ -80,6 +92,14 @@
 
     </section>
     
+       </section>
+
+    <?php if ($isLoggedIn): ?>
+      <section id="greeting" class="greeting-banner">
+        <h2>Hello, <?php echo $firstname; ?>!</h2>
+      </section>
+    <?php endif; ?>
+
     <section id="about" class="step-card">
       <div class="about-content">
         <img src="images/timeline3.png" alt="M-Unite Logo" class="logo-image-about">
@@ -151,17 +171,24 @@
 
 </section>
 
-
+<div>
+  <p></p>
+</div>
 
 
 
      <!-- FOOTER (Matches Wireframe) -->
   <footer class="site-footer">
+
+    <img src="images/footerimgresponsive1.png" alt="Makhanda skyline" class="footer-skyline-mobile">
+    <img src = "images/footer_img.png" alt = "Makhanda skyline" id = "footerimg">
+
+
     <div class="footer-top">
       <!-- Left Info -->
       <div class="footer-col footer-about">
         <div class="footer-logo-box">
-            <img src="logo1.png" alt="M-Unite Logo" class="logo-image">
+            <img src="images\logo_1.png" alt="M-Unite Logo" class="footer-logo">
         </div>
         <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
       </div>

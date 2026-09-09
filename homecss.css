@@ -12,7 +12,7 @@
 
 #carousel-frame {
   width: 100%;
-  height: 100%;
+  height: 110%;
   margin: 0;
   overflow: hidden;
   position: relative;
@@ -64,7 +64,7 @@
   padding: 1rem;
   z-index: 5;
   font-family: 'Merriweather Sans', sans-serif;
-  font-size: 2.2rem;
+  font-size: 2.8rem;
 }
 
 
@@ -123,6 +123,41 @@
   background: #F36E39;
 }
 
+.greeting-banner {
+  text-align: left;
+  padding: 1.2rem 1rem 0.4rem;
+}
+
+.greeting-banner h2 {
+  font-family: 'Merriweather Sans', sans-serif;
+  font-weight: 700;
+  color: #0E2841;
+  font-size: 1.4rem;
+}
+
+.login-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #d4edda;
+  color: #155724;
+  border-left: 4px solid #28a745;
+  padding: 12px 22px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  z-index: 9999;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.login-toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 /*----------------------------------------------------------------------*/
 /* section 2*/
 .localinfo {
@@ -207,75 +242,6 @@
 }
 
 
-/*footer*/
-.site-footer {
-  border-top: 2px solid #262626;
-  background: #0E2841;
-  padding: 35px 40px 15px;
-  margin-top: auto;
-  color: #ffffff;
-}
-
-.footer-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 30px;
-  max-width: 1100px;
-  margin: 0 auto 30px;
-}
-
-.footer-col {
-  flex: 1;
-}
-
-.footer-about {
-  flex: 1.4;
-}
-
-.footer-logo-box {
-  width: 70px;
-  height: 40px;
-  font-size: 13px;
-  font-weight: bold;
-  margin-bottom: 12px;
-}
-
-.footer-about p {
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-.footer-col h4 {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 12px;
-  color: #ffffff;
-}
-
-.footer-col ul {
-  list-style: none;
-}
-
-.footer-col ul li {
-  margin-bottom: 6px;
-  font-size: 13px;
-  color: white;
-}
-
-.social-icons-vertical {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-size: 18px;
-  color: #ffffff;
-}
-
-.footer-bottom {
-  text-align: center;
-  border-top: 1px solid #e0e0e0;
-  padding-top: 15px;
-  font-size: 13px;
-}
 
 /*----------------------------------------------------------------------*/
 /* --- RESPONSIVENESS --- */
@@ -293,12 +259,12 @@
     padding: 8px 10px;
     font-size: 12px;
   }
-  .footer-top {
-    flex-direction: column;
+
+  #carousel-frame {
+  width: 100%;
+  height: 125%;
   }
-  .footer-top {
-    gap: 20px;
-  }
+
   .social-icons-vertical {
     flex-direction: row;
   }
@@ -354,6 +320,9 @@
     padding: 0.6rem 1.2rem;
   }
 
+  
+}
+
   /* Tablets & Small Laptops (Max Width: 1024px) */
 @media (max-width: 1024px) {
   .weather-widget-wrap {
@@ -369,4 +338,3 @@
 }
 
 
-}
