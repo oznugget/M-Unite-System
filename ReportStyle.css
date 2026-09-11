@@ -114,23 +114,8 @@ h1, h2, h3, h4, button {
 }
 
 
-.site-header{
 
-    background-color: var(--color-primary);
-    color: var(--color-text-on-dark);
-
-
-    display: flex;
-    align-items:center;
-
-    justify-content: space-between;
-
-    padding: 1rem 1.5rem;
-
-}
-
-
-.main-nav ul{
+/* .main-nav ul{
     
     display: flex;
     gap: 1.5rem;
@@ -146,7 +131,7 @@ h1, h2, h3, h4, button {
 
 /*HIGHLIGHTS THE PAGE THAT WE ARE CURRENTLY ON USING ARIA-CURRENT DEFINED IN THE REPORTS LINK */
 
-.main-nav a[aria-current="page"]{
+/* .main-nav a[aria-current="page"]{
     color: var(--color-accent);
 }
 
@@ -156,7 +141,7 @@ h1, h2, h3, h4, button {
     width: 1.75rem;
     height: 1.75rem;
 }
-
+ */ 
 
 
 /*======================MAP AND FORM SECTION=========================*/
@@ -686,65 +671,7 @@ h1, h2, h3, h4, button {
 
 /*====================== footer ================ */
 
-.site-footer{
-    background-color: var(--color-primary);
-    color: var(--color-text-on-dark);
 
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-
-    padding: 2.5rem 1.5rem 1.5rem;
-}
-
-.footer-brand{
-    flex: 1 1 240px;
-}
-
-.footer-brand img{
-    width: 8rem;
-    margin-bottom: 0.75rem;
-
-}
-
-.footer-brand p{
-    font-size: 0.9rem;
-    opacity: 0.85;
-}
-
-.footer-col{
-    flex: 1 1 140px;
-}
-
-.footer-col h3{
-    margin-bottom: 0.75rem;
-    font-size: 1rem;
-}
-
-.footer-col ul li{
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-
-}
-
-.social-links{
-    display: flex;
-    gap: 0.75rem;
-}
-
-.social-links img{
-    width: 1.5rem;
-    height: 1.5rem;
-
-}
-
-.copyright{
-    width: 100%;
-    text-align: center;
-    font-size: 0.85rem;
-    opacity: 0.7;
-    margin-top: 2rem;
-}
 
 /* ================= STATUS TIMELINE ================= */
 /* The little step-tracker inside each report card, showing

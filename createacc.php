@@ -66,7 +66,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
       <?php if (isset($_GET['error']) && $_GET['error'] !== ''): ?>
         <div id="form-error-banner" class="form-error-banner">
-          <?php echo htmlspecialchars(urldecode($_GET['error']), ENT_QUOTES, 'UTF-8'); ?>
+          <?php echo htmlspecialchars($_GET['error'], ENT_QUOTES, 'UTF-8'); ?>
         </div>
       <?php endif; ?>
 
