@@ -7,22 +7,42 @@ require_once __DIR__ . '/db_connect.php'; // expects $conn (mysqli)
 
 // Only unassigned reports show on this dashboard — once linked to a
 // ticket, ticket_id is set and the report drops off this list.
-$sql = "SELECT report_id AS id, category_id, description, street_name,
-        CONCAT(street_number, ' ', street_name, ', ', surburb) AS address,
-        timestamp, current_status AS status
-    FROM reports
-    WHERE ticket_id IS NULL AND ward_id = ?
-    ORDER BY timestamp DESC";
-
+//
+// Split into "active" (still needs work) and "completed" (Resolved or
+// Closed but never got linked to a ticket) so completed ones can be
+// rendered in their own section at the bottom of the page.
+//
+// NOTE: image_url is assumed to be the column on `reports` that holds
+// the photo's path/URL. Rename it below if your schema uses something
+// else (e.g. photo_url).
 $ward_id = $_SESSION['ward_id'] ?? null;
 if (!$ward_id) {
     die('No ward set for this session.'); // or redirect to a login page
 }
 
+$sql = "SELECT report_id AS id, category_id, description, street_name, image_url,
+        CONCAT(street_number, ' ', street_name, ', ', surburb) AS address,
+        timestamp, current_status AS status
+    FROM reports
+    WHERE ticket_id IS NULL AND ward_id = ? AND current_status NOT IN ('Resolved', 'Closed')
+    ORDER BY timestamp DESC";
+
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $ward_id);
 $stmt->execute();
 $result = $stmt->get_result();
+
+$completed_sql = "SELECT report_id AS id, category_id, description, street_name, image_url,
+        CONCAT(street_number, ' ', street_name, ', ', surburb) AS address,
+        timestamp, current_status AS status
+    FROM reports
+    WHERE ticket_id IS NULL AND ward_id = ? AND current_status IN ('Resolved', 'Closed')
+    ORDER BY timestamp DESC";
+
+$completed_stmt = $conn->prepare($completed_sql);
+$completed_stmt->bind_param('i', $ward_id);
+$completed_stmt->execute();
+$completed_result = $completed_stmt->get_result();
 
 // Open tickets in this ward, for the "Add to Existing Ticket" dropdown
 $open_tickets_stmt = $conn->prepare(
@@ -95,8 +115,20 @@ $open_tickets = $open_tickets_stmt->get_result();
 <div class="report-list" id="report-list">
     <?php if ($result && $result->num_rows > 0): ?>
         <?php while ($row = $result->fetch_assoc()): ?>
-            <div class="report-row" data-type="<?= htmlspecialchars($row['category_id']) ?>" data-street="<?= htmlspecialchars($row['street_name']) ?>" data-id="<?= $row['id'] ?>">
+            <div class="report-row"
+                 data-type="<?= htmlspecialchars($row['category_id']) ?>"
+                 data-street="<?= htmlspecialchars($row['street_name']) ?>"
+                 data-id="<?= $row['id'] ?>"
+                 data-status="<?= htmlspecialchars($row['status']) ?>"
+                 data-address="<?= htmlspecialchars($row['address']) ?>"
+                 data-time="<?= date('d M Y, H:i', strtotime($row['timestamp'])) ?>"
+                 data-image="<?= htmlspecialchars($row['image_url'] ?? '') ?>">
                 <input type="checkbox" class="report-checkbox" value="<?= $row['id'] ?>">
+                <?php if (!empty($row['image_url'])): ?>
+                    <img class="report-thumb" src="<?= htmlspecialchars($row['image_url']) ?>" alt="Report photo">
+                <?php else: ?>
+                    <span class="report-thumb report-thumb-empty" aria-hidden="true"></span>
+                <?php endif; ?>
                 <span class="badge badge-<?= strtolower(str_replace(' ', '-', $row['status'])) ?>"><?= htmlspecialchars($row['status']) ?></span>
                 <span class="report-type"><?= htmlspecialchars($row['category_id']) ?></span>
                 <span class="report-desc" title="<?= htmlspecialchars($row['description']) ?>"><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 70, '…')) ?></span>
@@ -107,6 +139,36 @@ $open_tickets = $open_tickets_stmt->get_result();
         <?php endwhile; ?>
     <?php else: ?>
         <p class="empty-state">No unassigned reports right now.</p>
+    <?php endif; ?>
+</div>
+
+<h3 class="section-heading">Completed Reports (<?= $completed_result->num_rows ?>)</h3>
+<div class="report-list completed-section" id="completed-report-list">
+    <?php if ($completed_result && $completed_result->num_rows > 0): ?>
+        <?php while ($row = $completed_result->fetch_assoc()): ?>
+            <div class="report-row no-checkbox"
+                 data-type="<?= htmlspecialchars($row['category_id']) ?>"
+                 data-street="<?= htmlspecialchars($row['street_name']) ?>"
+                 data-id="<?= $row['id'] ?>"
+                 data-status="<?= htmlspecialchars($row['status']) ?>"
+                 data-address="<?= htmlspecialchars($row['address']) ?>"
+                 data-time="<?= date('d M Y, H:i', strtotime($row['timestamp'])) ?>"
+                 data-image="<?= htmlspecialchars($row['image_url'] ?? '') ?>">
+                <?php if (!empty($row['image_url'])): ?>
+                    <img class="report-thumb" src="<?= htmlspecialchars($row['image_url']) ?>" alt="Report photo">
+                <?php else: ?>
+                    <span class="report-thumb report-thumb-empty" aria-hidden="true"></span>
+                <?php endif; ?>
+                <span class="badge badge-<?= strtolower(str_replace(' ', '-', $row['status'])) ?>"><?= htmlspecialchars($row['status']) ?></span>
+                <span class="report-type"><?= htmlspecialchars($row['category_id']) ?></span>
+                <span class="report-desc" title="<?= htmlspecialchars($row['description']) ?>"><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 70, '…')) ?></span>
+                <span class="report-address"><?= htmlspecialchars($row['address']) ?></span>
+                <span class="report-time"><?= date('d M, H:i', strtotime($row['timestamp'])) ?></span>
+                <span class="report-id">#<?= $row['id'] ?></span>
+            </div>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <p class="empty-state">No completed reports yet.</p>
     <?php endif; ?>
 </div>
 
@@ -153,6 +215,7 @@ $open_tickets = $open_tickets_stmt->get_result();
     </div>
 </div>
 
+<script src="report-common.js"></script>
 <script src="reports.js"></script>
 </body>
 </html>

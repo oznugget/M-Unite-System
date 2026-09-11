@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
     setupAddReportsPanel();
     setupStatusUpdate();
     setupCommentForm();
+
+    if (window.initReportInteractions) initReportInteractions();
 });
 
 // Shorthand for document.getElementById

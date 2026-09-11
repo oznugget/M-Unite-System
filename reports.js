@@ -165,4 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateUI();
     applyGrouping();
+
+    if (window.initReportInteractions) initReportInteractions();
 });
