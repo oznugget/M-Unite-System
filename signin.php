@@ -69,17 +69,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             case "Ward Councillor":
                             case "Ward councillor":
                             case "2":
-                                header("Location: home.php?login=success");
+                                header("Location: ward_councillor_home.html?login=success");
                                 exit();
 
                             case "Municipal Officer":
                             case "3":
-                                header("Location: home.php?login=success");
+                                header("Location: officer-home.php?login=success");
                                 exit();
 
                             case "System Admin":
                             case "4":
-                                header("Location: home.php?login=success");
+                                header("Location: admin-home.php?login=success");
                                 exit();
 
                             default:
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="signincss.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <script src="signinjs.js" defer></script>
+    <script src="signin.js" defer></script>
     <link rel="stylesheet" href="header_footer.css">
     <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />

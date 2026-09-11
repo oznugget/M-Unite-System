@@ -133,7 +133,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
         </script>
 
-        <a href = "reports.php"><button class="mkrpt">Make Report</button></a>
+        <a href = "CommReports.php"><button class="mkrpt">Make Report</button></a>
     
         <div class="dots" id="dotsContainer"></div>
 
@@ -242,7 +242,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         <h4>Pages</h4>
         <ul>
           <li><a href="index.html">Home</a></li>
-          <li><a href="reports.html">Reports</a></li>
+          <li><a href="CommReports.php">Reports</a></li>
           <li><a href="notices.html">Notices</a></li>
           <li><a href="map.html">Map</a></li>
           <li><a href="about.html">About Us</a></li>
@@ -266,7 +266,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         <ul>
           <li><a href="#">Privacy Policy</a></li>
           <li><a href="#">Documentation</a></li>
-          <li><a href="#">Terms Of Use</a></li>
+          <li><a href="Terms_of_use.php">Terms Of Use</a></li>
           <li><a href="#">Copyright Notice</a></li>
         </ul>
       </div>
