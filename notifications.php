@@ -22,7 +22,7 @@
                 <img src="logo_1.png" alt="M-Unite Logo" class="logo-image">
                 <a href="home.php" class="logo-link"></a>
             </div>
-
+ 
             <nav class="navbar">
                 <a href="home.php" class="nav-item">Home</a>
                 <a href="reports.html" class="nav-item">Reports</a>
@@ -40,7 +40,7 @@
                     </a>
 
                     <!-- Account Button -->
-                    <a href="account.html" class="sign-in-btn">
+                    <a href="account.php" class="sign-in-btn">
                         Account <span class="material-symbols-outlined">account_circle</span>
                     </a>
                 </div>

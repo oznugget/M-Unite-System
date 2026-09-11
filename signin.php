@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <div class="header-right">
       <?php if ($isLoggedIn): ?>
-        <a href="account.html" class="sign-in-btn">
+        <a href="account.php" class="sign-in-btn">
           <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
         </a>
       <?php else: ?>

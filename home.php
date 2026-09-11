@@ -123,7 +123,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
           <p>We Are One</p>
         </div>
 
-        
+         
    
         <div class="weather-widget-wrap">
           <a class="weatherwidget-io" href="https://forecast7.com/en/n33d3126d53/grahamstown/" data-label_1="MAKHANDA" 

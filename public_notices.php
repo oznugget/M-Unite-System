@@ -44,7 +44,7 @@ $active_alerts = get_active_alerts($conn); // public scope, no username
                 </a>
 
                 <!-- Account Button -->
-                <a href="account.html" class="sign-in-btn">
+                <a href="account.php" class="sign-in-btn">
                     Account <span class="material-symbols-outlined">account_circle</span>
                 </a>
             </div>
