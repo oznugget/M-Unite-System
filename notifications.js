@@ -1,188 +1,186 @@
+/* COMBINED FILTERING & DOM MANAGEMENT */
 
-/* This code is for dismissing notices, displayig unread notices via the unread toggle btn,
-mark all unread notices as read at once and individual notice must be marked as read once clicked*/
-/* Search will be impplemented in cojunction with php */
-
-/*NOTIFICATION DISMISSAL*/
-
-const dismissButtons = document.querySelectorAll(".dismiss-btn");
-// Add click event to each button
-dismissButtons.forEach(button => {
-
-    button.addEventListener("click", function () {
-
-        // Find the notification card
-        const notification = button.closest(".notif-card");
-
-        // Get the notification ID, might need for php
-       // const notificationId = notification.dataset.notificationId;
-        const section = notification.closest("section");//section is either Earlier, Yesterday, Today
-        notification.remove();
-
-        // Check if the section still has notifications (Earlier, Yesterday, Today)
-        const remainingNotifications = section.querySelectorAll(".notif-card");
-
-        // If there are no notifications left , remove sections
-        if (remainingNotifications.length === 0) {
-            section.remove();
-        }
-        const allNotifications = document.querySelectorAll(".notif-card");
-
-        // If there are no notifications anywhere
-        if (allNotifications.length === 0) {
-            // Show "No new messages"
-            const noNotifications = document.querySelector(".no-notifications");
-            noNotifications.hidden = false;
-        }
-    });
-});
-
-/* DISPLAY UNREAD ONLY */
 const unreadToggle = document.querySelector(".unread-toggle input");
-
-// When the toggle is changed
-unreadToggle.addEventListener("change", function () {
-    const sections = document.querySelectorAll(".today-notices, .yesterday-notices, .earlier-notices");
-    const noUnreadMessage = document.querySelector(".no-unread-notifications");
-
-    // Toggle is ON
-    if (unreadToggle.checked) {
-        let unreadCount = 0;
-
-        // Go through every section
-        sections.forEach(section => {
-
-            // Get notifications inside this section
-            const notifications = section.querySelectorAll(".notif-card");
-            let visibleNotifications = 0;
-
-            // Check each notification
-            notifications.forEach(notification => {
-                if (notification.classList.contains("unread")) {
-                    // Show unread notification
-                    notification.style.display = "flex";
-                    visibleNotifications++;
-                    unreadCount++;
-                } else {
-                    // Hide read notification
-                    notification.style.display = "none";
-                }
-            });
-
-            // If this section has no unread notifications
-            if (visibleNotifications === 0) {
-                section.style.display = "none";
-            } else {
-                section.style.display = "";
-            }
-        });
-
-        // If there are no unread notifications anywhere
-        if (unreadCount === 0) {
-            noUnreadMessage.hidden = false;
-        } else {
-            noUnreadMessage.hidden = true;
-        }
-
-    } else { // Toggle is OFF
-        
-        // Show the "No unread notifications" message
-        noUnreadMessage.hidden = true;
-
-        // Show all sections
-        sections.forEach(section => {
-
-            section.style.display = "";
-
-            const notifications = section.querySelectorAll(".notif-card");
-            // Show all notifications
-            notifications.forEach(notification => {
-                notification.style.display = "flex";
-            });
-        });
-    }
-});
-
-/* MARK ALL NOTIFICATIONS AS READ */
-const markAllReadButton = document.querySelector(".mark-all-read");
-markAllReadButton.addEventListener("click", function () {
-   
-    const unreadNotifications = document.querySelectorAll(".notif-card.unread");
-    unreadNotifications.forEach(notification => {
-        // Remove the unread class
-        notification.classList.remove("unread");
-        // Remove the unread dot
-        const unreadDot = notification.querySelector(".unread-dot");
-        if (unreadDot) {
-            unreadDot.remove();
-        }
-    });
-
-});
-
-/* Mark individual notice as read when you click on it */
-const notificationCards = document.querySelectorAll(".notif-card");
-// When a notification card is clicked
-notificationCards.forEach(card => {
-    card.addEventListener("click", function () {
-
-        // Check if the notification is unread
-        if (card.classList.contains("unread")) {
-
-            // Change notification to read
-            card.classList.remove("unread");
-
-            // Remove the unread dot
-            const unreadDot = card.querySelector(".unread-dot");
-            if (unreadDot) {
-                unreadDot.remove();
-            }
-        }
-    });
-});
-
-/* FILTER TABS (All / Tickets / Ward / General) */
 const filterButtons = document.querySelectorAll(".notif-type-tab nav button");
+const categoryFilter = document.querySelector(".category-filter");
+const searchInput = document.querySelector(".notification-search input");
+
+let currentType = "all";
+let currentCategory = "";
+let currentSearch = "";
+
+const singleTabEmptyMessage = document.querySelector(".single-tab-empty-message");
+const groupTitles = document.querySelectorAll(".notice-group .group-title");
+
+function applyFilters() {
+    const allCards = document.querySelectorAll(".notif-card");
+    const isUnreadOnly = unreadToggle.checked;
+
+    allCards.forEach(card => {
+        const matchesType = (currentType === "all") || (card.dataset.notifType === currentType);
+        const matchesCategory = (currentCategory === "") || (card.dataset.category.toLowerCase() === currentCategory.toLowerCase());
+
+        const titleText = card.querySelector(".notif-title")?.textContent.toLowerCase() || "";
+        const msgText = card.querySelector(".notif-msg")?.textContent.toLowerCase() || "";
+        const matchesSearch = (currentSearch === "") || titleText.includes(currentSearch) || msgText.includes(currentSearch);
+
+        const matchesUnread = !isUnreadOnly || card.classList.contains("unread");
+
+        const shouldShow = matchesType && matchesCategory && matchesSearch && matchesUnread;
+
+        card.style.display = shouldShow ? "flex" : "none";
+    });
+
+    // Clean up empty time buckets (Today / Yesterday / Earlier)
+    const timeBuckets = document.querySelectorAll(".time-bucket, .time-bucket-cards");
+    timeBuckets.forEach(bucket => {
+        const cards = bucket.querySelectorAll(".notif-card");
+        const hasVisibleCard = Array.from(cards).some(card => card.style.display !== "none");
+        bucket.style.display = hasVisibleCard ? "" : "none";
+    });
+
+    const personalGroup = document.querySelector(".notice-group[data-group='personal']");
+    const townwideGroup = document.querySelector(".notice-group[data-group='townwide']");
+    const isAllTab = currentType === "all";
+
+    if (isAllTab) {
+        // ALL tab: show section headings, each section manages its own empty message
+        groupTitles.forEach(title => title.hidden = false);
+        singleTabEmptyMessage.hidden = true;
+
+        [personalGroup, townwideGroup].forEach(group => {
+            const cards = group.querySelectorAll(".notif-card");
+            const hasVisibleCard = Array.from(cards).some(card => card.style.display !== "none");
+            const emptyMessage = group.querySelector(".group-empty-message");
+            if (emptyMessage) emptyMessage.hidden = hasVisibleCard;
+        });
+    } else {
+        // Specific tab (Reports/Ward/General): flat list, no section headings, single empty message
+        groupTitles.forEach(title => title.hidden = true);
+
+        [personalGroup, townwideGroup].forEach(group => {
+            const emptyMessage = group.querySelector(".group-empty-message");
+            if (emptyMessage) emptyMessage.hidden = true;
+        });
+
+        const hasAnyVisibleCard = Array.from(allCards).some(card => card.style.display !== "none");
+        singleTabEmptyMessage.hidden = hasAnyVisibleCard;
+    }
+
+    // Priority alerts group: hide entirely if nothing in it matches
+    const alertGroup = document.querySelector(".notice-group.alert-group");
+    if (alertGroup) {
+        const cards = alertGroup.querySelectorAll(".notif-card");
+        const hasVisibleCard = Array.from(cards).some(card => card.style.display !== "none");
+        alertGroup.style.display = hasVisibleCard ? "" : "none";
+    }
+}
+
+    // Clean up empty time buckets (Today / Yesterday / Earlier)
+    const timeBuckets = document.querySelectorAll(".time-bucket, .time-bucket-cards");
+    timeBuckets.forEach(bucket => {
+        const cards = bucket.querySelectorAll(".notif-card");
+        const hasVisibleCard = Array.from(cards).some(card => card.style.display !== "none");
+        bucket.style.display = hasVisibleCard ? "" : "none";
+    });
+
+    // Per-section empty messaging: Personal Updates / Town-Wide Notices
+    // Each section shows its own "No new messages" independently of the other.
+    const noticeGroups = document.querySelectorAll(
+        ".notice-group[data-group='personal'], .notice-group[data-group='townwide']"
+    );
+    noticeGroups.forEach(group => {
+        const cards = group.querySelectorAll(".notif-card");
+        const hasVisibleCard = Array.from(cards).some(card => card.style.display !== "none");
+        const emptyMessage = group.querySelector(".group-empty-message");
+        if (emptyMessage) {
+            emptyMessage.hidden = hasVisibleCard;
+        }
+    });
+
+    // Priority alerts group has no "empty" text of its own — just hide it
+    // entirely if nothing in it matches the current filters.
+    const alertGroup = document.querySelector(".notice-group.alert-group");
+    if (alertGroup) {
+        const cards = alertGroup.querySelectorAll(".notif-card");
+        const hasVisibleCard = Array.from(cards).some(card => card.style.display !== "none");
+        alertGroup.style.display = hasVisibleCard ? "" : "none";
+    }
+
+    
+
+// Event Listeners
+unreadToggle.addEventListener("change", applyFilters);
+
 filterButtons.forEach(button => {
     button.addEventListener("click", function () {
-
-        // Update pressed state on the buttons
         filterButtons.forEach(btn => btn.setAttribute("aria-pressed", "false"));
         button.setAttribute("aria-pressed", "true");
 
-        const selectedType = button.dataset.filter;
-        const allCards = document.querySelectorAll(".notif-card");
-        const sections = document.querySelectorAll(".today-notices, .yesterday-notices, .earlier-notices");
-
-        allCards.forEach(card => {
-            const matches = selectedType === "all" || card.dataset.notifType === selectedType;
-            card.style.display = matches ? "flex" : "none";
-        });
-
-        // Hide sections that end up with nothing visible
-        sections.forEach(section => {
-            const visibleCards = section.querySelectorAll('.notif-card:not([style*="display: none"])');
-            section.style.display = visibleCards.length === 0 ? "none" : "";
-        });
+        currentType = button.dataset.filter;
+        applyFilters();
     });
 });
 
-/* CATEGORY FILTER (dropdown) */
-const categoryFilter = document.querySelector(".category-filter");
 categoryFilter.addEventListener("change", function () {
+    currentCategory = categoryFilter.value;
+    applyFilters();
+});
 
-    const selectedCategory = categoryFilter.value; // "" means "All categories"
-    const allCards = document.querySelectorAll(".notif-card");
-    const sections = document.querySelectorAll(".today-notices, .yesterday-notices, .earlier-notices");
+searchInput.addEventListener("input", function () {
+    currentSearch = searchInput.value.trim().toLowerCase();
+    applyFilters();
+});
 
-    allCards.forEach(card => {
-        const matches = selectedCategory === "" || card.dataset.category === selectedCategory;
-        card.style.display = matches ? "flex" : "none";
-    });
+/* MODAL POPUP LOGIC */
+function openNoticeModal(cardElement) {
+    if (!cardElement) return;
 
-    // Hide sections that end up with nothing visible
-    sections.forEach(section => {
-        const visibleCards = section.querySelectorAll('.notif-card:not([style*="display: none"])');
-        section.style.display = visibleCards.length === 0 ? "none" : "";
-    });
+    const modalOverlay = document.getElementById("notice-modal-overlay");
+    const title = cardElement.dataset.fullTitle || "";
+    const content = cardElement.dataset.fullContent || "";
+    const time = cardElement.dataset.time || "";
+    const icon = cardElement.dataset.icon || "notifications";
+    const category = cardElement.dataset.category || "";
+    const author = cardElement.dataset.author || "";
+
+    document.getElementById("modal-title").textContent = title;
+    document.getElementById("modal-content").textContent = content;
+    document.getElementById("modal-time").textContent = time;
+    document.getElementById("modal-icon").textContent = icon;
+    document.getElementById("modal-category").textContent = category.charAt(0).toUpperCase() + category.slice(1);
+
+    const authorElem = document.getElementById("modal-author");
+    const authorWrapper = document.getElementById("modal-author-wrapper");
+    if (author) {
+        authorElem.textContent = author;
+        authorWrapper.style.display = "inline";
+    } else {
+        authorWrapper.style.display = "none";
+    }
+
+    modalOverlay.classList.add("active");
+    modalOverlay.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden"; // Prevent background scrolling
+}
+
+function closeNoticeModal() {
+    const modalOverlay = document.getElementById("notice-modal-overlay");
+    if (modalOverlay) {
+        modalOverlay.classList.remove("active");
+        modalOverlay.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+    }
+}
+
+// Close modal when clicking on the dark background overlay
+document.addEventListener("DOMContentLoaded", function () {
+    const modalOverlay = document.getElementById("notice-modal-overlay");
+    if (modalOverlay) {
+        modalOverlay.addEventListener("click", function (event) {
+            if (event.target === modalOverlay) {
+                closeNoticeModal();
+            }
+        });
+    }
 });

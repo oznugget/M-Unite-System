@@ -1,5 +1,6 @@
 // Initialize the international telephone input plugin
 const input = document.querySelector("#contact");
+const regForm = document.getElementById('regForm');
 
 window.intlTelInput(input, {
   initialCountry: "za",
@@ -22,8 +23,7 @@ input.addEventListener('input', () => {
 // Live Address Autocomplete bounded to Makhanda
 
     //===============================================================================================================/
-// Ward extraction from Nominatim's address fields (same approach as the
-// fault-report form) — avoids a separate, flaky server-side MapIt API call.
+// Ward extraction from Nominatim's address fields — avoids a separate, flaky server-side MapIt API call.
 
 const POSSIBLE_WARD_FIELDS = ['neighbourhood', 'suburb', 'city_district', 'quarter'];
 
@@ -96,15 +96,28 @@ function extractWardNumber(addr) {
             // to a third-party API needed at submit time.
             const ward = extractWardNumber(addr) || '1'; // default ward 1 if undetected
 
+                      function escapeHtml(str) {
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+            function escapeJsAttr(str) {
+                return escapeHtml(str).replace(/\\/g, '\\\\');
+            }
+
             let betterDisplay = item.display_name;
             if (num !== '0' && !betterDisplay.startsWith(num)) {
                 betterDisplay = `${num} ${betterDisplay}`;
             }
-            const safeName = betterDisplay.replace(/'/g, "\\'");
-            const safeStreet = street.replace(/'/g, "\\'");
-            const safeSuburb = suburb.replace(/'/g, "\\'");
+            const safeName = escapeJsAttr(betterDisplay);
+            const safeStreet = escapeJsAttr(street);
+            const safeSuburb = escapeJsAttr(suburb);
+            const displayText = escapeHtml(betterDisplay);
 
-            suggestions.innerHTML = `<li onclick="applyAddress('${safeName}', '${item.lat}', '${item.lon}', '${num}', '${safeStreet}', '${safeSuburb}', '${ward}')">${betterDisplay}</li>`;
+            suggestions.innerHTML = `<li onclick="applyAddress('${safeName}', '${item.lat}', '${item.lon}', '${num}', '${safeStreet}', '${safeSuburb}', '${ward}')">${displayText}</li>`;
         } catch (err) {
             console.error("Autocomplete failed", err);
         }
@@ -127,16 +140,18 @@ function applyAddress(display, lat, lon, num, street, suburb, ward) {
 }
 
 
-
 //===============================================================================================================/
+// Role-based field toggling (Division / Address / Ward)
 
-//for municipal officer to choose division
 const roleSelect = document.getElementById('urole');
 const divisionContainer = document.getElementById('division-container');
 const divisionSelect = document.getElementById('division');
 
 const addressContainer = document.getElementById('address-container');
 const addressInput = document.getElementById('addr');
+
+const wardContainer = document.getElementById('ward-container');
+const wardSelect = document.getElementById('wcWard');
 
 function handleRoleChange() {
     const selectedRole = roleSelect.value;
@@ -157,25 +172,81 @@ function handleRoleChange() {
         addressContainer.style.display = 'none';
         addressInput.removeAttribute('required');
         addressInput.value = '';
-        
-        // Reset hidden address values
         document.getElementById('lat').value = '';
         document.getElementById('lon').value = '';
         document.getElementById('street_number').value = '';
         document.getElementById('street_name').value = '';
         document.getElementById('suburb').value = '';
     }
+
+    // 3. Ward: Show only for Ward Councillor (Value: 2)
+    if (selectedRole === '2') {
+        wardContainer.style.display = 'block';
+    } else {
+        wardContainer.style.display = 'none';
+        wardSelect.value = '';
+    }
 }
 
-// Attach listener and trigger once on load
-// Attach listener and trigger once on load
 roleSelect.addEventListener('change', handleRoleChange);
 roleSelect.addEventListener('change', updateSubmitState);
 handleRoleChange();
-
+//===================================================================================
 
 
 //===============================================================================================================/
+// Live name validation — fires on blur ("once they select the next field")
+
+const firstnameInput = document.getElementById('firstname');
+const surnameInput = document.getElementById('surname');
+const firstnameFeedback = document.getElementById('firstname-feedback');
+const surnameFeedback = document.getElementById('surname-feedback');
+
+const NAME_REGEX = /^[A-Za-z][A-Za-z\s'-]*$/; // letters (+ space/hyphen/apostrophe), no digits, min length 1
+
+function isValidName(value) {
+    return value.trim().length >= 1 && NAME_REGEX.test(value.trim());
+}
+
+function validateNameField(inputEl, feedbackEl, label) {
+    const value = inputEl.value;
+    if (value.trim() === '') {
+        // required attribute already flags empty on submit; don't nag before they've typed
+        feedbackEl.innerHTML = '';
+        inputEl.classList.remove('invalid');
+        return false;
+    }
+    if (!isValidName(value)) {
+        feedbackEl.innerHTML = `<li class="invalid">✗ Please input a valid ${label}</li>`;
+        inputEl.classList.add('invalid');
+        return false;
+    }
+    feedbackEl.innerHTML = '';
+    inputEl.classList.remove('invalid');
+    return true;
+}
+
+firstnameInput.addEventListener('blur', () => validateNameField(firstnameInput, firstnameFeedback, 'name'));
+surnameInput.addEventListener('blur', () => validateNameField(surnameInput, surnameFeedback, 'surname'));
+
+// Clear the red state as soon as it becomes valid again while typing
+firstnameInput.addEventListener('input', () => {
+    if (isValidName(firstnameInput.value) || firstnameInput.value.trim() === '') {
+        firstnameFeedback.innerHTML = '';
+        firstnameInput.classList.remove('invalid');
+    }
+    updateSubmitState();
+});
+surnameInput.addEventListener('input', () => {
+    if (isValidName(surnameInput.value) || surnameInput.value.trim() === '') {
+        surnameFeedback.innerHTML = '';
+        surnameInput.classList.remove('invalid');
+    }
+    updateSubmitState();
+});
+
+
+//=================================================================================================================
 
 //toggling password visibility
 function togglePassword(inputId, iconId) {
@@ -234,7 +305,7 @@ function renderPasswordFeedback() {
     }).join('');
 
     // Check if passwords match
-    if (confirmPwdInput.value.length > 0) {
+    if (confirmMyInput.value.length > 0) {
         const matches = doPasswordsMatch();
         confirmFeedback.innerHTML = `<li class="${matches ? 'valid' : 'invalid'}">${matches ? '✓' : '✗'} Passwords match</li>`;
     } else {
@@ -269,8 +340,8 @@ function updateSubmitState() {
   const isOfficialDomainValid = !isOfficialRole || emailVal.endsWith('@makana.gov.za');
 
   const basicFieldsValid =
-    firstname.value.trim() !== '' &&
-    surname.value.trim() !== '' &&
+    isValidName(firstname.value) &&
+    isValidName(surname.value) &&
     isEmailValidFormat &&
     isOfficialDomainValid &&
     contact.checkValidity() &&
@@ -356,7 +427,7 @@ function validateEmailField() {
   const isMakanaDomain = emailVal.endsWith('@makana.gov.za');
 
   if (isOfficialRole && !isMakanaDomain) {
-    emailFeedback.innerHTML = '<li class="invalid">✗ The provided email address cannot be used for the selected</li>';
+    emailFeedback.innerHTML = '<li class="invalid">✗ The provided email address cannot be used for the selected role</li>';
     emailInput.classList.add('invalid');
     return false;
   }
@@ -369,11 +440,35 @@ function validateEmailField() {
 
 
 
-// Triggers as soon as the user exits/tabs away from the email field
-const regForm = document.getElementById('regForm');
-
-emailInput.addEventListener('input', () => {
+// Show feedback only once the user leaves the email field
+emailInput.addEventListener('blur', () => {
   validateEmailField();
+});
+
+// Keep the submit button in sync as they type, without nagging mid-typing
+emailInput.addEventListener('input', () => {
+  // If it's already valid, clear any lingering red state immediately
+  const emailVal = emailInput.value.trim().toLowerCase();
+  const standardEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isOfficialRole = roleSelect.value !== '' && roleSelect.value !== '1';
+  const isValidNow = standardEmailRegex.test(emailVal) && (!isOfficialRole || emailVal.endsWith('@makana.gov.za'));
+
+  if (emailVal === '' || isValidNow) {
+    emailFeedback.innerHTML = '';
+    emailInput.classList.remove('invalid');
+  }
+
+  updateSubmitState();
+});
+
+// Re-evaluate if the user switches roles after already leaving the email field with a value
+roleSelect.addEventListener('change', () => {
+  if (emailInput.value.trim() !== '' && emailInput.classList.contains('invalid')) {
+    validateEmailField();
+  } else if (emailInput.value.trim() !== '') {
+    // re-check silently in case switching role just broke domain match
+    validateEmailField();
+  }
   updateSubmitState();
 });
 

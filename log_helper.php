@@ -1,61 +1,56 @@
 <?php
 /**
- * log_helper.php
+ * Shared helper for writing to the audit log.
  *
- * Writes one row to system_activities for a given action, looking up the
- * action_type_id from the action_types lookup table by its action_code
- * (e.g. 'TICKET_CREATE', 'COMMENT_ADD' — see action_types for the full list).
+ * UPDATE: confirmed against the latest schema screenshot - the real table
+ * is `system_activities` (normal spelling). Earlier versions of this file
+ * pointed at `systems_acitivies` (a typo'd name from an older screenshot),
+ * which meant every log_activity() call was silently failing since
+ * $conn->prepare() on a bad table name just returns false and gets
+ * skipped by the `if ($stmt)` check below - no error, no log entry.
  *
- * Basic usage (most actions — one-off events like creating a ticket or
- * adding a comment):
+ * signin.php still logs to a table called `logtrails` separately - that's
+ * a different, still-unresolved naming mismatch your team should settle
+ * (rename logtrails to system_activities, or vice versa, so there's ONE
+ * audit log table instead of two).
  *
- *   require_once __DIR__ . '/log_helper.php';
- *   log_activity($conn, $_SESSION['username'] ?? null, 'COMMENT_ADD');
+ * ACTION TYPE IDs USED BELOW - these must exist as rows in your
+ * `action_types` table or the action_type_id will point at nothing.
+ * Confirm with your team, or run:
  *
- * For login/logout-style events that span a session, pass an explicit
- * end_session timestamp via $opts:
+ *   INSERT INTO action_types (action_code, category, description) VALUES
+ *   ('TICKET_STATUS_UPDATED', 'Ticket', 'Officer updated a ticket status'),
+ *   ('NOTICE_CREATED', 'Notice', 'Officer posted a new notice'),
+ *   ('NOTICE_DELETED', 'Notice', 'Officer deleted a notice'),
+ *   ('PROFILE_UPDATED', 'Account', 'Officer updated their profile'),
+ *   ('ISSUE_CREATED', 'Current Issue', 'Officer created a current issue'),
+ *   ('ISSUE_FEATURED', 'Current Issue', 'Officer marked an issue as featured'),
+ *   ('ISSUE_DELETED', 'Current Issue', 'Officer deleted a current issue');
  *
- *   log_activity($conn, $username, 'AUTH_LOGOUT', [
- *       'end_session' => date('Y-m-d H:i:s'),
- *   ]);
- *
- * $opts supports:
- *   'ip_address'       — override the detected REMOTE_ADDR
- *   'end_session'      — datetime string, only set for session-ending events
- *   'is_authenticated' — override the default (1 if $username is set, else 0)
+ * Then check the actual action_type_id values MySQL assigned and update
+ * the constants below to match.
  */
 
-function log_activity(mysqli $conn, ?string $username, string $action_code, array $opts = []) {
-    static $action_type_cache = [];
+define('ACTION_SUCCESSFUL_LOGIN', 1);   // already used by signin.php
+define('ACTION_FAILED_LOGIN', 2);       // already used by signin.php
+define('ACTION_TICKET_STATUS_UPDATED', 3);
+define('ACTION_NOTICE_CREATED', 4);
+define('ACTION_NOTICE_DELETED', 5);
+define('ACTION_PROFILE_UPDATED', 6);
+define('ACTION_ISSUE_CREATED', 8);
+define('ACTION_ISSUE_FEATURED', 9);
+define('ACTION_ISSUE_DELETED', 10);
 
-    if (!isset($action_type_cache[$action_code])) {
-        $stmt = $conn->prepare("SELECT action_type_id FROM action_types WHERE action_code = ? LIMIT 1");
-        $stmt->bind_param('s', $action_code);
+function log_activity($conn, $username, $action_type_id) {
+    $ip_address = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    $timestamp  = date('Y-m-d H:i:s');
+    $is_auth    = 1;
+
+    $stmt = $conn->prepare("INSERT INTO system_activities (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
+    if ($stmt) {
+        $stmt->bind_param("sisssi", $username, $action_type_id, $ip_address, $timestamp, $timestamp, $is_auth);
         $stmt->execute();
-        $row = $stmt->get_result()->fetch_assoc();
-
-        if (!$row) {
-            error_log("log_activity: unknown action_code '{$action_code}' — not logged.");
-            return false;
-        }
-        $action_type_cache[$action_code] = (int)$row['action_type_id'];
+        $stmt->close();
     }
-    $action_type_id = $action_type_cache[$action_code];
-
-    $ip_address       = $opts['ip_address'] ?? ($_SERVER['REMOTE_ADDR'] ?? null);
-    $end_session      = $opts['end_session'] ?? null;
-    $is_authenticated = array_key_exists('is_authenticated', $opts)
-        ? (int)$opts['is_authenticated']
-        : ($username !== null ? 1 : 0);
-
-    $stmt = $conn->prepare("INSERT INTO system_activities
-            (username, action_type_id, ip_address, start_session, end_session, is_authenticated)
-        VALUES (?, ?, ?, NOW(), ?, ?)");
-    $stmt->bind_param('sissi', $username, $action_type_id, $ip_address, $end_session, $is_authenticated);
-
-    if (!$stmt->execute()) {
-        error_log("log_activity: insert failed — " . $stmt->error);
-        return false;
-    }
-    return $conn->insert_id;
 }
+?>

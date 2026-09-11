@@ -15,7 +15,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $firstname = isset($_POST["firstname"]) ? trim($_POST["firstname"]) : "";
     $surname = isset($_POST["surname"]) ? trim($_POST["surname"]) : "";
+    $nameRegex = '/^[A-Za-z][A-Za-z\s\'-]*$/';
+
+    if (!preg_match($nameRegex, $firstname) || strlen($firstname) < 1) {
+        showError("Please input a valid first name.");
+    }
+    if (!preg_match($nameRegex, $surname) || strlen($surname) < 1) {
+        showError("Please input a valid surname.");
+    }
+
+    // Defense-in-depth: strip any HTML/script content before storing.
+    // (Prepared statements below already stop SQL injection — this stops
+    // stored XSS from ever getting displayed unescaped elsewhere in the app.)
+    $firstname = htmlspecialchars($firstname, ENT_QUOTES, 'UTF-8');
+    $surname   = htmlspecialchars($surname, ENT_QUOTES, 'UTF-8');
+    $physAdd   = htmlspecialchars($physAdd, ENT_QUOTES, 'UTF-8');
     $email = isset($_POST["email"]) ? filter_var($_POST["email"], FILTER_SANITIZE_EMAIL) : "";
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    showError("Please enter a valid email address.");
+    }
     $contact = isset($_POST["contact"]) ? trim($_POST["contact"]) : "";
     $physAdd = isset($_POST["addr"]) ? trim($_POST["addr"]) : "";
     $roleMap = ["1" => "Community Member", "2" => "Ward councillor", "3" => "Municipal Officer", "4" => "System Admin"];
@@ -23,6 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = isset($_POST["pword"]) ? trim($_POST["pword"]) : "";
     $hash_pword = password_hash($password, PASSWORD_DEFAULT);
     $division = !empty($_POST["division"]) ? trim($_POST["division"]) : null;
+    $wcWard = !empty($_POST["wcWard"]) ? trim($_POST["wcWard"]) : null;
 
    // Standard required fields
 
@@ -105,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //Filling in ward councillor table
     } else if ($role === "Ward councillor") {
         $stmt3 = $conn->prepare("INSERT INTO ward_councillors(username, ward_id) VALUES (?,?)");
-        $stmt3->bind_param("si", $username, $ward_id);
+        $stmt3->bind_param("si", $username, $wcWard);
         $stmt3->execute();
         $stmt3->close();
     
