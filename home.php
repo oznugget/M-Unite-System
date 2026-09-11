@@ -35,7 +35,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
     <nav class="navbar" id="nav-menu">
       <a href="home.php" class="nav-item-active">Home</a>
-      <a href="CommReports.php" class="nav-item">Reports</a>
+      <a href="CommReports.html" class="nav-item">Reports</a>
       <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
       <a href="about_us.html" class="nav-item">About Us</a>
