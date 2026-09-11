@@ -29,7 +29,11 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
       </a>
     </div>
 
-    <nav class="navbar">
+    <div class="hamburger" id="hamburger-menu">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+
+    <nav class="navbar" id="nav-menu">
       <a href="home.php" class="nav-item-active">Home</a>
       <a href="CommReports.html" class="nav-item">Reports</a>
       <a href="public_notices.php" class="nav-item">Notices</a>
@@ -37,7 +41,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
       <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
 
-      <div class="header-right">
+      <div class="header-right" id="header-right">
       <?php if ($isLoggedIn): ?>
         <a href="account.php" class="sign-in-btn">
           <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
@@ -49,6 +53,46 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
       <?php endif; ?>
     </div>
     </header>
+
+    <script>
+      const hamburger = document.getElementById('hamburger-menu');
+      const navMenu = document.getElementById('nav-menu');
+      const hamburgerIcon = hamburger.querySelector('i');
+
+      function toggleMenu() {
+        const isOpen = navMenu.classList.toggle('active');
+        hamburger.classList.toggle('active', isOpen);
+        hamburgerIcon.classList.toggle('fa-bars', !isOpen);
+        hamburgerIcon.classList.toggle('fa-xmark', isOpen);
+      }
+
+      function closeMenu() {
+        navMenu.classList.remove('active');
+        hamburger.classList.remove('active');
+        hamburgerIcon.classList.add('fa-bars');
+        hamburgerIcon.classList.remove('fa-xmark');
+      }
+
+      hamburger.addEventListener('click', toggleMenu);
+
+      // Close the menu after a nav link is tapped
+      navMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeMenu);
+      });
+
+      // Close the menu automatically if the viewport grows past the mobile breakpoint
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) closeMenu();
+      });
+
+      // Close the menu if the user taps/clicks outside of it
+      document.addEventListener('click', (event) => {
+        const clickedInsideMenu = navMenu.contains(event.target) || hamburger.contains(event.target);
+        if (!clickedInsideMenu && navMenu.classList.contains('active')) {
+          closeMenu();
+        }
+      });
+    </script>
 
 
 
