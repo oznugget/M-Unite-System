@@ -35,6 +35,7 @@ a {
   justify-content: space-between;
   padding: 0 1.5rem; 
   height: 80px; /* Explicit height replaces the removed vertical padding */
+  width: 100%;
 }
 
 /* Keeps logo and sign-in button vertically centered, preventing them from stretching */
@@ -137,6 +138,7 @@ a {
   flex-direction: column;
   justify-content: flex-end;
   padding-top: 20rem;
+  margin-top: 5rem;
 }
 
 .footer-skyline-mobile,

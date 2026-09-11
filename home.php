@@ -35,15 +35,15 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
     <nav class="navbar" id="nav-menu">
       <a href="home.php" class="nav-item-active">Home</a>
-      <a href="reports.html" class="nav-item">Reports</a>
-      <a href="notification.html" class="nav-item">Notices</a>
+      <a href="CommReports.html" class="nav-item">Reports</a>
+      <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
       <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
 
       <div class="header-right" id="header-right">
       <?php if ($isLoggedIn): ?>
-        <a href="account.html" class="sign-in-btn">
+        <a href="account.php" class="sign-in-btn">
           <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
         </a>
       <?php else: ?>

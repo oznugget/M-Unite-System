@@ -120,10 +120,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
 
-<body>
 
+    
 
     <header class="site-header">
 
@@ -133,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </a>
     </div>
 
-    <nav class="navbar">
+    <nav class="navbar"> 
       <a href="home.php" class="nav-item-active">Home</a>
       <a href="reports.html" class="nav-item">Reports</a>
       <a href="notification.html" class="nav-item">Notices</a>
@@ -153,6 +152,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php endif; ?>
     </div>
     </header>
+
+
+    
+</head>
+
+<body>
 
 
 

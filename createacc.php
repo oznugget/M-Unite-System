@@ -24,7 +24,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 </head>
 <body>
 
-
+  
 
     <header class="site-header">
 
@@ -66,7 +66,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
       <?php if (isset($_GET['error']) && $_GET['error'] !== ''): ?>
         <div id="form-error-banner" class="form-error-banner">
-          <?php echo htmlspecialchars(urldecode($_GET['error']), ENT_QUOTES, 'UTF-8'); ?>
+          <?php echo htmlspecialchars($_GET['error'], ENT_QUOTES, 'UTF-8'); ?>
         </div>
       <?php endif; ?>
 
@@ -74,11 +74,13 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
       <div class="form-group">
         <label for="firstname">First Name </label>
         <input type="text" id="firstname" name="firstname" maxlength="20" required />
+        <ul id="firstname-feedback" class="pwd-feedback"></ul>
       </div>
 
       <div class="form-group">
         <label for="surname">Surname </label>
         <input type="text" id="surname" name="surname" maxlength="30" required/>
+        <ul id="surname-feedback" class="pwd-feedback"></ul>
       </div>
 
           
@@ -138,6 +140,28 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         <option value="Vandalism">Vandalism</option>
         <option value="Waste Management">Waste Management</option>
         <option value="Environmental Incidents">Environmental Incidents</option>
+      </select>
+    </div>
+
+      <!-- optional division field for Ward Councillors -->
+      <div class="form-group" id="ward-container" style="display: none;">
+      <label for="wcWard">Division <span style="font-weight: normal; font-size: 12px; color: #666;"></span></label>
+      <select id="wcWard" name="wardCouncillorward">
+        <option value="">Select Ward</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
       </select>
     </div>
 
