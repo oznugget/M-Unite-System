@@ -364,8 +364,71 @@ h1, h2, h3, h4, button {
     cursor: not-allowed;
 }
 
+.report-form.is-locked {
+  opacity: 0.6;
+}
+ 
+.pending-card {
+  background-color: #ffffff;
+  border: 1px solid var(--color-accent); /* accent border makes it visually distinct from a normal permanent report card */
+  padding: 1rem;
+  margin-top: 1.5rem;
+ 
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+ 
+.pending-message {
+  font-size: 0.9rem;
+  background-color: var(--color-bg);
+  padding: 0.5rem 0.75rem;
+}
+ 
+.countdown-seconds {
+  font-weight: 700;
+}
+ 
+.cancel-pending-btn {
+  align-self: flex-start;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  padding: 0.5rem 1rem;
+}
+ 
+/* ===== SUBMISSION BANNER ===== */
+ 
+.submission-banner {
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  border: 1px solid var(--color-primary);
+}
+ 
+/* Two different banner "moods" — JS adds one of these two
+   classes alongside .submission-banner depending on whether
+   the real submission succeeded or failed */
+.submission-banner.is-success {
+  border-color: var(--color-primary);
+  background-color: var(--color-bg);
+}
+ 
+.submission-banner.is-error {
+  border-color: var(--color-accent);
+  background-color: #ffffff;
+  color: var(--color-accent);
+}
 
 /*=================================== PAST REPORTS ========================= */
+.past-reports-link{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.past-reports-link .submit-btn{
+    display: inline-block;
+    text-align: center;
+}
 
 .past-reports-header{
 
@@ -681,4 +744,84 @@ h1, h2, h3, h4, button {
     font-size: 0.85rem;
     opacity: 0.7;
     margin-top: 2rem;
+}
+
+/* ================= STATUS TIMELINE ================= */
+/* The little step-tracker inside each report card, showing
+   progress through Pending -> In Progress -> Resolved -> Closed */
+
+.status-timeline {
+    display: flex;
+    margin: 0.25rem 0 0.5rem;
+}
+
+.status-step {
+    /* flex: 1 makes all 4 steps take up equal width, spreading
+       evenly across the card regardless of label length */
+    flex: 1;
+    text-align: center;
+    position: relative; /* needed so the connecting line (below) can be positioned against THIS step specifically */
+}
+
+/* The connecting line between dots. Only added to steps 2, 3,
+   and 4 (:not(:first-child)) — there's nothing to connect FROM
+   before the very first step. */
+.status-step:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    top: 7px; /* vertically lines up with the dot's centre */
+    left: -50%;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-bg);
+    z-index: 0; /* sits BEHIND the dot, not on top of it */
+}
+
+/* If this step's incoming segment has been passed already
+   (the "segment-filled" class our HTML adds), colour the line
+   to show progress instead of leaving it the default light grey */
+.status-step.segment-filled::before {
+    background-color: var(--color-accent);
+}
+
+.status-dot {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 2px solid var(--color-bg);
+    margin: 0 auto 0.4rem;
+    position: relative;
+    z-index: 1; /* sits ABOVE the connecting line */
+}
+
+.status-label {
+    font-size: 0.7rem;
+    opacity: 0.6;
+}
+
+/* ----- Step states ----- */
+
+/* A step already fully passed through */
+.status-step.is-complete .status-dot {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.status-step.is-complete .status-label {
+    opacity: 0.85;
+}
+
+/* The step the report/ticket is AT right now — made visually
+   the most prominent of the three states */
+.status-step.is-current .status-dot {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.status-step.is-current .status-label {
+    font-weight: 700;
+    opacity: 1;
+    color: var(--color-primary);
 }

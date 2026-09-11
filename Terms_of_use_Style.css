@@ -1,0 +1,38 @@
+/* =========================================================
+   M-Unite — Terms of Use page
+   Page-specific styles only. Shared site-wide rules (reset,
+   colours, fonts, header, footer) all live in styles.css,
+   which this page also loads — this file ONLY contains things
+   specific to legal/policy-style pages.
+   ========================================================= */
+
+.legal-page {
+  /* Caps the reading width — long paragraphs stretched across
+     a full wide screen become genuinely hard to read. This is
+     a standard, sensible line-length for body text. */
+  max-width: 800px;
+  margin: 0 auto; /* centres the capped-width content on the page */
+}
+
+.legal-page h2 {
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.legal-page p {
+  margin-bottom: 1rem;
+}
+
+.legal-updated {
+  opacity: 0.7;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.legal-placeholder-note {
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 1px dashed var(--color-accent);
+  font-size: 0.85rem;
+  opacity: 0.8;
+}

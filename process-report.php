@@ -3,6 +3,18 @@
 
 require 'db-connect.php'; // gives us $pdo, our database connection
 
+function respond($success, $message) {
+ 
+    header('Content-Type: application/json');
+ 
+    echo json_encode([
+        'success' => $success,
+        'message' => $message,
+    ]);
+ 
+    exit; // stops the script immediately — same role "die()" used to play
+ 
+}
 
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -14,7 +26,7 @@ $username = $_SESSION['username'] ?? 'brown@gmail.com';
 
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    die('Invalid request method.');
+   respond(false, 'Invalid request method.');
 }
 
 
@@ -50,7 +62,7 @@ if ($wardNumber === '' || !ctype_digit($wardNumber) || (int)$wardNumber < 1 || (
 
 
 if (!empty($errors)) {
-    die('Submission failed: ' . implode(' ', $errors));
+   respond(false, implode(' ', $errors));
 }
 
 
@@ -62,7 +74,7 @@ $categoryRow = $categoryStmt->fetch();
 
 if (!$categoryRow) {
     
-    die('Submission failed: invalid fault type selected.');
+    respond(false, 'Invalid fault type selected.');
 }
 
 $categoryId = $categoryRow['category_id'];
@@ -75,7 +87,7 @@ $wardStmt->execute(['name' => 'Ward ' . $wardNumber]);
 $wardRow = $wardStmt->fetch();
 
 if (!$wardRow) {
-    die('Submission failed: could not match the pinned location to a known ward.');
+    respond(false, 'Could not match the pinned location to a known ward.');
 }
 
 $wardId = $wardRow['ward_id'];
@@ -98,11 +110,11 @@ if (isset($_FILES['fault-image']) && $_FILES['fault-image']['error'] === UPLOAD_
     $maxSizeInBytes = 128 * 1024 * 1024; // 128MB, matching the JS validation rule
 
     if (!in_array($detectedType, $allowedTypes)) {
-        die('Submission failed: uploaded file is not a valid .jpg, .jpeg, or .png image.');
+       respond(false, 'Uploaded file is not a valid .jpg, .jpeg, or .png image.');
     }
 
     if ($uploadedFile['size'] > $maxSizeInBytes) {
-        die('Submission failed: uploaded image exceeds the 128MB size limit.');
+        respond(false, 'Uploaded image exceeds the 128MB size limit.');
     }
 
     
@@ -117,7 +129,7 @@ if (isset($_FILES['fault-image']) && $_FILES['fault-image']['error'] === UPLOAD_
         
         $imageUrl = 'uploads/' . $newFilename;
     } else {
-        die('Submission failed: could not save the uploaded image.');
+        respond(false, 'Could not save the uploaded image.');
     }
 
 }
@@ -146,5 +158,4 @@ $insertStmt->execute([
 
 
 
-header('Location: CommReports.html?submitted=1');
-exit;
+Respond(true, 'Report submitted successfully.');

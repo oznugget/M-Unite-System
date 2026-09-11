@@ -58,13 +58,11 @@
                         <div class = "location-input-row">
                             <input type = "text" id = "location-address" name = "location-address" required>
                             <button type = "button" class = "use-my-location-btn">Use My Location</button>
-                            <span class="field-error" id="location-address-error"></span>
+                            
                         </div>
+                        <span class="field-error" id="location-address-error"></span>
 
-                        <!---These fields never get seen or edited by the use
-                            JS will fill them in silently once the pin is dropped
-                            and travel along with the rest of the field until 
-                            submitted to php.-->
+                        
                         <input type = "hidden" id = "place-name" name = "place-name">
                         <input type = "hidden" id = "house-number" name = "house-number">
                         <input type = "hidden" id = "road-name" name = "road-name">
@@ -76,14 +74,15 @@
                     <div class = "form-field">
                         <label for = "fault-type">Fault Type<span class="required">*</span></label>
                         <select id = "fault-type" name= "fault-type" required>
-
+                            <option value="" selected disabled>Select Fault Type</option>
                             <option value="Electricity">Electricity</option>
-                            <option value="Water &amp; Sanitation">Water &amp; Sanitation</option>
+                            <option value="Water">Water</option>
                             <option value="Roads">Roads</option>
                             <option value="Animals">Animals</option>
-                            <option value="Transport">Transport</option>
+                            <option value="Sanitation">Sanitation</option>
                             <option value="Vandalism">Vandalism</option>
                             <option value="Waste Management">Waste Management</option>
+                            <option value="Environmental Incidents">Environmental Incidents</option>
 
                         </select>
                         <span class="field-error" id="fault-type-error"></span>
@@ -115,176 +114,17 @@
                     <button type = "submit" class = "submit-btn" disabled>Submit Fault</button>
                     
                 </form>
+
+                <div id="submission-banner" class="submission-banner" role="status" hidden></div>
+                <div id="pending-report-container"></div>
+                
             </section>
             
-
-            <section class = "past-reports">
-                <!---------past reports -->
-                <div class="past-reports-header">
-                    <h2>Past Reports</h2>
-                    <div class="filter-wrapper">
-                    <button type="button" class="filter-btn" aria-haspopup="true" aria-expanded="false">
-                    Filter By: <span class="filter-icon" aria-hidden="true"></span>
-                    </button>
-                     <div id="filter-panel" class="filter-panel" hidden>
-                    <label>
-                    <input type="checkbox" class="filter-checkbox" value="submitted" checked>
-                    Submitted
-                    </label>
-                    <label>
-                    <input type="checkbox" class="filter-checkbox" value="processing" checked>
-                    Processing
-                    </label>
-                    <label>
-                    <input type="checkbox" class="filter-checkbox" value="closed" checked>
-                    Closed
-                    </label>
-                </div>
-                </div>
-      
-                </div>
-            
-                <ul class="report-cards-list">
-            
-                    <!-- Example report card 1 -->
-                    <li class="report-card" data-status="submitted">
-                    <h3 class="report-card-title">Water and Sanitation Report</h3>
-            
-                    <div class="report-card-image">
-                        <img src="" alt="" hidden>
-                        <p class="no-image-text">No image</p>
-                    </div>
-            
-                    <div class="report-card-meta">
-                        <span class="report-date">Date: 00/00/00</span>
-                        <span class="report-status">Status: Submitted</span>
-                    </div>
-                    <span class="report-id">ID: 0000000</span>
-            
-                    <p class="report-description">
-                        <strong>Description:</strong> There is no water in my res.
-                    </p>
-            
-                    <p class="report-location">
-                        <strong>Location:</strong> Rhodes University.
-                    </p>
-            
-                    <span class="report-time">Time of report: 00:00</span>
-            
-                    <p class="report-comment" hidden>
-                        <strong>Comment:</strong> We heard you calm down
-                    </p>
-            
-                    <button type="button" class="delete-report-btn" hidden aria-label="Delete report">
-                        <span class="bin-icon" aria-hidden="true"></span>
-                    </button>
-                    </li>
-            
-                    <!-- Example report card 2 -->
-                    <li class="report-card" data-status="processing">
-                    <h3 class="report-card-title">Road Works Report</h3>
-            
-                    <div class="report-card-image">
-                        <img src="" alt="" hidden>
-                        <p class="no-image-text">No image</p>
-                    </div>
-            
-                    <div class="report-card-meta">
-                        <span class="report-date">Date: 00/00/00</span>
-                        <span class="report-status">Status: Processing</span>
-                    </div>
-                    <span class="report-id">ID: 0000000</span>
-            
-                    <p class="report-description">
-                        <strong>Description:</strong> I am dying of thirst
-                    </p>
-            
-                    <p class="report-location">
-                        <strong>Location:</strong> Location Sila
-                    </p>
-            
-                    <span class="report-time">Time of report: 00:00</span>
-            
-                    <p class="report-comment" hidden>
-                        <strong>Comment:</strong> Die, there's too many of you alive.
-                    </p>
-            
-                    <button type="button" class="delete-report-btn" hidden aria-label="Delete report">
-                        <span class="bin-icon" aria-hidden="true"></span>
-                    </button>
-                    </li>
-            
-                    <!-- Example report card 3 -->
-                    <li class="report-card" data-status="closed">
-                    <h3 class="report-card-title">Electricity Report</h3>
-            
-                    <div class="report-card-image">
-                        <img src="" alt="" hidden>
-                        <p class="no-image-text">No image</p>
-                    </div>
-            
-                    <div class="report-card-meta">
-                        <span class="report-date">Date: 00/00/00</span>
-                        <span class="report-status">Status: Closed</span>
-                    </div>
-                    <span class="report-id">ID: 0000000</span>
-            
-                    <p class="report-description">
-                        <strong>Description:</strong> The thief cut off my electricity cables i have no power
-                    </p>
-            
-                    <p class="report-location">
-                        <strong>Location:</strong> Hilltop 7
-                    </p>
-            
-                    <span class="report-time">Time of report: 00:00</span>
-            
-                    <p class="report-comment" hidden>
-                        <strong>Comment:</strong> So what did you want us to do? 
-                    </p>
-            
-                    <button type="button" class="delete-report-btn" hidden aria-label="Delete report">
-                        <span class="bin-icon" aria-hidden="true"></span>
-                    </button>
-                    </li>
-            
-                    <!-- Example report card 4 -->
-                    <li class="report-card" data-status="closed">
-                    <h3 class="report-card-title">Stray Animals Report</h3>
-            
-                    <div class="report-card-image">
-                        <img src="" alt="" hidden>
-                        <p class="no-image-text">No image</p>
-                    </div>
-            
-                    <div class="report-card-meta">
-                        <span class="report-date">Date: 00/00/00</span>
-                        <span class="report-status">Status: Closed</span>
-                    </div>
-                    <span class="report-id">ID: 0000000</span>
-            
-                    <p class="report-description">
-                        <strong>Description:</strong> Someone's dog just pooped on my door step
-                    </p>
-            
-                    <p class="report-location">
-                        <strong>Location:</strong> Location Sile
-                    </p>
-            
-                    <span class="report-time">Time of report: 00:00</span>
-            
-                    <p class="report-comment" hidden>
-                        <strong>Comment:</strong> Pop with it ke!
-                    </p>
-            
-                    <button type="button" class="delete-report-btn" hidden aria-label="Delete report">
-                        <span class="bin-icon" aria-hidden="true"></span>
-                    </button>
-                    </li>
-            
-                </ul>
+            <section class = "past-reports-link">
+                <a href = "MyReports.php" class = "submit-btn">View My Reports</a>
             </section>
 
+            
         </main>
             <!------AI CHATBOT ICON -->
         <div class="ai-chat-widget">
@@ -348,7 +188,7 @@
                 <ul>
                     <li><a href="privacy-policy.html">Privacy Policy</a></li>
                     <li><a href="documentation.html">Documentation</a></li>
-                    <li><a href="terms-of-use.html">Terms Of Use</a></li>
+                    <li><a href="Terms_of_use.html">Terms Of Use</a></li>
                     <li><a href="copyright-notice.html">Copyright Notice</a></li>
                 </ul>
             </nav>

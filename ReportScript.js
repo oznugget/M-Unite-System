@@ -158,8 +158,7 @@ function extractSuburb(addr) {
 
     }
 
-    /* Nothing usable found — fall back to city, since "surburb"
-       is a required (NOT NULL) column in the database */
+
     return addr.city || null;
 
 }
@@ -207,12 +206,7 @@ const faultTypeError = document.getElementById('fault-type-error');
 const faultDescriptionError = document.getElementById('fault-description-error');
 const faultImageError = document.getElementById('fault-image-error');
  
-/* Small reusable helper — rather than repeating this same
-   "toggle the invalid class + set/clear the message" logic
-   separately inside all 4 validation functions below, we write
-   it once here and call it from each of them. Takes the label
-   element, the error-message element, whether the field is
-   currently valid, and what message to show if it's not. */
+
  
 function setFieldValidity(labelEl, errorEl, isValid, message) {
  
@@ -401,67 +395,206 @@ removeImageBtn.addEventListener('click', function (event) {
   updateFormValidity();
  
 });
+ /*============================= PENDING REPORT TIMER ======================*/
 
-const filterBtn = document.querySelector('.filter-btn');
-const filterPanel = document.getElementById('filter-panel');
-const filterCheckboxes = document.querySelectorAll('.filter-checkbox');
-const reportCards = document.querySelectorAll('.report-card');
+ const reportForm = document.querySelector('.report-form');
+const pendingContainer = document.getElementById('pending-report-container');
+const submissionBanner = document.getElementById('submission-banner');
  
-/* ----- Opening/closing the panel ----- */
+
+let isCountdownActive = false;
  
-filterBtn.addEventListener('click', function () {
+
+let countdownIntervalId = null;
  
  
+reportForm.addEventListener('submit', function (event) {
  
-  const isCurrentlyHidden = filterPanel.hidden;
+  
+  event.preventDefault();
  
-  filterPanel.hidden = !isCurrentlyHidden;
-  filterBtn.setAttribute('aria-expanded', String(isCurrentlyHidden));
+  
+  const formData = new FormData(reportForm);
+ 
+  
+  const displayFaultType = faultTypeSelect.value;
+  const displayDescription = faultDescriptionInput.value;
+  const displayLocation = locationAddressInput.value;
+ 
+  
+  lockReportForm();
+ 
+  
+  showPendingCard(displayFaultType, displayDescription, displayLocation);
+ 
+  
+  startCountdown(formData);
  
 });
  
+ 
 
-document.addEventListener('click', function (event) {
+function lockReportForm() {
  
-  
-  const clickedInsideButton = filterBtn.contains(event.target);
-  const clickedInsidePanel = filterPanel.contains(event.target);
+  const allFields = reportForm.querySelectorAll('input, select, textarea, button');
  
-  if (!clickedInsideButton && !clickedInsidePanel && !filterPanel.hidden) {
-    filterPanel.hidden = true;
-    filterBtn.setAttribute('aria-expanded', 'false');
-  }
- 
-});
- 
-/* ----- Actually filtering the cards ----- */
- 
-function applyFilter() {
- 
-  
- 
-  const checkedStatuses = Array.from(filterCheckboxes)
-    .filter(function (checkbox) { return checkbox.checked; })
-    .map(function (checkbox) { return checkbox.value; });
- 
-  
- 
-  reportCards.forEach(function (card) {
- 
-    const cardStatus = card.dataset.status; // reads the data-status attribute we set back when building the cards
- 
-    if (checkedStatuses.includes(cardStatus)) {
-      card.hidden = false;
-    } else {
-      card.hidden = true;
-    }
- 
+  allFields.forEach(function (field) {
+    field.disabled = true;
   });
+ 
+  reportForm.classList.add('is-locked');
  
 }
  
-/* Re-run the filter every time ANY checkbox changes state */
+
+function unlockReportForm() {
  
-filterCheckboxes.forEach(function (checkbox) {
-  checkbox.addEventListener('change', applyFilter);
+  const allFields = reportForm.querySelectorAll('input, select, textarea, button');
+ 
+  allFields.forEach(function (field) {
+    field.disabled = false;
+  });
+ 
+  reportForm.classList.remove('is-locked');
+ 
+  updateFormValidity();
+ 
+}
+ 
+ 
+
+function showPendingCard(faultType, description, location) {
+ 
+  
+  const shortDescription = description.length > 100
+    ? description.substring(0, 100) + '...'
+    : description;
+ 
+  pendingContainer.innerHTML = `
+    <div class="report-card pending-card">
+      <h3 class="report-card-title">${faultType} Report</h3>
+      <p class="pending-message">
+        This report will be submitted in <span class="countdown-seconds">60</span> seconds.
+        You can still cancel it until then — after that, it cannot be undone.
+      </p>
+      <p class="report-description"><strong>Description:</strong> ${shortDescription}</p>
+      <p class="report-location"><strong>Location:</strong> ${location}</p>
+      <button type="button" class="cancel-pending-btn">Cancel Report</button>
+    </div>
+  `;
+ 
+  
+  const cancelBtn = pendingContainer.querySelector('.cancel-pending-btn');
+  cancelBtn.addEventListener('click', cancelPendingReport);
+ 
+}
+ 
+ 
+
+function startCountdown(formData) {
+ 
+  isCountdownActive = true;
+ 
+  let secondsRemaining = 60;
+ 
+  const countdownDisplay = pendingContainer.querySelector('.countdown-seconds');
+ 
+  
+  countdownIntervalId = setInterval(function () {
+ 
+    secondsRemaining = secondsRemaining - 1;
+    countdownDisplay.textContent = secondsRemaining;
+ 
+    if (secondsRemaining <= 0) {
+ 
+      
+      clearInterval(countdownIntervalId);
+      isCountdownActive = false;
+ 
+      submitReportForReal(formData);
+ 
+    }
+ 
+  }, 1000);
+ 
+}
+ 
+ 
+/* Called when the user clicks Cancel during the countdown */
+function cancelPendingReport() {
+ 
+  clearInterval(countdownIntervalId);
+  isCountdownActive = false;
+ 
+ 
+  pendingContainer.innerHTML = '';
+ 
+  unlockReportForm();
+ 
+}
+ 
+ 
+
+async function submitReportForReal(formData) {
+ 
+  try {
+ 
+    const response = await fetch('process-report.php', {
+      method: 'POST',
+      body: formData
+    });
+ 
+    const result = await response.json();
+ 
+   
+    pendingContainer.innerHTML = '';
+ 
+    if (result.success) {
+ 
+      showBanner('Report submitted successfully! You can view it in My Reports.', 'is-success');
+ 
+      
+      reportForm.reset();
+      unlockReportForm();
+ 
+    } else {
+ 
+      
+      showBanner('Something went wrong: ' + result.message, 'is-error');
+      unlockReportForm();
+ 
+    }
+ 
+  } catch (error) {
+ 
+    /* A genuine network failure (server unreachable, etc.) */
+    console.error('Submission error:', error);
+    pendingContainer.innerHTML = '';
+    showBanner('Could not submit your report — please check your connection and try again.', 'is-error');
+    unlockReportForm();
+ 
+  }
+ 
+}
+ 
+ 
+/* Small shared helper for showing either banner "mood" */
+function showBanner(message, moodClass) {
+ 
+  submissionBanner.textContent = message;
+  submissionBanner.className = 'submission-banner ' + moodClass;
+  submissionBanner.hidden = false;
+ 
+}
+ 
+ 
+
+ 
+window.addEventListener('beforeunload', function (event) {
+ 
+  if (isCountdownActive) {
+    event.preventDefault();
+    event.returnValue = ''; // required for the warning to actually appear in Chrome
+  }
+ 
 });
