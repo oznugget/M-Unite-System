@@ -286,20 +286,6 @@
 /*----------------------------------------------------------------------*/
 /* --- RESPONSIVENESS --- */
 @media (max-width: 768px) {
-    .site-header {
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-  }
-  .navbar {
-    width: 100%;
-    justify-content: space-around;
-  }
-  .nav-item {
-    padding: 8px 10px;
-    font-size: 12px;
-  }
-
   #carousel-frame {
   width: 100%;
   height: 125%;
