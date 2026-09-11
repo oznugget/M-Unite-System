@@ -1,17 +1,17 @@
 <?php
-
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $isLoggedIn = isset($_SESSION['username']);
 $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
 
 require 'db-connect.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
 
-$username = $_SESSION['username'] ?? 'brown@gmail.com';
+
+$username = $_SESSION['username']; 
 
 
 
@@ -130,7 +130,7 @@ function buildStatusTimeline($currentStatus) {
 
     <main class="reports-page">
 
-        <p class="map-hint"><a href="CommReports.html">&larr; Back to report a fault</a></p>
+        <p class="map-hint"><a href="CommReports.php">&larr; Back to report a fault</a></p>
 
         <section class="past-reports">
             <div class="past-reports-header">

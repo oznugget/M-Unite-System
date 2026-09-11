@@ -1,4 +1,5 @@
 <?php
+session_start();
 $isLoggedIn = isset($_SESSION['username']);
 $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 ?>
