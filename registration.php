@@ -24,6 +24,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         showError("Please input a valid surname.");
     }
 
+    $contact = isset($_POST["contact"]) ? trim($_POST["contact"]) : "";
+    $physAdd = isset($_POST["addr"]) ? trim($_POST["addr"]) : "";
+    $roleMap = ["1" => "Community Member", "2" => "Ward councillor", "3" => "Municipal Officer", "4" => "System Admin"];
+    $role = isset($_POST["userrole"]) ? ($roleMap[$_POST["userrole"]] ?? "") : "";
+    $password = isset($_POST["pword"]) ? trim($_POST["pword"]) : "";
+    $hash_pword = password_hash($password, PASSWORD_DEFAULT);
+    $division = !empty($_POST["division"]) ? trim($_POST["division"]) : null;
+    $wcWard = !empty($_POST["wardCouncillorward"]) ? trim($_POST["wardCouncillorward"]) : null;
+
     // Defense-in-depth: strip any HTML/script content before storing.
     // (Prepared statements below already stop SQL injection — this stops
     // stored XSS from ever getting displayed unescaped elsewhere in the app.)
@@ -34,16 +43,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     showError("Please enter a valid email address.");
     }
-    $contact = isset($_POST["contact"]) ? trim($_POST["contact"]) : "";
-    $physAdd = isset($_POST["addr"]) ? trim($_POST["addr"]) : "";
-    $roleMap = ["1" => "Community Member", "2" => "Ward councillor", "3" => "Municipal Officer", "4" => "System Admin"];
-    $role = isset($_POST["userrole"]) ? ($roleMap[$_POST["userrole"]] ?? "") : "";
-    $password = isset($_POST["pword"]) ? trim($_POST["pword"]) : "";
-    $hash_pword = password_hash($password, PASSWORD_DEFAULT);
-    $division = !empty($_POST["division"]) ? trim($_POST["division"]) : null;
-    $wcWard = !empty($_POST["wcWard"]) ? trim($_POST["wcWard"]) : null;
-
-   // Standard required fields
 
     //for splitting the physical address into street number, street name and suburb
     $lat           = $_POST["lat"] ?? "";
@@ -55,6 +54,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Require physical address  if user is a Community Member
     if ($role === "Community Member" && empty($physAdd)) {
         showError("Physical address is required for Community Members.");
+    }
+
+    if ($role === "Ward councillor" && empty($wcWard)) {
+        showError("Please select your ward.");
+    }
+
+    if ($role === "Municipal Officer" && empty($division)) {
+        showError("Please select a division.");
     }
 
     // Default to '0' rather than rejecting registration if no number was found
@@ -148,10 +155,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $timestamp        = date('Y-m-d H:i:s');
         $is_authenticated = 1;
 
-        $stmtLog = $conn->prepare("INSERT INTO system_activities (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmtLog = $conn->prepare("INSERT INTO system_activities (username, action_type_id, ip_address, timestamp, is_authenticated) VALUES (?, ?, ?, ?, ?)");
 
         if ($stmtLog) {
-            $stmtLog->bind_param("sisssi", $username, $action_type_id, $ip_address, $timestamp, $timestamp, $is_authenticated);
+            $stmtLog->bind_param("sissi", $username, $action_type_id, $ip_address, $timestamp, $is_authenticated);
             $stmtLog->execute();
             $stmtLog->close();
         }
@@ -181,12 +188,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Every other DB failure gets one flat, generic message —
             // no error code, no SQL text, ever shown to the user.
             showError("Something went wrong while creating your account. Please try again, and contact support if the problem continues.");
+            error_log("Registration DB error [" . $e->getCode() . "]: " . $e->getMessage());
         }
-    } catch (Exception $e) {
-        // Catch-all for non-DB exceptions (e.g. unexpected runtime errors)
+    } catch (mysqli_sql_exception $e) {
         $conn->rollback();
-        error_log("Registration unexpected error: " . $e->getMessage());
-        showError("Something went wrong while creating your account. Please try again.");
+        // TEMPORARY DEBUG: Displays the exact database error on your screen
+        showError("SQL Error [" . $e->getCode() . "]: " . $e->getMessage());
+    } catch (Exception $e) {
+        $conn->rollback();
+        showError("PHP Error: " . $e->getMessage());
     }
 }
 

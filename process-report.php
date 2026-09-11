@@ -21,7 +21,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$username = $_SESSION['username'] ?? 'brown@gmail.com';
+//$username = $_SESSION['username'] ?? 'brown@gmail.com';
 
 
 

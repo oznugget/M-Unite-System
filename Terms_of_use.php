@@ -1,3 +1,8 @@
+<?php
+$isLoggedIn = isset($_SESSION['username']);
+$firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,9 +13,11 @@
   <!-- Same fonts as every other page, for visual consistency -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@400;700&family=TikTok+Sans:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- No Leaflet needed here — this page has no map -->
+  <link rel="stylesheet" href="header_footer.css">
   <link rel="stylesheet" href="ReportStyle.css">
   <link rel="stylesheet" href="Terms_of_use_Style.css">
 </head>
@@ -20,25 +27,34 @@
   <!-- Identical to every other page's header, except NOTHING
        has aria-current="page" here since Terms of Use isn't
        one of the 5 main nav links -->
-  <header class="site-header">
-    <a href="index.html" class="logo">
-      <img src="assets/logo.png" alt="M-Unite logo">
-    </a>
+ <header class="site-header">
 
-    <nav class="main-nav" aria-label="Main navigation">
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="reports.html">Reports</a></li>
-        <li><a href="notices.html">Notices</a></li>
-        <li><a href="map.html">Map</a></li>
-        <li><a href="about.html">About Us</a></li>
-      </ul>
+      <div class="logo-box">
+      <a href="home.php" class="logo-link">
+      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
+      </a>
+    </div>
+
+    <nav class="navbar">
+      <a href="home.php" class="nav-item-active">Home</a>
+      <a href="CommReports.html" class="nav-item">Reports</a>
+      <a href="public_notices.php" class="nav-item">Notices</a>
+      <a href="map.php" class="nav-item">Map</a>
+      <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
 
-    <button class="account-icon" aria-label="My account / Sign in">
-      <img src="assets/account-icon.svg" alt="">
-    </button>
-  </header>
+      <div class="header-right">
+      <?php if ($isLoggedIn): ?>
+        <a href="account.php" class="sign-in-btn">
+          <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php else: ?>
+        <a href="signin.php" class="sign-in-btn">
+          Sign In <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php endif; ?>
+    </div>
+    </header>
 
   <!-- ===== MAIN CONTENT ===== -->
   <!-- Reusing the "reports-page" class purely for its existing
@@ -145,74 +161,75 @@
       <a href="mailto:info@munite.co.za">info@munite.co.za</a>.
     </p>
 
-    <p class="legal-placeholder-note">
-      [Placeholder content — to be reviewed and finalised by the
-      team/institution before this page is considered final.]
-    </p>
+    
 
   </main>
 
   <!-- ===== FOOTER ===== -->
   <!-- Identical to every other page's footer -->
-  <footer class="site-footer">
-    <div class="footer-brand">
-      <img src="assets/logo.svg" alt="M-Unite logo">
-      <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
+      <footer class="site-footer">
+
+    <img src="images/footerimgresponsive1.png" alt="Makhanda skyline" class="footer-skyline-mobile">
+    <img src = "images/footer_img.png" alt = "Makhanda skyline" id = "footerimg">
+
+
+    <div class="footer-top">
+      <!-- Left Info -->
+      <div class="footer-col footer-about">
+        <div class="footer-logo-box">
+            <img src="images\logo_1.png" alt="M-Unite Logo" class="footer-logo">
+        </div>
+        <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
+      </div>
+
+      <!-- Pages Column -->
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="reports.html">Reports</a></li>
+          <li><a href="notices.html">Notices</a></li>
+          <li><a href="map.html">Map</a></li>
+          <li><a href="about.html">About Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Connect Column -->
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Report Website Bugs</a></li>
+          <li><a href="#">Volunteer</a></li>
+          <li><a href="mailto:info@munite.co.za">info@munite.co.za</a></li>
+          <li><a href="tel:+27000000000">+27 000000000</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources Column -->
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="Terms_of_use.html">Terms Of Use</a></li>
+          <li><a href="#">Copyright Notice</a></li>
+        </ul>
+      </div>
+
+     <div class="footer-col footer-socials">
+        <h4>Socials</h4>
+        <div class="social-icons-vertical">
+          <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://github.com" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+          <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
     </div>
 
-    <nav class="footer-col" aria-label="Pages">
-      <h3>Pages</h3>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="reports.html">Reports</a></li>
-        <li><a href="notices.html">Notices</a></li>
-        <li><a href="map.html">Map</a></li>
-        <li><a href="about.html">About Us</a></li>
-      </ul>
-    </nav>
-
-    <nav class="footer-col" aria-label="Connect">
-      <h3>Connect</h3>
-      <ul>
-        <li><a href="report-bug.html">Report Website Bugs</a></li>
-        <li><a href="volunteer.html">Volunteer</a></li>
-        <li><a href="mailto:info@munite.co.za">info@munite.co.za</a></li>
-        <li><a href="tel:+27300300300">+27 300300300</a></li>
-      </ul>
-    </nav>
-
-    <nav class="footer-col" aria-label="Resources">
-      <h3>Resources</h3>
-      <ul>
-        <li><a href="privacy-policy.html">Privacy Policy</a></li>
-        <li><a href="documentation.html">Documentation</a></li>
-        <li><a href="terms-of-use.html" aria-current="page">Terms Of Use</a></li>
-        <li><a href="copyright-notice.html">Copyright Notice</a></li>
-      </ul>
-    </nav>
-
-    <nav class="footer-col" aria-label="Socials">
-      <h3>Socials</h3>
-      <ul class="social-links">
-        <li>
-          <a href="https://instagram.com/munite" aria-label="M-Unite on Instagram">
-            <img src="assets/instagram-icon.svg" alt="">
-          </a>
-        </li>
-        <li>
-          <a href="https://github.com/munite" aria-label="M-Unite on GitHub">
-            <img src="assets/github-icon.svg" alt="">
-          </a>
-        </li>
-        <li>
-          <a href="https://linkedin.com/company/munite" aria-label="M-Unite on LinkedIn">
-            <img src="assets/linkedin-icon.svg" alt="">
-          </a>
-        </li>
-      </ul>
-    </nav>
-
-    <p class="copyright">&copy; M-Unite 2026</p>
+  
+    <div class="footer-bottom">
+      <p>&copy; M-Unite 2026</p>
+    </div>
   </footer>
 
 </body>

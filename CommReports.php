@@ -1,3 +1,8 @@
+<?php
+$isLoggedIn = isset($_SESSION['username']);
+$firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
+?>
+
 <!DOCTYPE html>
 <html lang = "en">
     <head>
@@ -29,7 +34,7 @@
 
     <nav class="navbar">
       <a href="home.php" class="nav-item-active">Home</a>
-      <a href="CommReports.html" class="nav-item">Reports</a>
+      <a href="CommReports.php" class="nav-item">Reports</a>
       <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
       <a href="about_us.html" class="nav-item">About Us</a>
@@ -211,7 +216,7 @@
         <ul>
           <li><a href="#">Privacy Policy</a></li>
           <li><a href="#">Documentation</a></li>
-          <li><a href="#">Terms Of Use</a></li>
+          <li><a href="Terms_of_use.php">Terms Of Use</a></li>
           <li><a href="#">Copyright Notice</a></li>
         </ul>
       </div>

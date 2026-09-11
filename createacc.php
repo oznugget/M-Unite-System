@@ -44,7 +44,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
       <div class="header-right">
       <?php if ($isLoggedIn): ?>
-        <a href="account.html" class="sign-in-btn">
+        <a href="account.php" class="sign-in-btn">
           <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
         </a>
       <?php else: ?>
@@ -145,7 +145,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
       <!-- optional division field for Ward Councillors -->
       <div class="form-group" id="ward-container" style="display: none;">
-      <label for="wcWard">Division <span style="font-weight: normal; font-size: 12px; color: #666;"></span></label>
+      <label for="wcWard">Ward <span style="font-weight: normal; font-size: 12px; color: #666;"></span></label>
       <select id="wcWard" name="wardCouncillorward">
         <option value="">Select Ward</option>
         <option value="1">1</option>
