@@ -1,0 +1,154 @@
+.alert-banner {
+    background-color: #FCEBEB;
+    border-bottom: 1px solid #E24B4A;
+}
+
+.alert-banner-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.6rem 2rem;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid rgba(226, 75, 74, 0.25);
+}
+
+.alert-banner-item:last-child {
+    border-bottom: none;
+}
+
+.alert-banner-icon {
+    color: #A32D2D;
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.alert-banner-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.alert-banner-title {
+    margin: 0;
+    font-family: "Merriweather Sans", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #791F1F;
+}
+
+.alert-banner-excerpt {
+    margin: 2px 0 0;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.8rem;
+    color: #A32D2D;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.alert-banner-time {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: #A32D2D;
+    white-space: nowrap;
+    margin-top: 2px;
+}
+
+.alert-banner {
+    background-color: #FCEBEB;
+    border-bottom: 1px solid #E24B4A;
+}
+
+.alert-banner-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 0.6rem 2rem;
+    border-bottom: 1px solid rgba(226, 75, 74, 0.25);
+}
+
+.alert-banner-item:last-child {
+    border-bottom: none;
+}
+
+.alert-banner-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+}
+
+.alert-banner-icon {
+    color: #A32D2D;
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.alert-banner-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.alert-banner-title {
+    margin: 0;
+    font-family: "Merriweather Sans", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #791F1F;
+}
+
+.alert-banner-excerpt {
+    margin: 2px 0 0;
+    font-family: "TikTok Sans", sans-serif;
+    font-size: 0.8rem;
+    color: #A32D2D;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.alert-banner-time {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: #A32D2D;
+    white-space: nowrap;
+    margin-top: 2px;
+}
+
+.alert-banner-dismiss {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #A32D2D;
+    cursor: pointer;
+    border-radius: 50%;
+    margin-top: 1px;
+}
+
+.alert-banner-dismiss:hover {
+    background-color: rgba(163, 45, 45, 0.12);
+}
+
+.alert-banner-dismiss .material-symbols-outlined {
+    font-size: 16px;
+}
+
+@media (max-width: 640px) {
+    .alert-banner-item {
+        padding: 0.6rem 1.25rem;
+        gap: 0.35rem;
+    }
+    .alert-banner-excerpt {
+        white-space: normal;
+    }
+}
