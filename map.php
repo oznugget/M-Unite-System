@@ -201,8 +201,8 @@ if ($action === 'geocode') {
         </div>
         <nav class="navbar">
             <a href="home.php" class="nav-item-active">Home</a>
-            <a href="reports.html" class="nav-item">Reports</a>
-            <a href="notification.html" class="nav-item">Notices</a>
+            <a href="CommReports.html" class="nav-item">Reports</a>
+            <a href="public_notices.php" class="nav-item">Notices</a>
             <a href="map.php" class="nav-item">Map</a>
             <a href="about_us.html" class="nav-item">About Us</a>
         </nav>

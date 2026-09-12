@@ -184,3 +184,24 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+/* DISMISS / REMOVE NOTIFICATION CARD LOGIC */
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".notif-card").forEach(card => {
+        const closeBtn = card.querySelector(".close-btn, .remove-btn, .material-symbols-outlined");
+        if (closeBtn) {
+            closeBtn.addEventListener("click", function (e) {
+                e.stopPropagation(); // Prevents opening the modal when clicking 'x'
+                card.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+                card.style.opacity = "0";
+                card.style.transform = "scale(0.95)";
+                setTimeout(() => {
+                    card.remove();
+                    if (typeof applyFilters === "function") {
+                        applyFilters(); // Re-checks empty buckets and counts
+                    }
+                }, 300);
+            });
+        }
+    });
+});

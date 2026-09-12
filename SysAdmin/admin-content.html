@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content - M-Unite Admin</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo-box">M</div>
+  <nav>
+    <a href="admin-home.html">&#127968; Home</a>
+    <a href="admin-users.html">&#128101; Users</a>
+    <a href="admin-content.html" class="active">&#128196; Content</a>
+    <a href="admin-monitor.html">&#128737;&#65039; Monitoring</a>
+  </nav>
+  <span class="account-btn"><a href="admin-account.html">&#128100; My Account</a></span>
+</header>
+
+<main class="wide">
+  <h1>Content Management</h1>
+  <p class="page-intro">Review notices submitted by municipal officers before they go live.</p>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="num" id="stat-total">0</div><div class="label">Total Items</div></div>
+    <div class="stat-card"><div class="num" id="stat-pending">0</div><div class="label">Awaiting Review</div></div>
+    <div class="stat-card"><div class="num" id="stat-approved">0</div><div class="label">Approved</div></div>
+  </div>
+
+  <section>
+    <div class="toolbar">
+      <input type="text" id="search-input" placeholder="Search by title...">
+      <select id="status-filter">
+        <option value="all">All statuses</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+    <ul id="content-list" class="item-list"></ul>
+    <p class="empty-msg" id="empty-msg" style="display:none;">No items match your search.</p>
+  </section>
+</main>
+
+<footer>&copy; M-Unite 2026 - System Administrator Portal</footer>
+
+<script src="nav.js"></script>
+<script src="admin-content.js"></script>
+</body>
+</html>
