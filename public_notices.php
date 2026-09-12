@@ -59,19 +59,11 @@ $global_unread_count = get_global_unread_count($conn);
                     <?php endif; ?>
                 </a>
 
-<<<<<<< HEAD
-                <!-- Account Button -->
-                <a href="account.php" class="sign-in-btn">
-                    Account <span class="material-symbols-outlined">account_circle</span>
-                </a>
-            </div>
-=======
                     <!-- Account Button -->
                     <a href="account.html" class="sign-in-btn">
                         <?php echo $firstname?><span class="material-symbols-outlined">account_circle</span>
                     </a>
                 </div>
->>>>>>> notificationsPhP
         </header>
 
         <?php render_alert_banner($active_alerts); ?>
