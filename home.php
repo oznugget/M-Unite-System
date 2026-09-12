@@ -1,8 +1,10 @@
 <?php
+require "dbConnection.php";
 session_start();
 
 $isLoggedIn = isset($_SESSION['username']);
 $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -150,75 +152,118 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
       </div>
     </section>
 
-    <section id = "localinfo" class = "localinfo">
-      <h2 class = "section-title"> Local Information </h2>
 
-      <div class="localinfo-row">
 
-        <div id = "dams" class = "infocard">
-          <h2> Dam Levels </h2>
-            <h3 class = "damnames">Howieson's Poort Dam </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
-            <h3 class = "damnames">Settlers Dam </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
-            <h3 class = "damnames">Jamieson and Milner Dams </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
-            <h3 class = "damnames">Glen Melville Dam </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
+   <section id="localinfo" class="localinfo">
+      <h2 class="section-title">Local Information</h2>
+
+      <div class="localinfo-row"> 
+        <!-- DAM LEVELS -->
+        <div id="dams" class="infocard">
+          <h2>Dam Levels</h2>
+          <br>
+          <?php 
+          $damLevels = [
+              "Howieson's Poort Dam" => 0,
+              "Settlers Dam" => 0,
+              "Glen Melville Dam" => 0
+          ]; 
+          $result = $conn->query("SELECT dam_name, level_percent FROM dams_levels");
+          if ($result) {
+              while ($row = $result->fetch_assoc()) {
+                  if (stripos($row['dam_name'], "Howieson") !== false) $damLevels["Howieson's Poort Dam"] = $row['level_percent'];
+                  if (stripos($row['dam_name'], "Settlers") !== false) $damLevels["Settlers Dam"] = $row['level_percent'];
+                  if (stripos($row['dam_name'], "Glen") !== false) $damLevels["Glen Melville Dam"] = $row['level_percent'];
+              }
+          } else {
+              echo "<p style='color:red; font-size:12px;'>DB Error: " . $conn->error . "</p>";
+          }
+          ?>
+          <?php foreach ($damLevels as $name => $level): ?>
+              <h3 class="damnames"><?= htmlspecialchars($name) ?></h3>
+              <div class="dam-bar-container">
+                  <div class="dam-bar-fill" style="width: <?= htmlspecialchars($level) ?>%;">
+                      <?php if ($level >= 15): ?>
+                          <span class="dam-text-inside"><?= htmlspecialchars($level) ?>%</span>
+                      <?php endif; ?>
+                  </div>
+                  <?php if ($level < 15): ?>
+                      <span class="dam-text-outside"><?= htmlspecialchars($level) ?>%</span>
+                  <?php endif; ?>
+              </div>
+          <?php endforeach; ?>
         </div>
 
-        <div class="localinfo-col">
-
-          <div id = "townnotices" class = "infocard">
-            <h2> Town Notices </h2>
-            <a href = "notifications.html"></a>
-            <!--- fetch top notice from municipal officer most recent community wide notices as a box
-            and render the first 3 lines from it. community wide is visible to guest and all other users-->
-          </div>
-
-          <div id = "events" class = "infocard">
-            <h2> Events </h2>
-             <!--- fetch top event from municipal officer most recent events post as a box
-            and render the first 3 lines from it. events are visible to guest and all other users-->
-          </div>
-
+        <!-- EVENTS INFO -->
+        <div id="eventsInfo" class="infocard hover-orange">
+          <a href="public_notices.php" style="text-decoration:none; color:inherit;">
+            <h2>Events</h2>
+            <br>
+            <br>
+            <?php
+                $eventinfo = $conn->query("SELECT title, event_date FROM events ORDER BY event_date DESC LIMIT 3");
+                if ($eventinfo && $eventinfo->num_rows > 0) {
+                    while ($row = $eventinfo->fetch_assoc()) {
+                        echo "<p><strong>" . htmlspecialchars($row['title']) . "</strong> - " . date("F j, Y", strtotime($row['event_date'])) . "</p>";
+                    }
+                } else {
+                    echo "<p>No upcoming events at this time.</p>";
+                }
+            ?>
+          </a>
         </div>
 
+        <!-- TOWN NOTICES (Spans full width below) -->
+        <div id="townNotices" class="infocard full-width hover-orange">
+          <a href="public_notices.php" style="text-decoration:none; color:inherit;">
+            <h2>Town Notices</h2>
+            <?php
+            $result = $conn->query("SELECT content FROM notices WHERE notif_type = 'general' ORDER BY created_at DESC LIMIT 1");
+            if ($result && $result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                echo "<p>" . htmlspecialchars($row['content']) . "</p>";
+            } else {
+                echo "<p>No new notices at this time.</p>";
+            }
+            ?>
+          </a>
+        </div>
       </div>
-     
     </section>
 
+    <!-- INFORMATICS SECTION -->
+    <section id="informatics">
+      <div id="currentissues" class="infomaticsection">
+        <h2>Current Issues</h2>
+        <p>Makhanda is currently facing a water crisis. Makhanda is currently using 18 megalitres a day of water each day – about 180 litres per person. The crippling drought has nearly emptied Settlers' Dam – which supplies about half of that – and it is unlikely to recover until/unless we receive significant rainfall.</p>
+        <a href="notifications.php">Read more -></a>
+      </div>
 
+      <div id="comein" class="infomaticsection">
+        <h2>Where You Come In</h2>
+        <!-- Volunteer Form -->
+       <!-- Inside the "Where You Come In" section -->
+<!-- Volunteer Form -->
+        <form method = "POST" id="volunteerForm" data-logged-in="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 10px; max-width: 400px;">
+            <p style="margin-bottom: 0.5rem; font-weight: bold; color: #0E2841;">We would appreciate any assistance from you with 
+               different initiatives. Please select options to volunteer for should you wish to be added to a mailing list:</p>
+            
+            <!-- Checklist Options -->
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="clean_up"> Clean up</label>
+                <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="neighbourhood_watch"> Neighbourhood watch</label>
+                <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="soup_kitchens"> Soup kitchens</label>
+                <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="disaster_management"> Disaster management</label>
+                <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="youth_mentor"> Youth mentor</label>
+            </div>
 
+            <button type="button" id="confirmVolunteerBtn" class="mkrpt" style="position:static; font-size:1rem; padding: 0.8rem; margin-top: 10px;">Confirm sign up</button>
+        </form>
+        <p id="volunteerMessage" style="display:none; margin-top: 15px; font-weight: bold;"></p>
+      </div>
+    </section>
 
-
- <section id="informatics">
-
-  <div id="currentissues" class="infomaticsection">
-    <h2>Current Issues</h2>
-    <p>Makhanda is currently facing a water crisis. Makhanda is currently using 18 megalitres a
-      day of water each day – about 180 litres per person. The crippling drought has nearly emptied
-      Settlers' Dam – which supplies about half of that – and it is unlikely to recover until/unless
-      we receive significant rainfall.</p>
-    <a href="notifications.html">Read more -></a>
-  </div>
-
-  <div id="comein" class="infomaticsection">
-    <h2>Where You Come In</h2>
-    <p>Every drop counts. Use 50l a day. Keep taps closed. Take short showers.
-      Flush using grey water. A distribution schedule is being worked on that will get water tankers
-      delivering drinking water to different wards across the City. There will also be collection points,
-      replenished daily, where residents will be able to collect their daily allocation of water.
-    </p>
-    <a href="notifications.html">Read more -></a>
-  </div>
-
-</section>
-
-<div>
-  <p></p>
-</div>
-
+    
 
 
      <!-- FOOTER -->
