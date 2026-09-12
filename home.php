@@ -1,5 +1,4 @@
 <?php
-require "dbConnection.php";
 session_start();
 include 'dbConnection.php';
 include 'alert_banner.php'; // Contains get_active_alerts() and format_alert_time()
@@ -148,7 +147,7 @@ $alerts = get_active_alerts($conn, $username);
         !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
         </script>
 
-        <a href = "CommReports.php"><button class="mkrpt">Make Report</button></a>
+        <a href="CommReports.php" class="mkrpt">Make Report</a>
     
         <div class="dots" id="dotsContainer"></div>
 
@@ -156,12 +155,11 @@ $alerts = get_active_alerts($conn, $username);
 
     </section>
     
-       </section>
 
 
     <section id="about" class="step-card">
       <div class="about-content">
-        <img src="images/timeline3.png" alt="M-Unite Logo" class="logo-image-about"  >
+        <img src="images/timeline3.png" alt="Journey Through M-Unite" class="logo-image-about"  >
       </div>
     </section>
 
@@ -214,7 +212,7 @@ $alerts = get_active_alerts($conn, $username);
             <br>
             <br>
             <?php
-                $eventinfo = $conn->query("SELECT title, event_date FROM events ORDER BY event_date DESC LIMIT 3");
+                $eventinfo = $conn->query("SELECT title, event_date FROM events WHERE event_date >= CURDATE() ORDER BY event_date ASC LIMIT 3");
                 if ($eventinfo && $eventinfo->num_rows > 0) {
                     while ($row = $eventinfo->fetch_assoc()) {
                         echo "<p><strong>" . htmlspecialchars($row['title']) . "</strong> - " . date("F j, Y", strtotime($row['event_date'])) . "</p>";
@@ -247,16 +245,23 @@ $alerts = get_active_alerts($conn, $username);
     <!-- INFORMATICS SECTION -->
     <section id="informatics">
       <div id="currentissues" class="infomaticsection">
-        <h2>Current Issues</h2>
-        <p>Makhanda is currently facing a water crisis. Makhanda is currently using 18 megalitres a day of water each day – about 180 litres per person. The crippling drought has nearly emptied Settlers' Dam – which supplies about half of that – and it is unlikely to recover until/unless we receive significant rainfall.</p>
-        <a href="notifications.php">Read more -></a>
+        <h2>Longterm Issues in Makhanda</h2>
+        <?php $issue = $conn->query("SELECT content, is_featured from current_issues ORDER BY created_at DESC LIMIT 1");
+                if ($issue && $issue->num_rows >0){
+                  $row = $issue->fetch_assoc();
+                  if ($row['is_featured'] == 1)
+                  echo "<p>" . htmlspecialchars($row['content']) . "</p>";
+                } else{
+                   echo "<p>There are no long-term issues to be reported</p> .";
+                }
+        ?>
+        <a href="public_notices.php#ci">Read more -></a>
       </div>
 
       <div id="comein" class="infomaticsection">
         <h2>Where You Come In</h2>
         <!-- Volunteer Form -->
-       <!-- Inside the "Where You Come In" section -->
-<!-- Volunteer Form -->
+      
         <form method = "POST" id="volunteerForm" data-logged-in="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 10px; max-width: 400px;">
             <p style="margin-bottom: 0.5rem; font-weight: bold; color: #0E2841;">We would appreciate any assistance from you with 
                different initiatives. Please select options to volunteer for should you wish to be added to a mailing list:</p>
@@ -270,7 +275,15 @@ $alerts = get_active_alerts($conn, $username);
                 <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="youth_mentor"> Youth mentor</label>
             </div>
 
-            <button type="button" id="confirmVolunteerBtn" class="mkrpt" style="position:static; font-size:1rem; padding: 0.8rem; margin-top: 10px;">Confirm sign up</button>
+            <?php if ($isLoggedIn): ?>
+                  <button type="button" id="confirmVolunteerBtn" class="mkrpt" style="position:static; font-size:1rem; padding: 0.8rem; margin-top: 10px;">
+                      Confirm sign up
+                  </button>
+              <?php else: ?>
+                  <p class="signin-prompt">
+                      Please <a href="signin.php" class="signin-here">sign in here</a> to volunteer.
+                  </p>
+              <?php endif; ?>
         </form>
         <p id="volunteerMessage" style="display:none; margin-top: 15px; font-weight: bold;"></p>
       </div>

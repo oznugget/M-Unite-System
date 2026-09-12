@@ -112,7 +112,7 @@ $global_unread_count = get_global_unread_count($conn);
 
         <!-- NEW: CURRENT ISSUES SECTION -->
         <section class="notice-group issues-group">
-            <h2 class="group-title">Current Issues</h2>
+            <h2 class="group-title" id = ci>Current Issues</h2>
             <?php if (!empty($current_issues)): ?>
                 <div class="time-bucket-cards">
                     <?php foreach ($current_issues as $n) { render_public_notice_card($n); } ?>

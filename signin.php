@@ -50,6 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['username']  = $row['username'];
                         $_SESSION['firstname'] = $row['name'];
                         $_SESSION['role']      = $row['role'];
+                        $_SESSION['ward']    = null;
+                        $_SESSION['ward_id'] = null;
+                        $_SESSION['division'] = null;
 
                         $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
                         if ($stmtLog) {
@@ -63,17 +66,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         switch ($row['role']) {
                             case "Community Member":
                             case "1":
+                                  $stmtC = $conn->prepare("SELECT ward FROM community_members WHERE username = ? LIMIT 1");
+                                    if ($stmtC) {
+                                        $stmtC->bind_param("s", $row['username']);
+                                        $stmtC->execute();
+                                        $cm = $stmtC->get_result()->fetch_assoc();
+                                        $stmtC->close();
+                                        if ($cm && !empty($cm['ward'])) {
+                                            $_SESSION['ward'] = $cm['ward'];
+                                        }
+                                    }
                                 header("Location: home.php?login=success");
                                 exit();
 
-                            case "Ward Councillor":
                             case "Ward councillor":
                             case "2":
+                                $stmtW = $conn->prepare("SELECT ward_id FROM ward_councillors WHERE username = ? LIMIT 1");
+                                if ($stmtW) {
+                                    $stmtW->bind_param("s", $row['username']);
+                                    $stmtW->execute();
+                                    $wardRow = $stmtW->get_result()->fetch_assoc();
+                                    $stmtW->close();
+
+                                    if ($wardRow) {
+                                        $_SESSION['ward_id'] = $wardRow['ward_id'];
+                                    }
+                                }
                                 header("Location: ward_councillor_home.html?login=success");
                                 exit();
 
                             case "Municipal Officer":
                             case "3":
+                                 $stmtM = $conn->prepare("SELECT division FROM municipal_officers WHERE username = ? LIMIT 1");
+                                if ($stmtM) {
+                                    $stmtM->bind_param("s", $row['username']);
+                                    $stmtM->execute();
+                                    $div = $stmtM->get_result()->fetch_assoc();
+                                    $stmtM->close();
+
+                                    if ($div) {
+                                        $_SESSION['division'] = $div['division'];
+                                    }
+                                }
                                 header("Location: officer-home.php?login=success");
                                 exit();
 
@@ -121,26 +155,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-
     
+</head>
 
-    <header class="site-header">
+<body>
 
-      <div class="logo-box">
+<header class="site-header">
+
+    <div class="logo-box">
       <a href="home.php" class="logo-link">
-      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
+        <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
       </a>
     </div>
 
-    <nav class="navbar"> 
-      <a href="home.php" class="nav-item-active">Home</a>
-      <a href="reports.html" class="nav-item">Reports</a>
-      <a href="notification.html" class="nav-item">Notices</a>
+    <div class="hamburger" id="hamburger-menu">
+      <i class="fa-solid fa-bars"></i>
+    </div>
+
+    <nav class="navbar" id="nav-menu">
+      <a href="home.php" class="nav-item">Home</a>
+      <a href="CommReports.php" class="nav-item">Reports</a>
+      <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
       <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
 
-      <div class="header-right">
+    <div class="header-right">
       <?php if ($isLoggedIn): ?>
         <a href="account.php" class="sign-in-btn">
           <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
@@ -151,13 +191,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </a>
       <?php endif; ?>
     </div>
-    </header>
 
-
-    
-</head>
-
-<body>
+</header>
 
 
 
@@ -169,12 +204,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php if (!empty($error)): ?>
             <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center; font-size: 14px;">
                 <?php echo htmlspecialchars($error); ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['registration']) && $_GET['registration'] === 'success'): ?>
-            <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center; font-size: 14px;">
-                <p>Account created successfully! Please sign in below.</p>
             </div>
         <?php endif; ?>
 
@@ -196,7 +225,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="register-link">
-                Don't have an account? <a href="createacc.php">Register Now</a>
+                Don't have an account? <a href="createacc.php">Register Now</a> <br>
                 Forgot your password? <a href="forgot_password.php">Reset It</a>
             </div>
         </form>

@@ -20,3 +20,27 @@ document.addEventListener('DOMContentLoaded', function () {
         window.history.replaceState({}, document.title, cleanUrl);
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const hamburger = document.getElementById('hamburger-menu');
+  const navMenu   = document.getElementById('nav-menu');
+  if (!hamburger || !navMenu) return;
+
+  const icon = hamburger.querySelector('i');
+
+  const toggleMenu = () => {
+    const isOpen = navMenu.classList.toggle('active');
+    hamburger.classList.toggle('active', isOpen);
+    icon.classList.toggle('fa-bars', !isOpen);
+    icon.classList.toggle('fa-xmark', isOpen);
+  };
+
+  hamburger.addEventListener('click', toggleMenu);
+
+  navMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navMenu.classList.remove('active');
+    hamburger.classList.remove('active');
+    icon.classList.add('fa-bars');
+    icon.classList.remove('fa-xmark');
+  }));
+});
