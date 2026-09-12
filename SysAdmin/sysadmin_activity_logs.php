@@ -8,16 +8,28 @@
 </head>
 <body>
 
-<header>
-  <div class="logo-box">M</div>
-  <nav>
-    <a href="admin-home.html">&#127968; Home</a>
-    <a href="admin-users.html">&#128101; Users</a>
-    <a href="admin-content.html">&#128196; Content</a>
-    <a href="admin-monitor.html" class="active">&#128737;&#65039; Monitoring</a>
-  </nav>
-  <span class="account-btn"><a href="admin-account.html">&#128100; My Account</a></span>
-</header>
+  <!-- ============ Sidebar ============ -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div>
+          <div class="brand-name">M-Unite</div>
+          <div class="brand-sub">Makhanda &middot; Makana Local Municipality</div>
+        </div>
+      </div>
+
+      <ul class="side-nav">
+        <li><a href="sysadmin_home.php" class="active">Dashboard</a></li>
+        <li><a href="sysadmin_users.php">User Management</a></li>
+        <li><a href="sysadmin_content.php">Content Management</a></li>
+        <li><a href="sysadmin_activity_logs.php">Activity Log</a></li>
+        <li><a href="sysadmin_reports.php">Reports</a></li>
+        <li><a href="sysadmin_account.php">My Account</a></li>
+      </ul>
+
+
+      <a href="#" class="logout-link" id="logout-btn">&#8630; Log Out</a>
+    </aside>
 
 <main class="wide">
   <h1>System Monitoring</h1>

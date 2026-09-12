@@ -66,15 +66,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
      boxed nav links, and a "Sign In" icon button on the right -->
 <header>
   <div class="logo-box">M</div>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="reports.html">Reports</a>
-    <a href="notices.html">Notices</a>
-    <a href="map.html">Map</a>
-    <a href="about.html">About Us</a>
-  </nav>
-  <span class="account-btn">&#128100; My Account</span>
 </header>
+
+<!-- ============ Sidebar ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div>
+        <div class="brand-name">M-Unite</div>
+        <div class="brand-sub">Makhanda &middot; Makana Local Municipality</div>
+      </div>
+    </div>
+
+    <ul class="side-nav">
+      <li><a href="sysadmin_home.php" class="active">Dashboard</a></li>
+      <li><a href="sysadmin_users.php">User Management</a></li>
+      <li><a href="sysadmin_content.php">Content Management</a></li>
+      <li><a href="sysadmin_activity_logs.php">Activity Log</a></li>
+      <li><a href="sysadmin_reports.php">Reports</a></li>
+      <li><a href="sysadmin_account.php">My Account</a></li>
+    </ul>
+
+
+    <a href="#" class="logout-link" id="logout-btn">&#8630; Log Out</a>
+  </aside>
 
 <main id="main-content">
   <h1>My Account</h1>

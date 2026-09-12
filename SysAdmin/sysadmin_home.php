@@ -1,3 +1,7 @@
+<?php
+require "sysadmin_home_data.php";
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +10,7 @@
 <title>Dashboard - M-Unite Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@500;700;800&family=TikTok+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+
 <link rel="stylesheet" href="sysadmin_style.css">
 </head>
 <body class="admin-shell">
@@ -24,12 +28,12 @@
     </div>
 
     <ul class="side-nav">
-      <li><a href="admin-home.html" class="active">Dashboard</a></li>
-      <li><a href="admin-users.html">Users</a></li>
-      <li><a href="admin-content.html">Content</a></li>
-      <li><a href="admin-monitor.html">Activity Log</a></li>
-      <li><a href="admin-reports.html">Reports</a></li>
-      <li><a href="admin-account.html">My Account</a></li>
+      <li><a href="sysadmin_home.php" class="active">Dashboard</a></li>
+      <li><a href="sysadmin_users.php">User Management</a></li>
+      <li><a href="sysadmin_content.php">Content Management</a></li>
+      <li><a href="sysadmin_activity_logs.php">Activity Log</a></li>
+      <li><a href="sysadmin_reports.php">Reports</a></li>
+      <li><a href="sysadmin_account.php">My Account</a></li>
     </ul>
 
 
@@ -39,78 +43,88 @@
   <!--Main column-->
   <div>
     <header class="topbar">
-      <div class="search-box">&#128269;&nbsp; Search users, notices, activity...</div>
+      <div class="search-box"> Search users, notices, activity...</div>
       <div class="topbar-right">
         <div class="bell">&#128276;</div>
-        <div class="avatar">SR</div>
+        <div class="avatar"><?php echo $fullInitials; ?></div>
         <div>
-          <div class="who-name">Sipho Radebe</div>
+          <div class="who-name"><?php echo htmlspecialchars($admin['name'] . ' ' . $admin['surname']); ?></div>
           <div class="who-role">SYSTEM ADMINISTRATOR</div>
         </div>
-      </div>
     </header>
 
     <main class="content">
-      <h1>Good morning, Sipho</h1>
-      <p class="lead">Five registrations, four notices and three locked accounts need your attention this morning.</p>
+            <h1>Good morning, <?php echo $firstName; ?></h1>
 
-      <!-- Stat strip -->
       <div class="stat-strip">
         <div class="stat-card">
-          <div class="stat-label">TOTAL USERS</div>
-          <div class="stat-num">1,284</div>
-          <div class="stat-meta">+34 this month</div>
+          <div class="stat-label">ACTIVE USERS</div>
+          <div class="stat-num"><?php echo $activeUsers; ?></div>
+          <div class="stat-meta">out of <?php echo $totalUsers; ?> currently</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">PENDING APPROVALS</div>
-          <div class="stat-num">5</div>
-          <div class="stat-meta">Oldest waiting 4 days</div>
+          <div class="stat-num"><?php echo $pendingApprovals; ?></div>
+          <div class="stat-meta">Oldest waiting <?php echo $oldestWaitingDays; ?> days</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">PENDING NOTICES</div>
-          <div class="stat-num">4</div>
-          <div class="stat-meta">2 ward-specific</div>
+          <div class="stat-num"><?php echo $pendingNotices; ?></div>
+          <div class="stat-meta"><?php echo htmlspecialchars($noticeBreakdownText); ?></div>
         </div>
         <div class="stat-card">
           <div class="stat-label">LOCKED ACCOUNTS</div>
-          <div class="stat-num">3</div>
+          <div class="stat-num"><?php echo $lockedAccounts; ?></div>
           <div class="stat-meta">After 5 failed attempts</div>
         </div>
       </div>
 
       <!-- Panel grid -->
       <div class="panel-grid">
-
         <!-- Pending Users -->
         <section class="panel">
-          <h2>Pending Users</h2>
-          <p class="panel-sub">Most recent registrations awaiting approval</p>
+            <h2>Pending Users</h2>
+            <p class="panel-sub">Most recent registrations awaiting approval</p>
 
-          <div class="row">
-            <div class="row-avatar">NM</div>
-            <div class="row-info">
-              <div class="row-title">Nomvula Mabhena</div>
-              <div class="row-meta">Ward Councillor &middot; Ward 3 &mdash; Hlalani &middot; 09 Sep 2026</div>
-            </div>
-            <div class="row-actions">
-              <button class="btn btn-approve">Approve</button>
-              <button class="btn btn-reject">Reject</button>
-            </div>
-          </div>
+            <?php if (empty($pendingUsersList)): ?>
+                <p class="panel-sub">No pending users right now.</p>
+            <?php else: ?>
+                <?php foreach ($pendingUsersList as $user): ?>
+                    <?php
+                        $initials = strtoupper(substr($user['name'], 0, 1) . substr($user['surname'], 0, 1));
+                        $daysAgo  = floor((time() - strtotime($user['date_registered'])) / 86400);
+                        $dateText = ($daysAgo <= 0) ? 'Today' : $daysAgo . ' day' . ($daysAgo > 1 ? 's' : '') . ' ago';
 
-          <div class="row">
-            <div class="row-avatar">SN</div>
-            <div class="row-info">
-              <div class="row-title">Sibusiso Ndlovu</div>
-              <div class="row-meta">Municipal Officer &middot; Community-wide &middot; 09 Sep 2026</div>
-            </div>
-            <div class="row-actions">
-              <button class="btn btn-approve">Approve</button>
-              <button class="btn btn-reject">Reject</button>
-            </div>
-          </div>
+                        if (in_array($user['role'], ['Ward Councillor', 'Ward councillor', '2'])) {
+                            $roleLabel = 'Ward Councillor';
+                            $scopeLabel = $user['ward_name'];
+                        } elseif (in_array($user['role'], ['Municipal Officer', '3'])) {
+                            $roleLabel = 'Municipal Officer';
+                            $scopeLabel = 'Community-wide';
+                        } else {
+                            $roleLabel = 'System Admin';
+                            $scopeLabel = 'Community-wide';
+                        }
+                    ?>
+                    <div class="row">
+                        <div class="row-avatar"><?php echo $initials; ?></div>
+                        <div class="row-info">
+                            <div class="row-title"><?php echo htmlspecialchars($user['name'] . ' ' . $user['surname']); ?></div>
+                            <div class="row-meta">
+                                <?php echo htmlspecialchars($roleLabel); ?> &middot;
+                                <?php echo htmlspecialchars($scopeLabel); ?> &middot;
+                                <?php echo $dateText; ?>
+                            </div>
+                        </div>
+                        <div class="row-actions">
+                            <button class="btn btn-approve" data-username="<?php echo htmlspecialchars($user['username']); ?>">Approve</button>
+                            <button class="btn btn-reject" data-username="<?php echo htmlspecialchars($user['username']); ?>">Reject</button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
 
-          <div class="panel-footer"><a href="admin-users.html?status=pending">View all pending users &rarr;</a></div>
+            <div class="panel-footer"><a href="sysadmin_users.php?status=pending">View all pending users &rarr;</a></div>
         </section>
 
         <!-- Locked / Suspicious Accounts -->
