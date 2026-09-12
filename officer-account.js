@@ -1,0 +1,70 @@
+// M-Unite Officer - Account page
+
+let notifications = [
+  { text: "A new official ticket was forwarded to you (Water - Ward 5).", read: false },
+  { text: "Ticket #2007 has not been closed in 5 days.", read: false },
+  { text: "Your notice 'Community Clean-Up Day' was approved.", read: true }
+];
+
+function updateUnreadCount() {
+  document.getElementById("stat-unread").textContent = notifications.filter(n => !n.read).length;
+}
+
+function renderNotifications() {
+  const list = document.getElementById("notif-list");
+  list.innerHTML = "";
+  notifications.forEach((n, i) => {
+    const li = document.createElement("li");
+    li.style.opacity = n.read ? "0.6" : "1";
+    li.innerHTML = `${n.text} ${n.read ? "" : '<span class="badge badge-pending">New</span>'}
+      ${n.read ? "" : `<br><button class="secondary" onclick="markRead(${i})">Mark as read</button>`}`;
+    list.appendChild(li);
+  });
+  updateUnreadCount();
+}
+
+function markRead(index) {
+  notifications[index].read = true;
+  renderNotifications();
+}
+
+const validators = {
+  name: v => v.trim().length > 0,
+  phone: v => /^\d{10}$/.test(v)
+};
+
+function validateField(id) {
+  const input = document.getElementById(id);
+  const valid = validators[id](input.value);
+  input.closest("label").classList.toggle("invalid", !valid);
+  return valid;
+}
+
+document.getElementById("settings-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const ids = ["name", "phone"];
+  const allValid = ids.map(validateField).every(Boolean);
+  if (!allValid) return;
+
+  document.getElementById("p-name").textContent = document.getElementById("name").value;
+  document.getElementById("p-phone").textContent = document.getElementById("phone").value;
+
+  const msg = document.getElementById("save-msg");
+  msg.style.display = "inline";
+  setTimeout(() => (msg.style.display = "none"), 2000);
+});
+
+document.getElementById("logout-btn").addEventListener("click", () => {
+  document.getElementById("main-content").style.display = "none";
+  document.getElementById("signed-out").style.display = "block";
+});
+
+document.getElementById("login-btn").addEventListener("click", () => {
+  document.getElementById("main-content").style.display = "block";
+  document.getElementById("signed-out").style.display = "none";
+});
+
+document.getElementById("name").value = document.getElementById("p-name").textContent;
+document.getElementById("phone").value = document.getElementById("p-phone").textContent;
+
+renderNotifications();

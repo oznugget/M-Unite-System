@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - M-Unite Admin</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo-box">M</div>
+  <nav>
+    <a href="admin-home.html" class="active">Home</a>
+    <a href="admin-users.html">Users</a>
+    <a href="admin-content.html">Content</a>
+    <a href="admin-monitor.html">Activity Logs</a>
+    <a href="admin-monitor.html">Reports</a>
+    <a href="admin-monitor.html">My account</a>
+  </nav>
+  <span class="account-btn"><a href="admin-account.html">&#128100; My Account</a></span>
+</header>
+
+<main class="wide">
+      <h1>Admin Dashboard</h1>
+      <p class="page-intro">System-wide overview across users, content, and activity.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card"><span class="num" id="stat-users">--</span><div class="label">Active Users</div></div>
+        <div class="stat-card"><span class="num" id="stat-pending">--</span><div class="label">Pending Approvals</div></div>
+        <div class="stat-card"><span class="num" id="stat-reports">--</span><div class="label">Reports Logged</div></div>
+        <div class="stat-card"><span class="num" id="stat-notices">--</span><div class="label">Notices Live</div></div>
+        <div class="stat-card"><span class="num" id="stat-wards">--</span><div class="label">Active Wards</div></div>
+        <div class="stat-card"><span class="num" id="stat-alerts">--</span><div class="label">System Alerts</div></div>
+      </div>
+
+      <div class="status-row">
+        <div class="status-card">
+          <div class="status-title">Database</div>
+          <div class="status-value ok">&#9989; Active</div>
+          <div class="status-meta">Last backup: today, 03:00</div>
+        </div>
+        <div class="status-card">
+          <div class="status-title">Notification Service</div>
+          <div class="status-value ok">&#9989; Active</div>
+          <div class="status-meta">Last sent: 5 minutes ago</div>
+        </div>
+        <div class="status-card">
+          <div class="status-title">Ward Report Sync</div>
+          <div class="status-value fail">&#10060; Failed</div>
+          <div class="status-meta">Last attempt: today, 07:12</div>
+        </div>
+      </div>
+
+      <div class="alert-card">
+        <span>&#9888;&#65039;</span>
+        <div class="alert-text">
+          3 reports from the Ward 5 councillor app failed to sync overnight. This may cause the ward's
+          statistics to be out of date until it's resolved.
+          <br><a href="admin-monitor.html">Read more in System Monitoring &rarr;</a>
+        </div>
+      </div>
+
+      <div class="dash-row">
+        <section>
+          <h2>&#128202; Users by Role</h2>
+          <div class="donut" id="role-donut"><div class="donut-hole" id="role-donut-total"></div></div>
+          <div class="donut-key" id="role-key"></div>
+        </section>
+
+        <section>
+          <h2>&#128276; Recent Activity</h2>
+          <ul class="feed-list" id="activity-feed"></ul>
+        </section>
+      </div>
+
+      <section>
+        <h2>&#128202; Reports Overview</h2>
+        <div class="toolbar">
+          <select id="breakdown-select">
+            <option value="ward">By Ward</option>
+            <option value="category">By Category</option>
+          </select>
+        </div>
+        <div class="bar-chart-wrap" id="report-bars"></div>
+      </section>
+
+      <section>
+        <h2>&#9203; Awaiting Approval</h2>
+        <table id="pending-table">
+          <tr><th>Name</th><th>Role Requested</th><th>Date</th><th></th></tr>
+        </table>
+        <p class="empty-msg" id="pending-empty" style="display:none;">No pending approvals right now.</p>
+      </section>
+    </main>
+
+<footer>&copy; M-Unite 2026 - System Administrator Portal</footer>
+
+<script src="nav.js"></script>
+<script src="admin-home.js"></script>
+</body>
+</html>
