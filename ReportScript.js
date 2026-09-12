@@ -474,8 +474,8 @@ function showPendingCard(faultType, description, location) {
     <div class="report-card pending-card">
       <h3 class="report-card-title">${faultType} Report</h3>
       <p class="pending-message">
-        This report will be submitted in <span class="countdown-seconds">60</span> seconds.
-        You can still cancel it until then — after that, it cannot be undone.
+        This report will be submitted in <span class="countdown-seconds">15</span> seconds.
+        You can still cancel it until then - after that, it cannot be undone.
       </p>
       <p class="report-description"><strong>Description:</strong> ${shortDescription}</p>
       <p class="report-location"><strong>Location:</strong> ${location}</p>
@@ -495,7 +495,7 @@ function startCountdown(formData) {
  
   isCountdownActive = true;
  
-  let secondsRemaining = 60;
+  let secondsRemaining = 15;
  
   const countdownDisplay = pendingContainer.querySelector('.countdown-seconds');
  
@@ -530,6 +530,10 @@ function cancelPendingReport() {
   pendingContainer.innerHTML = '';
  
   unlockReportForm();
+
+  fetch('log_cancelled_report.php', { method: 'POST' }).catch(function (error) {
+    console.error('Could not log the cancelled report:', error);
+  });
  
 }
  

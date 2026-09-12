@@ -1,0 +1,315 @@
+/* --- GENERAL & RESET --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'TikTok Sans', Arial, sans-serif;
+}
+
+body {
+  background: #DCE6F2;
+  color: #222222;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'TikTok Sans', sans-serif;
+}
+
+h1, h2, h3, .logo-box, .stat-value {
+  font-family: 'Merriweather Sans', sans-serif;
+  font-weight: 700;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- HEADER & NAVIGATION --- */
+.site-header {
+  background: radial-gradient(circle, #3f5f7a 0%, #0e2841 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: stretch; /* Allows the navbar to stretch from top to bottom edge */
+  justify-content: space-between;
+  padding: 0 1.5rem; 
+  height: 80px; /* Explicit height replaces the removed vertical padding */
+  width: 100%;
+}
+
+/* Keeps logo and sign-in button vertically centered, preventing them from stretching */
+.site-header > :not(.navbar) {
+  align-self: center;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  height: 120px; /* Keeps it slightly smaller than the 80px header */
+  width: 150px; /* Explicit width prevents it from pushing the nav */
+  flex-shrink: 0; /* Prevents the browser from squishing the logo box */
+}
+
+/* Update your existing .logo-image rule */
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Ensures the logo scales without distortion */
+  object-position: left center; /* Aligns the logo cleanly to the left */
+}
+
+
+
+.navbar {
+  display: flex;
+  gap: 0;
+  font-size: 18px;
+}
+
+.nav-item, 
+.nav-item-active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 130px; /* Forces all items to share this exact width regardless of text length */
+  height: 100%; /* Fills the vertical space of the header */
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.nav-item-active {    /*for the current page to be highlighted in the navbar*/
+  color: #F36E39;
+  font-weight: bold;
+
+}
+
+.nav-item:hover {
+  background-color: #F36E39;
+  color: #ffffff;
+  
+
+}
+
+.nav-item-active:hover {
+  background-color: #F36E39;
+  color: #ffffff;
+  border-radius: 1px;
+}
+
+.account-icon img {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.sign-in-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 1px;
+  border: 1px solid #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background: #0E2841;
+  transition: background-color 0.5s ease, color 0.5s ease, border 0.5s ease;
+}
+
+.sign-in-btn:hover {
+  background-color: #F36E39;
+  color: #ffffff;
+  border: 1px solid #F36E39;
+}
+
+.hamburger {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #ffffff;
+}
+
+/* --- FOOTER --- */
+
+.site-footer {
+  position: relative;
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-top: 20rem;
+}
+
+.footer-skyline-mobile,
+#footerimg {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.footer-skyline-mobile {
+  display: none;
+}
+
+
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto 30px;
+}
+
+.footer-col {
+  flex: 1;
+}
+
+.footer-about {
+  flex: 1.4;
+}
+
+.footer-logo {
+  width: 120px;
+  height: 40px;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.footer-about p, .footer-bottom p {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #ffffff;
+}
+
+.footer-col h4 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.footer-col ul {
+  list-style: none;
+}
+
+.footer-col ul li {
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: white;
+}
+
+.social-icons-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 15px;
+  font-size: 13px;
+}
+
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .site-header {
+    position: relative;
+    flex-wrap: nowrap;
+    height: 70px;
+    padding: 0 15px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hamburger {
+    display: flex;
+    align-items: center;
+    order: -1;              /* keeps it pinned to the top-left, ahead of the logo */
+    margin-right: 12px;
+    transition: transform 0.3s ease;
+  }
+
+  .hamburger.active {
+    transform: rotate(90deg);
+  }
+
+  .logo-box {
+    height: 60px;
+    width: 110px;
+  }
+
+  /* The nav links drop down as an overlay panel instead of pushing page content */
+  .navbar {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    flex-direction: column;
+    background: #0E2841;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+    z-index: 20;
+  }
+
+  .navbar.active {
+    display: flex;
+  }
+
+  .nav-item, .nav-item-active {
+    width: 100%;
+    height: 50px;
+  }
+
+  .steps-grid,
+  .footer-top {
+    flex-direction: column;
+  }
+ 
+  .site-footer {
+  height: auto;
+  padding-top: 60px;
+  margin-top: 10rem;
+  }
+
+  .footer-skyline-mobile {
+    display: block;
+    width: 100%;
+    height: 118%;
+  }
+
+  #footerimg{
+    display: none;
+  }
+
+
+  /* Stack the columns vertically and center them */
+  .footer-top {
+    flex-direction: column;
+    align-items: center; 
+    text-align: center;
+    gap: 30px;
+  }
+
+  /* Center the logo and about text */
+  .footer-about {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Change social icons from a vertical list to a horizontal row */
+  .social-icons-vertical {
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+  }
+}

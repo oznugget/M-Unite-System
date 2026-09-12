@@ -1,7 +1,8 @@
 <?php
 
 
-require 'db-connect.php'; // gives us $pdo, our database connection
+require 'db-connect.php';
+require 'log_activity.php'; // gives us $pdo, our database connection
 
 function respond($success, $message) {
  
@@ -23,7 +24,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $username = $_SESSION['username'] ?? 'brown@gmail.com';
 
-
+$isAuthenticated = isset($_SESSION['username']) ? 1 : 0;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
    respond(false, 'Invalid request method.');
@@ -156,6 +157,10 @@ $insertStmt->execute([
     'timestamp' => date('Y-m-d H:i:s'), // current date/time, formatted the way MySQL's DATETIME column expects
 ]);
 
+logActivity($pdo, $username, 'REPORT_CREATE', $isAuthenticated);
 
+if ($imageUrl !== null) {
+    logActivity($pdo, $username, 'REPORT_ATTACH_MEDIA', $isAuthenticated);
+}
 
 Respond(true, 'Report submitted successfully.');
