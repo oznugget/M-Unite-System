@@ -1,0 +1,271 @@
+/* =========================================================
+   M-Unite - one shared stylesheet for every page (resident,
+   officer, admin). Colours + type per the SDS style guide
+   (Section 2.1): #DCE6F2 (60%) background, #0E2841 (30%)
+   header/footer, #F36E39 (10%) buttons/accents.
+   Header/nav follows the SDS wireframe: logo box, boxed nav
+   bar, and an account button on the right - top nav, not a
+   sidebar, on every page.
+   ========================================================= */
+
+:root {
+  --navy: #0E2841;
+  --navy-light: #1b3c5c;
+  --orange: #F36E39;
+  --orange-dark: #d25524;
+  --bg: #DCE6F2;
+  --white: #FFFFFF;
+  --ink: #262626;
+  --border: #ccc;
+  --amber-bg: #fdecd2; --amber-fg: #8a5a00;
+  --blue-bg: #dbe7f6;  --blue-fg: #0E2841;
+  --green-bg: #dcf3e3; --green-fg: #1e7a3c;
+  --grey-bg: #e9e9e9;  --grey-fg: #555;
+  --red-bg: #fbe0dd;   --red-fg: #b3261e;
+  --pink-bg: #fbe0ef;  --pink-fg: #a3155e;
+  --shadow: 0 2px 6px rgba(14, 40, 65, 0.10);
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--ink);
+  margin: 0;
+}
+
+/* ---------- Header: horizontal tab bar, matching the SDS wireframe
+   (logo, tabs, account button) but without hand-drawn divider lines -
+   flat tabs with a soft rounded highlight instead ---------- */
+header {
+  background-color: var(--navy);
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo-box {
+  border-radius: 8px;
+  background: white;
+  color: var(--navy);
+  padding: 7px 14px;
+  font-weight: 800;
+}
+
+nav {
+  display: flex;
+  gap: 4px;
+  margin-right: auto;
+}
+
+header nav a {
+  color: white;
+  text-decoration: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-block;
+  transition: transform 0.18s ease, background-color 0.18s ease;
+}
+
+header nav a.active { background-color: rgba(255, 255, 255, 0.18); }
+header nav a.nav-hover { background-color: rgba(255, 255, 255, 0.22); transform: translateY(-3px); }
+
+.account-btn {
+  background: var(--orange);
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  white-space: nowrap;
+  color: white;
+  font-weight: 700;
+  font-size: 0.88rem;
+  display: inline-block;
+  transition: transform 0.18s ease;
+}
+.account-btn a { color: inherit; text-decoration: none; font-weight: inherit; }
+.account-btn.nav-hover { transform: translateY(-4px); }
+
+/* ---------- Main content ---------- */
+main {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+main.wide { max-width: 1000px; }
+
+@media (max-width: 700px) {
+  header { flex-wrap: wrap; }
+  nav { order: 3; width: 100%; margin-top: 8px; justify-content: center; flex-wrap: wrap; }
+}
+
+h1, h2, h3 { color: var(--navy); margin: 0 0 8px; }
+h1 { margin-bottom: 4px; }
+h2 { font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+.page-intro { color: #45505c; margin-top: 0; margin-bottom: 20px; }
+
+/* Each profile / reports / settings / dashboard block */
+section {
+  background-color: white;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--navy);
+  border-radius: 5px;
+}
+
+/* ---------- Toolbar: in-page search + filter controls ---------- */
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.toolbar input, .toolbar select { width: auto; flex: 1; min-width: 140px; margin-top: 0; }
+
+/* ---------- Forms ---------- */
+label { display: block; margin-bottom: 12px; font-weight: bold; }
+input, select, textarea {
+  display: block;
+  padding: 6px;
+  width: 100%;
+  margin-top: 4px;
+  font-family: inherit;
+  font-weight: normal;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  transition: border-color 0.15s ease;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--orange); }
+.error-text { color: var(--red-fg); font-size: 0.8rem; margin-top: 4px; display: none; }
+.invalid .error-text { display: block; }
+.invalid input, .invalid textarea { border-color: var(--red-fg); }
+.field-note { font-size: 0.8rem; font-weight: normal; color: #767b80; margin-top: 4px; }
+
+/* ---------- Buttons ---------- */
+button {
+  background-color: var(--orange);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 6px;
+  transition: background-color 0.15s ease;
+}
+button:hover { background-color: var(--orange-dark); }
+button.secondary { background-color: white; color: var(--navy); border: 1px solid var(--navy); }
+button.secondary:hover { background-color: var(--bg); }
+button.danger { background-color: white; color: var(--red-fg); border: 1px solid var(--red-fg); }
+button.danger:hover { background-color: var(--red-bg); }
+
+/* ---------- Reports list (resident account page) ---------- */
+#report-list { list-style: none; padding: 0; }
+#report-list li { border: 1px solid var(--border); border-radius: 5px; padding: 10px; margin-bottom: 10px; }
+.status { font-weight: bold; color: var(--orange); }
+
+/* ---------- Card-style item list (officer/admin pages) ---------- */
+.item-list { list-style: none; padding: 0; }
+.item-list li { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; transition: box-shadow 0.15s ease; }
+.item-list li:hover { box-shadow: var(--shadow); }
+.item-title { font-weight: bold; color: var(--navy); }
+.item-meta { color: #6b7684; font-size: 0.85rem; margin: 2px 0 8px; }
+
+/* ---------- Status badges ---------- */
+.badge { display: inline-block; font-size: 0.74rem; font-weight: bold; padding: 3px 10px; border-radius: 999px; margin-left: 4px; }
+.badge-pending, .badge-Pending { background: var(--amber-bg); color: var(--amber-fg); }
+.badge-progress, .badge-InProgress { background: var(--blue-bg); color: var(--blue-fg); }
+.badge-approved, .badge-Approved, .badge-resolved, .badge-Resolved { background: var(--green-bg); color: var(--green-fg); }
+.badge-closed, .badge-Closed { background: var(--grey-bg); color: var(--grey-fg); }
+.badge-rejected, .badge-Rejected { background: var(--red-bg); color: var(--red-fg); }
+.badge-new { background: var(--pink-bg); color: var(--pink-fg); }
+
+/* ---------- Dashboard stat cards ---------- */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.stat-card { background: white; border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); border-top: 4px solid var(--orange); }
+.stat-card .num { font-size: 1.7rem; color: var(--navy); font-weight: 800; }
+.stat-card .label { font-size: 0.82rem; color: #5a6472; }
+
+/* ---------- System status + alert cards ---------- */
+.status-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.status-card { background: white; border-radius: var(--radius); padding: 14px 18px; box-shadow: var(--shadow); }
+.status-card .status-title { font-size: 0.8rem; color: #5a6472; margin-bottom: 4px; }
+.status-card .status-value { font-weight: 800; font-size: 1.05rem; }
+.status-value.ok { color: var(--green-fg); }
+.status-value.fail { color: var(--red-fg); }
+.status-card .status-meta { font-size: 0.78rem; color: #8a94a3; margin-top: 2px; }
+
+.alert-card {
+  background: var(--red-bg); border-left: 5px solid var(--red-fg); border-radius: var(--radius);
+  padding: 14px 18px; margin-bottom: 22px; display: flex; align-items: flex-start; gap: 12px;
+}
+.alert-card .alert-text { flex: 1; font-size: 0.92rem; }
+.alert-card a { color: var(--red-fg); font-weight: bold; }
+
+/* ---------- Dashboard row: donut chart + activity feed ---------- */
+.dash-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+@media (max-width: 800px) { .dash-row { grid-template-columns: 1fr; } }
+
+.donut { width: 150px; height: 150px; border-radius: 50%; margin: 6px auto 14px; display: grid; place-items: center; }
+.donut-hole { width: 84px; height: 84px; background: white; border-radius: 50%; display: grid; place-items: center; font-weight: 800; color: var(--navy); font-size: 1.1rem; text-align: center; line-height: 1.1; }
+.donut-key { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; }
+.donut-key .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+
+.feed-list { list-style: none; padding: 0; margin: 0; }
+.feed-list li { padding: 10px 0; border-bottom: 1px solid #eee; font-size: 0.88rem; }
+.feed-list li:last-child { border-bottom: none; }
+
+/* ---------- Bar chart made of plain divs, centered, simple wireframe look ---------- */
+.bar-chart-wrap { max-width: 460px; margin: 0 auto; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.bar-label { width: 100px; font-size: 0.85rem; text-align: right; }
+.bar-track { flex: 1; background: white; border: 2px solid var(--navy); border-radius: 3px; overflow: hidden; height: 20px; }
+.bar-fill { height: 100%; background: var(--orange); }
+.bar-value { width: 26px; text-align: left; font-weight: bold; font-size: 0.85rem; }
+
+/* ---------- Tables (statistics / logs) ---------- */
+table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+th { text-align: left; padding: 10px 8px; color: var(--navy); border-bottom: 2px solid #e4e4e4; cursor: pointer; }
+td { padding: 9px 8px; border-bottom: 1px solid #e4e4e4; }
+tr:hover td { background: #f5f8fc; }
+
+.empty-msg { text-align: center; color: #8a94a3; padding: 24px; }
+
+/* ---------- Footer ---------- */
+footer { background-color: var(--navy); color: white; text-align: center; padding: 20px; margin-top: 30px; }
+footer a { color: white; margin: 0 8px; text-decoration: none; }
+footer p { margin: 4px 0; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 700px) {
+  header { flex-wrap: wrap; }
+  nav { order: 3; width: 100%; margin-top: 8px; }
+}
+
+/* ---------- Events page: flyer thumbnails and preview ---------- */
+.flyer-thumb {
+  width: 90px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.flyer-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  font-size: 1.4rem;
+  color: #8a94a3;
+}
+.flyer-preview {
+  max-width: 200px;
+  max-height: 140px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  display: block;
+}

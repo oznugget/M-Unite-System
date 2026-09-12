@@ -4,6 +4,8 @@ include 'dbConnection.php';
 // Fetch all active, non-expired general (town-wide) notices.
 // No username, no notice_status join — this page has no per-user state.
 $public_notices = [];
+$event_notices=[];
+$current_issues=[];
 
 $sql = "SELECT n.notice_id, n.title, n.content, n.notif_type, n.ward_id,
                n.is_alert, n.expires_at, n.resolved_at, n.created_at,
@@ -13,10 +15,9 @@ $sql = "SELECT n.notice_id, n.title, n.content, n.notif_type, n.ward_id,
         LEFT JOIN service_categories sc ON n.category_id = sc.category_id
         LEFT JOIN ward_councillors wc ON n.ward_id = wc.ward_id
         LEFT JOIN accounts ac ON ac.username = wc.username
-        WHERE n.notif_type = 'general'
-          AND (n.expires_at IS NULL OR n.expires_at > NOW())
+        WHERE (n.expires_at IS NULL OR n.expires_at > NOW())
         ORDER BY n.created_at DESC";
-
+        
 $stmt = $conn->prepare($sql);
 if ($stmt === false) {
     error_log("Prepare failed: " . $conn->error);
@@ -24,7 +25,16 @@ if ($stmt === false) {
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
-        $public_notices[] = $row;
+        // Categorize into the appropriate arrays based on notif_type or category
+        $type = strtolower($row['notif_type']);
+        
+        if ($type === 'general') {
+            $public_notices[] = $row;  //fetch only general notices
+        } elseif ($type === 'events') {
+            $event_notices[] = $row;  //fetch only evemt nnotices
+        } elseif ($type === 'current_issues') {
+            $current_issues[] = $row;  //fetch pnly current issue notices
+        }
     }
     $stmt->close();
 }

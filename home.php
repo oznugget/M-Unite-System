@@ -1,8 +1,15 @@
 <?php
 session_start();
+include 'dbConnection.php';
+include 'alert_banner.php'; // Contains get_active_alerts() and format_alert_time()
+include 'alert_banner_data.php';
 
 $isLoggedIn = isset($_SESSION['username']);
 $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
+$username   = $isLoggedIn ? $_SESSION['username'] : null;
+
+// Fetch active alerts based on scope (public vs user's ward if logged in)
+$alerts = get_active_alerts($conn, $username);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,10 +19,15 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
     <title>Home</title>
 
     <script src="homejs.js" defer></script>
+    <script src="alert_banner.js" defer></script>
     <link rel="stylesheet" href="homecss.css">
     <link rel="stylesheet" href="header_footer.css">
+    <link rel="stylesheet" href="alert_banner.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
 </head>
 
 
@@ -35,13 +47,13 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
     <nav class="navbar" id="nav-menu">
       <a href="home.php" class="nav-item-active">Home</a>
-      <a href="CommReports.html" class="nav-item">Reports</a>
+      <a href="CommReports.php" class="nav-item">Reports</a>
       <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
       <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
-
-      <div class="header-right" id="header-right">
+    
+      <div class="header-right">
       <?php if ($isLoggedIn): ?>
         <a href="account.php" class="sign-in-btn">
           <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
@@ -52,6 +64,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         </a>
       <?php endif; ?>
     </div>
+    
     </header>
 
     <script>
