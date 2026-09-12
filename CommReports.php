@@ -1,7 +1,14 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $isLoggedIn = isset($_SESSION['username']);
 $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
+
+if (!$isLoggedIn) {
+    header('Location: signin.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -116,7 +123,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
                     <div class = "form-field">
                         <label for = "fault-image">Upload Fault Image</label>
                         <div class = "upload-dropzone">
-                            <input type = "file" id = "fault-image" name = "fault-image" accept = ".jpg,.jpeg,.png">
+                            <input type = "file" id = "fault-image" name = "fault-image" accept = ".jpg,.jpeg,.png,.webp">
                             <span class = "upload-icon" aria-hidden="true"></span>
                             <span class = "upload-hint">Click or drag an image here</span>
 
@@ -133,7 +140,6 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
                     
                 </form>
 
-                <div id="submission-banner" class="submission-banner" role="status" hidden></div>
                 <div id="pending-report-container"></div>
                 
             </section>
@@ -145,6 +151,18 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
             
         </main>
             <!------AI CHATBOT ICON -->
+
+        <div id="submission-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="submission-modal-message" hidden>
+            <div class="modal-box">
+                <p id="submission-modal-message" class="modal-message"></p>
+                <div class="modal-actions">
+                    <button type="button" id="modal-ok-btn" class="modal-ok-btn">OK</button>
+                    <a href="MyReports.php" class="modal-view-reports-btn">View My Reports</a>
+                </div>
+            </div>
+        </div>
+
+
         <div class="ai-chat-widget">
             <img src = "makbot_chat.jpeg" alt = "matbok, M-Unite chatbot" class = "ai-chat-mascot">
             <p class="ai-chat-prompt">Want to chat with Makbot, our AI assistant?</p>

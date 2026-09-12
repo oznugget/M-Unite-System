@@ -7,6 +7,8 @@
 
     <script src="homejs.js" defer></script>
     <link rel="stylesheet" href="homecss.css">
+    <link rel="stylesheet" href="header_footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
 </head>
@@ -18,20 +20,36 @@
 
     <header class="site-header">
 
-    <div class="logo-box">
-      <img src="logo1.png" alt="M-Unite Logo" class="logo-image">
-      <a href="index.html" class="logo-link"></a>
+      <div class="logo-box">
+      <a href="home.php" class="logo-link">
+      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
+      </a>
     </div>
 
-    <nav class="navbar">
-      <a href="home.php" class="nav-item">Home</a>
-      <a href="test_login.php" class="nav-item">Reports</a>
-      <a href="tickets.php" class="nav-item">Notices</a>
-      <a href="notification.html" class="nav-item">Notices</a>
-      <a href="map.html" class="nav-item">Map</a>
-      <a href="about_us.html" class="nav-item active">About Us</a>
+    <div class="hamburger" id="hamburger-menu">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+
+    <nav class="navbar" id="nav-menu">
+      <a href="ward_councillor_home.html" class="nav-item-active">Home</a>
+      <a href="reports.php" class="nav-item">Incoming Reports</a>
+      <a href="CommReports.php" class="nav-item">Make Report</a>
+      <a href="tickets.php" class="nav-item">Tickets</a>
+      <a href="public_notices.php" class="nav-item">Notices</a>
+      <a href="map.php" class="nav-item">Map</a>
     </nav>
 
+      <div class="header-right" id="header-right">
+      <?php if ($isLoggedIn): ?>
+        <a href="account.php" class="sign-in-btn">
+          <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php else: ?>
+        <a href="signin.php" class="sign-in-btn">
+          Sign In <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php endif; ?>
+    </div>
     </header>
 
 
@@ -118,11 +136,16 @@
 
      <!-- FOOTER (Matches Wireframe) -->
   <footer class="site-footer">
+
+    <img src="images/footerimgresponsive1.png" alt="Makhanda skyline" class="footer-skyline-mobile">
+    <img src = "images/footer_img.png" alt = "Makhanda skyline" id = "footerimg">
+
+
     <div class="footer-top">
       <!-- Left Info -->
       <div class="footer-col footer-about">
         <div class="footer-logo-box">
-            <img src="logo1.png" alt="M-Unite Logo" class="logo-image">
+            <img src="images\logo_1.png" alt="M-Unite Logo" class="footer-logo">
         </div>
         <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
       </div>
@@ -178,3 +201,4 @@
   </footer>
 </body>
 </html>
+

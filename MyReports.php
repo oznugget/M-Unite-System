@@ -1,17 +1,22 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+   
 }
+
+
 $isLoggedIn = isset($_SESSION['username']);
 $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
+if (!$isLoggedIn) {
+    header('Location: signin.php');
+    exit;
+}
+
+$username = $_SESSION['username'];
 
 require 'db-connect.php';
 
-
-
-
-$username = $_SESSION['username']; 
 
 
 

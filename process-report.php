@@ -107,11 +107,11 @@ if (isset($_FILES['fault-image']) && $_FILES['fault-image']['error'] === UPLOAD_
     $imageInfo = @getimagesize($uploadedFile['tmp_name']);
     $detectedType = $imageInfo ? $imageInfo['mime'] : '';
 
-    $allowedTypes = ['image/jpeg', 'image/png'];
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     $maxSizeInBytes = 128 * 1024 * 1024; // 128MB, matching the JS validation rule
 
     if (!in_array($detectedType, $allowedTypes)) {
-       respond(false, 'Uploaded file is not a valid .jpg, .jpeg, or .png image.');
+       respond(false, 'Uploaded file is not a valid .jpg, .jpeg, .png, or .webp image.');
     }
 
     if ($uploadedFile['size'] > $maxSizeInBytes) {
@@ -119,7 +119,13 @@ if (isset($_FILES['fault-image']) && $_FILES['fault-image']['error'] === UPLOAD_
     }
 
     
-    $extension = ($detectedType === 'image/png') ? 'png' : 'jpg';
+    if ($detectedType === 'image/png') {
+        $extension = 'png';
+    } elseif ($detectedType === 'image/webp') {
+        $extension = 'webp';
+    } else {
+        $extension = 'jpg';
+    }
     $newFilename = uniqid('report_', true) . '.' . $extension;
 
     

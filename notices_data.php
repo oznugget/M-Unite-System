@@ -1,8 +1,17 @@
 <?php
-session_start();
+// Only start the session if one isn't already active
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include 'dbConnection.php';
 
-$username = $_SESSION['user_id'] ?? 'funi@gmail.com';
+// Ensure user is logged in first
+if (!isset($_SESSION['username'])) {
+    header("Location: signin.php");
+    exit;
+}
+
+$username = $_SESSION['username'];
 
 // Change notice to read
 if (isset($_GET['mark_read'])) {

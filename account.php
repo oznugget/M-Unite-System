@@ -102,7 +102,7 @@ $firstname = htmlspecialchars($_SESSION['firstname'] ?? '');
           <h2>&#128100; Profile</h2>
           <p>Name: <strong><?php echo htmlspecialchars($userData['name']); ?> <?php echo htmlspecialchars($userData['surname']); ?></strong></p>
           <p>Email: <?php echo htmlspecialchars($userData['username']); ?></p>
-          <p>Phone: <?php echo htmlspecialchars($userData['phone_number']); ?></p>
+          <p>Phone: 0<?php echo htmlspecialchars($userData['phone_number']); ?></p>
           <?php if ($addressData): ?>
             <p>Address:
               <?php echo htmlspecialchars($addressData['street_number'] . ' ' . $addressData['street_name'] . ', ' . $addressData['suburb'] . ', ' . $addressData['town'] . ' ' . $addressData['postal_code']); ?>
