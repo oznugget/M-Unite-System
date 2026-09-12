@@ -69,10 +69,11 @@ async function fillAddressFromCoordinates(lat, lng) {
         locationAddressInput.value = 'Address not found, please type it manually';
     }
 
-    } catch (error) {
+        } catch (error) {
         console.error('Error fetching address:', error);
         locationAddressInput.value = 'Error fetching address, please type it manually';
     }
+    markTouched('location');
     updateFormValidity();
 }
 
@@ -193,133 +194,162 @@ function fillStructuredLocationDetails(data){
 
 /* ====================== FORM VALIDATION ====================== */
 
+/* ====================== FORM VALIDATION ====================== */
+
 const faultTypeSelect = document.getElementById('fault-type');
 const faultImageInput = document.getElementById('fault-image');
 const submitBtn = document.querySelector('.submit-btn');
- 
-const locationAddressLabel = document.querySelector('label[for="location-address"]');
-const faultTypeLabel = document.querySelector('label[for="fault-type"]');
-const faultDescriptionLabel = document.querySelector('label[for="fault-description"]');
- 
+
 const locationAddressError = document.getElementById('location-address-error');
 const faultTypeError = document.getElementById('fault-type-error');
 const faultDescriptionError = document.getElementById('fault-description-error');
 const faultImageError = document.getElementById('fault-image-error');
- 
 
- 
-function setFieldValidity(labelEl, errorEl, isValid, message) {
- 
-  if (isValid) {
-    labelEl.classList.remove('invalid');
+/* Tracks which fields the user has actually "reached" so far.
+   A field only gets its red error shown once it's touched —
+   this stops every field flashing red the moment ANY one
+   field changes. */
+const touchedFields = {
+  location: false,
+  faultType: false,
+  description: false,
+  image: false,
+};
+
+const fieldOrder = ['location', 'faultType', 'description', 'image'];
+
+function markTouched(fieldKey) {
+  touchedFields[fieldKey] = true;
+}
+
+/* Called when a field gains focus — marks every field BEFORE
+   it in fieldOrder as touched too. This is what makes a
+   skipped field light up: if you jump straight from Location
+   to Description, focusing Description marks Fault Type
+   (the one you skipped) as touched. */
+function markPrecedingTouched(fieldKey) {
+  const targetIndex = fieldOrder.indexOf(fieldKey);
+  for (let i = 0; i < targetIndex; i++) {
+    touchedFields[fieldOrder[i]] = true;
+  }
+}
+
+function setFieldValidity(errorEl, isValid, message, touched) {
+
+  if (isValid || !touched) {
     errorEl.textContent = '';
   } else {
-    labelEl.classList.add('invalid');
     errorEl.textContent = message;
   }
- 
-}
- 
 
- 
-function validateLocationAddress() {
- 
+}
+
+function validateLocationAddress(silent) {
+
   const isValid = locationAddressInput.value.trim() !== '';
- 
-  setFieldValidity(
-    locationAddressLabel,
-    locationAddressError,
-    isValid,
-    'Please provide a location — click the map, use "Use My Location", or type an address.'
-  );
- 
+
+  if (!silent) {
+    setFieldValidity(
+      locationAddressError,
+      isValid,
+      'Please provide a location — click the map, use "Use My Location", or type an address.',
+      touchedFields.location
+    );
+  }
+
   return isValid;
- 
+
 }
- 
-function validateFaultType() {
- 
+
+function validateFaultType(silent) {
+
   const isValid = faultTypeSelect.value !== '';
- 
-  setFieldValidity(
-    faultTypeLabel,
-    faultTypeError,
-    isValid,
-    'Please select a fault type.'
-  );
- 
+
+  if (!silent) {
+    setFieldValidity(
+      faultTypeError,
+      isValid,
+      'Please select a fault type.',
+      touchedFields.faultType
+    );
+  }
+
   return isValid;
- 
+
 }
- 
-function validateFaultDescription() {
- 
+
+function validateFaultDescription(silent) {
+
   const isValid = faultDescriptionInput.value.trim() !== '';
- 
-  setFieldValidity(
-    faultDescriptionLabel,
-    faultDescriptionError,
-    isValid,
-    'Please describe the fault.'
-  );
- 
+
+  if (!silent) {
+    setFieldValidity(
+      faultDescriptionError,
+      isValid,
+      'Please describe the fault.',
+      touchedFields.description
+    );
+  }
+
   return isValid;
- 
+
 }
- 
-function validateFaultImage() {
- 
-  
+
+function validateFaultImage(silent) {
+
   if (faultImageInput.files.length === 0) {
-    faultImageError.textContent = '';
+    if (!silent) faultImageError.textContent = '';
     return true;
   }
- 
+
   const file = faultImageInput.files[0];
- 
-  
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
- 
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
   if (!allowedTypes.includes(file.type)) {
-    faultImageError.textContent = 'Only .jpg, .jpeg, and .png files are allowed.';
+    if (!silent) faultImageError.textContent = 'Only .jpg, .jpeg, .png, and .webp files are allowed.';
     return false;
   }
- 
-  
+
   const maxSizeInBytes = 128 * 1024 * 1024;
- 
+
   if (file.size > maxSizeInBytes) {
-    faultImageError.textContent = 'Image must be smaller than 128MB.';
+    if (!silent) faultImageError.textContent = 'Image must be smaller than 128MB.';
     return false;
   }
- 
-  /* Passed both checks */
-  faultImageError.textContent = '';
+
+  if (!silent) faultImageError.textContent = '';
   return true;
- 
-}
- 
 
- 
-function updateFormValidity() {
- 
-  const locationValid = validateLocationAddress();
-  const faultTypeValid = validateFaultType();
-  const descriptionValid = validateFaultDescription();
-  const imageValid = validateFaultImage();
- 
+}
+
+function updateFormValidity(silent) {
+
+  const locationValid = validateLocationAddress(silent);
+  const faultTypeValid = validateFaultType(silent);
+  const descriptionValid = validateFaultDescription(silent);
+  const imageValid = validateFaultImage(silent);
+
   const formIsValid = locationValid && faultTypeValid && descriptionValid && imageValid;
- 
-  submitBtn.disabled = !formIsValid;
- 
-}
- 
 
- 
+  submitBtn.disabled = !formIsValid;
+
+}
+
 locationAddressInput.addEventListener('input', updateFormValidity);
 faultTypeSelect.addEventListener('change', updateFormValidity);
 faultDescriptionInput.addEventListener('input', updateFormValidity);
 faultImageInput.addEventListener('change', updateFormValidity);
+
+locationAddressInput.addEventListener('focus', function () { markPrecedingTouched('location'); });
+faultTypeSelect.addEventListener('focus', function () { markPrecedingTouched('faultType'); });
+faultDescriptionInput.addEventListener('focus', function () { markPrecedingTouched('description'); });
+faultImageInput.addEventListener('focus', function () { markPrecedingTouched('image'); });
+
+locationAddressInput.addEventListener('blur', function () { markTouched('location'); updateFormValidity(); });
+faultTypeSelect.addEventListener('blur', function () { markTouched('faultType'); updateFormValidity(); });
+faultDescriptionInput.addEventListener('blur', function () { markTouched('description'); updateFormValidity(); });
+faultImageInput.addEventListener('blur', function () { markTouched('image'); updateFormValidity(); });
 
 
 /* ====================== IMAGE UPLOAD PREVIEW ====================== */
@@ -329,6 +359,15 @@ const uploadHint = document.querySelector('.upload-hint');
 const uploadPreview = document.querySelector('.upload-preview');
 const uploadFilename = document.querySelector('.upload-filename');
 const removeImageBtn = document.querySelector('.remove-image-btn');
+
+function resetImageUploadUI() {
+  uploadPreview.hidden = true;
+  uploadPreview.src = '';
+  uploadFilename.hidden = true;
+  removeImageBtn.hidden = true;
+  uploadIcon.hidden = false;
+  uploadHint.hidden = false;
+}
  
 
  
@@ -342,7 +381,7 @@ faultImageInput.addEventListener('change', function () {
   const file = faultImageInput.files[0];
  
   
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   if (!allowedTypes.includes(file.type)) {
     return;
   }
@@ -376,30 +415,25 @@ faultImageInput.addEventListener('change', function () {
  
 removeImageBtn.addEventListener('click', function (event) {
  
-  
   event.stopPropagation();
  
-  
   faultImageInput.value = '';
+  resetImageUploadUI();
  
-  /* Swap back to the empty dropzone state */
-  uploadPreview.hidden = true;
-  uploadPreview.src = '';
-  uploadFilename.hidden = true;
-  removeImageBtn.hidden = true;
- 
-  uploadIcon.hidden = false;
-  uploadHint.hidden = false;
- 
-  
   updateFormValidity();
  
 });
  /*============================= PENDING REPORT TIMER ======================*/
 
- const reportForm = document.querySelector('.report-form');
+  const reportForm = document.querySelector('.report-form');
 const pendingContainer = document.getElementById('pending-report-container');
-const submissionBanner = document.getElementById('submission-banner');
+const submissionModal = document.getElementById('submission-modal');
+const submissionModalMessage = document.getElementById('submission-modal-message');
+const modalOkBtn = document.getElementById('modal-ok-btn');
+
+modalOkBtn.addEventListener('click', function () {
+  submissionModal.hidden = true;
+});
  
 
 let isCountdownActive = false;
@@ -457,7 +491,7 @@ function unlockReportForm() {
  
   reportForm.classList.remove('is-locked');
  
-  updateFormValidity();
+  updateFormValidity(true); // silent — just recheck the button, don't flash errors on a freshly reset form
  
 }
  
@@ -555,16 +589,17 @@ async function submitReportForReal(formData) {
  
     if (result.success) {
  
-      showBanner('Report submitted successfully! You can view it in My Reports.', 'is-success');
+      showModal('Report submitted successfully!', 'is-success');
  
       
       reportForm.reset();
+      resetImageUploadUI();
       unlockReportForm();
  
     } else {
  
       
-      showBanner('Something went wrong: ' + result.message, 'is-error');
+      showModal('Something went wrong: ' + result.message, 'is-error');
       unlockReportForm();
  
     }
@@ -574,7 +609,7 @@ async function submitReportForReal(formData) {
     /* A genuine network failure (server unreachable, etc.) */
     console.error('Submission error:', error);
     pendingContainer.innerHTML = '';
-    showBanner('Could not submit your report — please check your connection and try again.', 'is-error');
+    showModal('Could not submit your report — please check your connection and try again.', 'is-error');
     unlockReportForm();
  
   }
@@ -582,12 +617,12 @@ async function submitReportForReal(formData) {
 }
  
  
-/* Small shared helper for showing either banner "mood" */
-function showBanner(message, moodClass) {
+/* Small shared helper for showing either modal "mood" */
+function showModal(message, moodClass) {
  
-  submissionBanner.textContent = message;
-  submissionBanner.className = 'submission-banner ' + moodClass;
-  submissionBanner.hidden = false;
+  submissionModalMessage.textContent = message;
+  submissionModalMessage.className = 'modal-message ' + moodClass;
+  submissionModal.hidden = false;
  
 }
  
