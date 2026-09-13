@@ -13,6 +13,7 @@ require "sysadmin_users_data.php";
 
       <link rel="stylesheet" href="sysadmin_users.css">
       <link rel="stylesheet" href="sysadmin_style.css">
+      <link rel="stylesheet" href="manager_panel.css">
     </head>
 
     <body class="admin-shell">
@@ -30,13 +31,11 @@ require "sysadmin_users_data.php";
       <div class="app-shell">
         <!-- ============ Sidebar ============ -->
         <aside class="sidebar">
-          <div class="brand">
-            <div class="brand-mark">M</div>
-            <div>
-              <div class="brand-name">M-Unite</div>
-              <div class="brand-sub">Makhanda &middot; Makana Local Municipality</div>
+            <div class="brand">
+                <a href="sysadmin_home.php" class="logo-link">
+                  <img src="images/logo_1.png" alt="M-Unite Logo" class="brand-logo-image">
+                </a>
             </div>
-          </div>
 
           <ul class="side-nav">
             <li><a href="sysadmin_home.php" class="active">Dashboard</a></li>
@@ -114,7 +113,7 @@ require "sysadmin_users_data.php";
                       <td><?php echo htmlspecialchars($u['ward_label']); ?></td>
                       <td><span class="status-pill <?php echo $u['status_class']; ?>">&#9679; <?php echo $u['status_label']; ?></span></td>
                       <td><?php echo date('d M Y', strtotime($u['date_registered'])); ?></td>
-                      <td><a href="#" class="manage-link" data-username="<?php echo htmlspecialchars($u['username']); ?>">Manage &rarr;</a></td>
+                      <td><a href="?<?php echo http_build_query(array_merge($_GET, ['username' => $u['username']])); ?>" class="manage-link">Manage &rarr;</a></td>
                     </tr>
                   <?php endforeach; ?>
                 <?php endif; ?>
@@ -153,7 +152,79 @@ require "sysadmin_users_data.php";
             </div>
           <?php endif; ?>
         </main>
-        </main>
     </div>
+                <!-- Manage User Side Panel -->
+      <?php if ($selectedUser): ?>
+      <div class="panel-overlay open" id="managePanelOverlay">
+        <aside class="manage-panel" id="managePanel">
+          <div class="manage-panel-header">
+            <div class="manage-panel-avatar"><?php echo htmlspecialchars($selectedUser['initials']); ?></div>
+            <div class="manage-panel-heading">
+              <div class="manage-panel-name"><?php echo htmlspecialchars($selectedUser['name'] . ' ' . $selectedUser['surname']); ?></div>
+              <div class="manage-panel-sub"><?php echo htmlspecialchars($selectedUser['username']); ?> &middot; <?php echo htmlspecialchars($selectedUser['role_label']); ?></div>
+            </div>
+            <a href="?<?php echo http_build_query(array_diff_key($_GET, ['username' => ''])); ?>" class="manage-panel-close">&times;</a>
+          </div>
+
+          <div class="manage-panel-body">
+            <span class="status-pill <?php echo $selectedUser['status_class']; ?>">&#9679; <?php echo htmlspecialchars($selectedUser['status_label']); ?></span>
+
+            <div class="manage-detail-row">
+              <span class="manage-detail-icon">&#9993;</span>
+              <div>
+                <div class="manage-detail-label">Email</div>
+                <div class="manage-detail-value"><?php echo htmlspecialchars($selectedUser['username']); ?></div>
+              </div>
+            </div>
+
+            <div class="manage-detail-row">
+              <span class="manage-detail-icon">&#9742;</span>
+              <div>
+                <div class="manage-detail-label">Phone</div>
+                <div class="manage-detail-value"><?php echo htmlspecialchars($selectedUser['phone_number'] ?: '—'); ?></div>
+              </div>
+            </div>
+
+            <div class="manage-detail-row">
+              <span class="manage-detail-icon">&#128100;</span>
+              <div>
+                <div class="manage-detail-label">Ward</div>
+                <div class="manage-detail-value"><?php echo htmlspecialchars($selectedUser['ward_label']); ?></div>
+              </div>
+            </div>
+
+            <div class="manage-detail-row">
+              <span class="manage-detail-icon">&#128337;</span>
+              <div>
+                <div class="manage-detail-label">Registered</div>
+                <div class="manage-detail-value"><?php echo date('d M Y', strtotime($selectedUser['date_registered'])); ?></div>
+              </div>
+            </div>
+
+            <div class="manage-detail-row">
+              <span class="manage-detail-icon">&#128337;</span>
+              <div>
+                <div class="manage-detail-label">Last login</div>
+                <div class="manage-detail-value"><?php echo $selectedUser['last_login'] ? date('d M Y, H:i', strtotime($selectedUser['last_login'])) : '—'; ?></div>
+              </div>
+            </div>
+
+            <div class="manage-actions-label">ADMIN ACTIONS</div>
+
+            <?php if ($selectedUser['is_registered'] == 0): ?>
+              <button class="btn-approve-full" id="mp-approve-btn">&check; Approve registration</button>
+            <?php endif; ?>
+
+            <div class="manage-actions-grid">
+              <button class="btn-action-outline" id="mp-assign-role">&#128100; Assign role</button>
+              <button class="btn-action-outline" id="mp-unlock">&#128274; Unlock</button>
+              <button class="btn-action-outline" id="mp-suspend">&#9201; Suspend</button>
+              <button class="btn-action-outline danger" id="mp-remove">&#128465; Remove</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+      <?php endif; ?>
+  
   </body>
 </html>

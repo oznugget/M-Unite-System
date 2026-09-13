@@ -1,10 +1,12 @@
 <?php
-session_start();
-require "db.php";
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require "dbConnection.php";
 
 // 1. Must be logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: signIN.php");
+    header("Location: signin.php");
     exit();
 }
 
@@ -134,7 +136,7 @@ while ($row = $result->fetch_assoc()) {
         $row['role_label'] = 'System Admin';
         $row['ward_label'] = 'Community-wide';
     } else {
-        $row['role_label'] = 'Citizen';
+        $row['role_label'] = 'Community Member';
         $row['ward_label'] = $row['citizen_ward'] ?? '—';
     }
 
@@ -154,5 +156,77 @@ while ($row = $result->fetch_assoc()) {
 
     $usersList[] = $row;
 }
+
+//  If a specific user was selected via ?username=..., load their full detail 
+$selectedUser = null;
+
+if (isset($_GET['username']) && $_GET['username'] !== '') {
+    $selUsername = trim($_GET['username']);
+
+    $selSql = "
+        SELECT a.username, a.name, a.surname, a.phone_number, a.role, a.is_registered, a.active_status, a.date_registered,
+               wc_w.ward_name AS councillor_ward,
+               cm_w.ward_name AS citizen_ward,
+               (
+                 SELECT COUNT(*) FROM system_activities sa
+                 WHERE sa.username = a.username AND sa.action_type_id = 2
+                   AND sa.timestamp > COALESCE(
+                       (SELECT MAX(timestamp) FROM system_activities sa2
+                        WHERE sa2.username = a.username AND sa2.action_type_id = 1),
+                       '1970-01-01'
+                   )
+               ) AS fail_streak,
+               (
+                 SELECT MAX(timestamp) FROM system_activities sa3
+                 WHERE sa3.username = a.username AND sa3.action_type_id = 1
+               ) AS last_login
+        FROM accounts a
+        LEFT JOIN ward_councillors wc ON a.username = wc.username
+        LEFT JOIN wards wc_w ON wc.ward_id = wc_w.ward_id
+        LEFT JOIN community_member cm ON a.username = cm.username
+        LEFT JOIN wards cm_w ON cm.ward_id = cm_w.ward_id
+        WHERE a.username = ?
+    ";
+    $selStmt = $conn->prepare($selSql);
+    $selStmt->bind_param("s", $selUsername);
+    $selStmt->execute();
+    $selResult = $selStmt->get_result();
+
+    if ($selResult->num_rows > 0) {
+        $selectedUser = $selResult->fetch_assoc();
+
+        if (in_array($selectedUser['role'], ['Ward Councillor', 'Ward councillor', '2'])) {
+            $selectedUser['role_label'] = 'Ward Councillor';
+            $selectedUser['ward_label'] = $selectedUser['councillor_ward'] ?? '—';
+        } elseif (in_array($selectedUser['role'], ['Municipal Officer', '3'])) {
+            $selectedUser['role_label'] = 'Municipal Officer';
+            $selectedUser['ward_label'] = 'N/A';
+        } elseif (in_array($selectedUser['role'], ['System Admin', '4'])) {
+            $selectedUser['role_label'] = 'System Admin';
+            $selectedUser['ward_label'] = 'N/A';
+        } else {
+            $selectedUser['role_label'] = 'Citizen';
+            $selectedUser['ward_label'] = $selectedUser['citizen_ward'] ?? '—';
+        }
+
+        if ($selectedUser['fail_streak'] >= 5) {
+            $selectedUser['status_label'] = 'Locked';
+            $selectedUser['status_class'] = 'locked';
+        } elseif ($selectedUser['is_registered'] == 0) {
+            $selectedUser['status_label'] = 'Pending';
+            $selectedUser['status_class'] = 'pending';
+        } elseif ($selectedUser['active_status'] == 1) {
+            $selectedUser['status_label'] = 'Active';
+            $selectedUser['status_class'] = 'active';
+        } else {
+            $selectedUser['status_label'] = 'Inactive';
+            $selectedUser['status_class'] = 'inactive';
+        }
+
+        $selectedUser['initials'] = strtoupper(substr($selectedUser['name'], 0, 1) . substr($selectedUser['surname'], 0, 1));
+    }
+    $selStmt->close();
+}
+
 $dataStmt->close();
 ?>

@@ -2,11 +2,10 @@
 session_start();
 
 
-require "dbConnection.php"; 
+require "db.php"; 
 
-$error = "";
 $isLoggedIn = isset($_SESSION['username']);
-$firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
+$firstname  = isset($_SESSION['firstname']) ? htmlspecialchars($_SESSION['firstname']) : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -33,11 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $result = $stmt->get_result();
 
                 if ($result->num_rows === 0) {
-                    $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmtLog = $conn->prepare("INSERT INTO system_activities (username, action_type_id, ip_address, timestamp, is_authenticated) VALUES (?, ?, ?, ?, ?)");
                     if ($stmtLog) {
-                        $action_type_id = 2; // Failed Login
+                        $action_type_id = 2; // AUTH_LOGIN_FAILED
                         $is_auth = 0;
-                        $stmtLog->bind_param("sisssi", $email, $action_type_id, $ip_address, $timestamp, $timestamp, $is_auth);
+                        $stmtLog->bind_param("siisi", $email, $action_type_id, $ip_address, $timestamp, $is_auth);
                         $stmtLog->execute();
                         $stmtLog->close();
                     }
@@ -51,11 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['firstname'] = $row['name'];
                         $_SESSION['role']      = $row['role'];
 
-                        $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
+                        $stmtLog = $conn->prepare("INSERT INTO system_activities (username, action_type_id, ip_address, timestamp, is_authenticated) VALUES (?, ?, ?, ?, ?)");
                         if ($stmtLog) {
-                            $action_type_id = 1; // Successful Login
+                            $action_type_id = 1; // AUTH_LOGIN_SUCCESS
                             $is_auth = 1;
-                            $stmtLog->bind_param("sisssi", $email, $action_type_id, $ip_address, $timestamp, $timestamp, $is_auth);
+                            $stmtLog->bind_param("siisi", $email, $action_type_id, $ip_address, $timestamp, $is_auth);
                             $stmtLog->execute();
                             $stmtLog->close();
                         }
@@ -87,11 +86,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 break;
                         }
                     } else {
-                        $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
+                        $stmtLog = $conn->prepare("INSERT INTO system_activities (username, action_type_id, ip_address, timestamp, is_authenticated) VALUES (?, ?, ?, ?, ?)");
                         if ($stmtLog) {
-                            $action_type_id = 2; // Failed Login
+                            $action_type_id = 2; // AUTH_LOGIN_FAILED
                             $is_auth = 0;
-                            $stmtLog->bind_param("sisssi", $email, $action_type_id, $ip_address, $timestamp, $timestamp, $is_auth);
+                            $stmtLog->bind_param("siisi", $email, $action_type_id, $ip_address, $timestamp, $is_auth);
                             $stmtLog->execute();
                             $stmtLog->close();
                         }
@@ -121,9 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-
-    
-
     <header class="site-header">
 
       <div class="logo-box">
@@ -146,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
         </a>
       <?php else: ?>
-        <a href="signin.php" class="sign-in-btn">
+        <a href="signIN.php" class="sign-in-btn">
           Sign In <i class="fa-regular fa-circle-user"></i>
         </a>
       <?php endif; ?>
@@ -158,9 +154,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-
-
-
 
     <!-- SIGN-IN FORM -->
     <div class="registration">

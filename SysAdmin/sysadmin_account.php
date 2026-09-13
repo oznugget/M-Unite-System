@@ -1,176 +1,242 @@
 <?php
-require_once("db.php");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require "dbConnection.php";
 
-// No sign-in page yet, so for now the username is passed in the URL,
-// e.g. account.php?username=amahle.mtshali@example.com
-$username = isset($_REQUEST['username']) ? trim($_REQUEST['username']) : '';
-
-if ($username === '') {
-    die("<p class=\"error\">No username provided. Open this page as account.php?username=someone@example.com</p>");
+// 1. Must be logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: signIN.php");
+    exit();
 }
 
-// Retrieve the account + community member details
-$sql = "SELECT a.username, a.name, a.surname, a.phone_number, a.active_status,
-               cm.town, w.ward_name
-        FROM accounts a
-        JOIN community_member cm ON cm.username = a.username
-        LEFT JOIN wards w ON w.ward_id = cm.ward_id
-        WHERE a.username = '$username'";
-$result = $conn->query($sql);
-
-if ($result === FALSE) {
-    die("<p class=\"error\">Unable to retrieve account details!</p>");
+// 2. Must be a System Admin
+$allowedRoles = ['System Admin', '4'];
+if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], $allowedRoles)) {
+    header("Location: signIN.php");
+    exit();
 }
+
+$username = $_SESSION['username'];
+
+// ---- Fetch this admin's account details ----
+$stmt = $conn->prepare("SELECT username, name, surname, phone_number FROM accounts WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
 if ($result->num_rows === 0) {
-    die("<p class=\"error\">No account found for username: $username</p>");
+    session_destroy();
+    header("Location: signIN.php");
+    exit();
 }
 
-$row = $result->fetch_assoc();
+$admin = $result->fetch_assoc();
+$stmt->close();
 
-// Handle the settings form being submitted
-$updateMessage = "";
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$profileMessage  = "";
+$passwordMessage = "";
 
-    $name_up  = isset($_POST["name"]) ? trim($_POST["name"]) : '';
-    $phone_up = isset($_POST["phone"]) ? trim($_POST["phone"]) : '';
+// ---- Handle Profile form submission ----
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_profile'])) {
 
-    if ($name_up !== '' && $phone_up !== '') {
+    $name_up    = trim($_POST["name"] ?? '');
+    $surname_up = trim($_POST["surname"] ?? '');
+    $phone_up   = trim($_POST["phone"] ?? '');
 
-        $sql_update = "UPDATE accounts SET name = '$name_up', phone_number = '$phone_up' WHERE username = '$username'";
-        $update_result = $conn->query($sql_update);
-
-        if ($update_result === FALSE) {
-            $updateMessage = "<p class=\"error\">Unable to update the record!</p>";
-        } else {
-            $updateMessage = "<p class=\"success\">Account successfully updated!</p>";
-            // refresh the values so the page shows the change immediately
-            $row['name'] = $name_up;
-            $row['phone_number'] = $phone_up;
-        }
+    if ($name_up === '' || $surname_up === '' || $phone_up === '') {
+        $profileMessage = "<p class=\"error\">Name, surname, and phone number are required.</p>";
     } else {
-        $updateMessage = "<p class=\"error\">Name and phone number are required.</p>";
+        $updateStmt = $conn->prepare("UPDATE accounts SET name = ?, surname = ?, phone_number = ? WHERE username = ?");
+        $updateStmt->bind_param("ssss", $name_up, $surname_up, $phone_up, $username);
+
+        if ($updateStmt->execute()) {
+            $profileMessage = "<p class=\"success\">Profile updated successfully!</p>";
+            $admin['name']         = $name_up;
+            $admin['surname']      = $surname_up;
+            $admin['phone_number'] = $phone_up;
+        } else {
+            $profileMessage = "<p class=\"error\">Unable to update the record. Please try again.</p>";
+        }
+        $updateStmt->close();
     }
 }
+
+// ---- Handle Password form submission ----
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_password'])) {
+
+    $currentPassword = $_POST['current_password'] ?? '';
+    $newPassword     = $_POST['new_password'] ?? '';
+    $confirmPassword = $_POST['confirm_password'] ?? '';
+
+    if ($currentPassword === '' || $newPassword === '' || $confirmPassword === '') {
+        $passwordMessage = "<p class=\"error\">All password fields are required.</p>";
+    } elseif ($newPassword !== $confirmPassword) {
+        $passwordMessage = "<p class=\"error\">New password and confirmation do not match.</p>";
+    } elseif (strlen($newPassword) < 8) {
+        $passwordMessage = "<p class=\"error\">New password must be at least 8 characters.</p>";
+    } else {
+        // Verify current password is correct before allowing a change
+        $pwStmt = $conn->prepare("SELECT password FROM accounts WHERE username = ?");
+        $pwStmt->bind_param("s", $username);
+        $pwStmt->execute();
+        $pwRow = $pwStmt->get_result()->fetch_assoc();
+        $pwStmt->close();
+
+        if (!password_verify($currentPassword, $pwRow['password'])) {
+            $passwordMessage = "<p class=\"error\">Current password is incorrect.</p>";
+        } else {
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            $pwUpdateStmt = $conn->prepare("UPDATE accounts SET password = ? WHERE username = ?");
+            $pwUpdateStmt->bind_param("ss", $hashedPassword, $username);
+
+            if ($pwUpdateStmt->execute()) {
+                $passwordMessage = "<p class=\"success\">Password updated successfully!</p>";
+            } else {
+                $passwordMessage = "<p class=\"error\">Unable to update password. Please try again.</p>";
+            }
+            $pwUpdateStmt->close();
+        }
+    }
+}
+
+$fullName = htmlspecialchars($admin['name'] . ' ' . $admin['surname']);
+$initials = strtoupper(substr($admin['name'], 0, 1) . substr($admin['surname'], 0, 1));
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Account - M-Unite</title>
-<link rel="stylesheet" href="style.css">
+<title>My Account - M-Unite Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@500;700;800&family=TikTok+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="sysadmin_style.css">
+<link rel="stylesheet" href="sysadmin_account.css">
 </head>
-<body>
+<body class="admin-shell">
 
-<!-- Top navigation bar, styled after the SDS wireframe: logo box,
-     boxed nav links, and a "Sign In" icon button on the right -->
-<header>
-  <div class="logo-box">M</div>
-</header>
+<div class="app-shell">
 
-<!-- ============ Sidebar ============ -->
+  <!-- ============ Sidebar ============ -->
   <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-mark">M</div>
-      <div>
-        <div class="brand-name">M-Unite</div>
-        <div class="brand-sub">Makhanda &middot; Makana Local Municipality</div>
-      </div>
+        <div class="brand">
+      <a href="sysadmin_home.php" class="logo-link">
+        <img src="images/logo_1.png" alt="M-Unite Logo" class="brand-logo-image">
+      </a>
     </div>
 
     <ul class="side-nav">
-      <li><a href="sysadmin_home.php" class="active">Dashboard</a></li>
+      <li><a href="sysadmin_home.php">Dashboard</a></li>
       <li><a href="sysadmin_users.php">User Management</a></li>
       <li><a href="sysadmin_content.php">Content Management</a></li>
       <li><a href="sysadmin_activity_logs.php">Activity Log</a></li>
       <li><a href="sysadmin_reports.php">Reports</a></li>
-      <li><a href="sysadmin_account.php">My Account</a></li>
+      <li><a href="sysadmin_account.php" class="active">My Account</a></li>
     </ul>
-
 
     <a href="#" class="logout-link" id="logout-btn">&#8630; Log Out</a>
   </aside>
 
-<main id="main-content">
-  <h1>My Account</h1>
+  <!--Main column-->
+  <div>
+    <header class="topbar">
+      <div class="search-box"> Search users, notices, activity...</div>
+      <div class="topbar-right">
+        <div class="bell">&#128276;</div>
+        <div class="avatar"><?php echo $initials; ?></div>
+        <div>
+          <div class="who-name"><?php echo $fullName; ?></div>
+          <div class="who-role">SYSTEM ADMINISTRATOR</div>
+        </div>
+      </div>
+    </header>
 
-  <!-- Profile information -->
-  <section>
-    <h2>Profile</h2>
-    <p>Name: <span id="p-name"><?php echo $row['name'] . " " . $row['surname']; ?></span></p>
-    <p>Email: <span id="p-email"><?php echo $row['username']; ?></span></p>
-    <p>Phone: <span id="p-phone"><?php echo $row['phone_number']; ?></span></p>
-    <p>Ward: <?php echo $row['ward_name'] . ", " . $row['town']; ?></p>
-    <p>Role: Community Member</p>
-    <p>Status: <?php echo ($row['active_status'] == 1) ? "Active" : "Inactive"; ?></p>
-  </section>
+    <main class="content">
+      <div class="account-header">
+        <div>
+          <h1>My Account</h1>
+          <p class="page-sub">Your administrator profile and credentials.</p>
+        </div>
+      </div>
 
-  <!-- List of reports the user has submitted -->
-  <section>
-    <h2>My Reports</h2>
-    <ul id="report-list">
-      <?php
-      $sql_reports = "SELECT r.description, r.current_status, r.timestamp, sc.category_name
-                       FROM reports r
-                       JOIN service_categories sc ON sc.category_id = r.category_id
-                       WHERE r.username = '$username'
-                       ORDER BY r.timestamp DESC";
-      $result_reports = $conn->query($sql_reports);
+      <div class="account-grid">
 
-      if ($result_reports === FALSE) {
-          echo "<p class=\"error\">Unable to retrieve reports!</p>";
-      } elseif ($result_reports->num_rows === 0) {
-          echo "<li>You haven't submitted any reports yet.</li>";
-      } else {
-          while ($rrow = $result_reports->fetch_assoc()) {
-              echo "<li>";
-              echo "<strong>" . $rrow['category_name'] . "</strong> - ";
-              echo "<span class=\"status\">" . $rrow['current_status'] . "</span><br>";
-              echo $rrow['description'] . "<br>";
-              echo "<small>" . $rrow['timestamp'] . "</small>";
-              echo "</li>";
-          }
-      }
-      ?>
-    </ul>
-  </section>
+        <!-- Profile -->
+        <section class="panel">
+          <h2>Profile</h2>
+          <p class="panel-sub">Displayed to other staff in the activity log.</p>
 
-  <!-- Update account details -->
-  <section>
-    <h2>Settings</h2>
-    <?php echo $updateMessage; ?>
-    <p>Update your account details below.</p>
-    <form action="account.php?username=<?php echo $username; ?>" method="POST">
-      <label>Name:
-        <input type="text" id="name" name="name" value="<?php echo $row['name']; ?>">
-      </label>
-      <label>Email:
-        <input type="email" id="email" name="email" value="<?php echo $row['username']; ?>" readonly>
-      </label>
-      <label>Phone number:
-        <input type="text" id="phone" name="phone" value="<?php echo $row['phone_number']; ?>">
-      </label>
-      <button type="submit">Save Changes</button>
-    </form>
-  </section>
+          <?php echo $profileMessage; ?>
 
-  <button id="logout-btn">Log Out</button>
-</main>
+          <div class="account-identity">
+            <div class="account-avatar"><?php echo $initials; ?></div>
+            <div>
+              <div class="account-name"><?php echo $fullName; ?></div>
+            </div>
+          </div>
 
-<!-- Site footer -->
-<footer>
-  <p>Connecting residents of Makhanda and the Municipality.</p>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="reports.html">Reports</a>
-    <a href="notices.html">Notices</a>
-    <a href="map.html">Map</a>
-    <a href="about.html">About Us</a>
-  </nav>
-  <p>&copy; M-Unite 2026</p>
-</footer>
+          <form method="post" action="">
+            <div class="account-form-row">
+              <div class="account-field">
+                <label>First Name</label>
+                <input type="text" name="name" value="<?php echo htmlspecialchars($admin['name']); ?>" required>
+              </div>
+              <div class="account-field">
+                <label>Surname</label>
+                <input type="text" name="surname" value="<?php echo htmlspecialchars($admin['surname']); ?>" required>
+              </div>
+            </div>
+
+            <div class="account-form-row">
+              <div class="account-field">
+                <label>Work Email</label>
+                <input type="email" value="<?php echo htmlspecialchars($admin['username']); ?>" disabled>
+              </div>
+              <div class="account-field">
+                <label>Mobile Number</label>
+                <input type="text" name="phone" value="<?php echo htmlspecialchars($admin['phone_number']); ?>" required>
+              </div>
+            </div>
+
+            <button type="submit" name="update_profile" class="btn-save">Save changes</button>
+          </form>
+        </section>
+
+        <!-- Security -->
+        <section class="panel">
+          <h2>Security</h2>
+          <p class="panel-sub">Update your login credentials.</p>
+
+          <?php echo $passwordMessage; ?>
+
+          <form method="post" action="">
+            <div class="account-field">
+              <label>Current Password</label>
+              <input type="password" name="current_password" required>
+            </div>
+
+            <div class="account-form-row">
+              <div class="account-field">
+                <label>New Password</label>
+                <input type="password" name="new_password" required>
+              </div>
+              <div class="account-field">
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" required>
+              </div>
+            </div>
+
+            <button type="submit" name="update_password" class="btn-update-password">Update password</button>
+          </form>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
 
 <script src="nav.js"></script>
-<?php $conn->close(); ?>
 </body>
 </html>

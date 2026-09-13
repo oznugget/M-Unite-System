@@ -19,12 +19,10 @@ require "sysadmin_home_data.php";
 
   <!-- ============ Sidebar ============ -->
   <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-mark">M</div>
-      <div>
-        <div class="brand-name">M-Unite</div>
-        <div class="brand-sub">Makhanda &middot; Makana Local Municipality</div>
-      </div>
+   <div class="brand">
+      <a href="sysadmin_home.php" class="logo-link">
+        <img src="imaages/logo_1.png" alt="M-Unite Logo" class="brand-logo-image">
+      </a>
     </div>
 
     <ul class="side-nav">

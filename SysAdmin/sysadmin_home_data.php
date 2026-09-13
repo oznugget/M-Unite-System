@@ -1,10 +1,12 @@
 <?php
-session_start();
-require "db.php";
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}   //preventing that weird code thhingy about session has already started
+require "dbConnection.php";
 
 // 1. Must be logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: signIN.php");
+    header("Location: signin.php");
     exit();
 }
 
