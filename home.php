@@ -239,14 +239,13 @@ $alerts = get_active_alerts($conn, $username);
       </div>
     </section>
 
-    <!-- WHAT YOU CAN REPORT -->
 <!-- WHAT YOU CAN REPORT -->
 <section id="report-categories" class="report-categories">
     <div class="report-categories-inner">
 
         <h2 class="section-title">What You Can Report</h2>
         <p class="section-subtitle">
-            The various reports you can submit throughout our website to the Makana municipality.
+            Read through the various reports you can submit through our website to the Makana municipality.
         </p>
 
         <div class="category-grid">
