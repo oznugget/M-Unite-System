@@ -312,9 +312,9 @@ $alerts = get_active_alerts($conn, $username);
       <div class="footer-col">
         <h4>Pages</h4>
         <ul>
-          <li><a href="index.html">Home</a></li>
+          <li><a href="home.php">Home</a></li>
           <li><a href="CommReports.php">Reports</a></li>
-          <li><a href="notices.html">Notices</a></li>
+          <li><a href="public_notices.html">Notices</a></li>
           <li><a href="map.html">Map</a></li>
           <li><a href="about.html">About Us</a></li>
         </ul>
@@ -325,8 +325,8 @@ $alerts = get_active_alerts($conn, $username);
         <h4>Connect</h4>
         <ul>
           <li><a href="#">Report Website Bugs</a></li>
-          <li><a href="#">Volunteer</a></li>
-          <li><a href="mailto:info@munite.co.za">info@munite.co.za</a></li>
+          <li><a href="home.php#volunteerForm">Volunteer</a></li>
+          <li><a href="#">info@munite.co.za</a></li>
           <li><a href="tel:+27000000000">+27 000000000</a></li>
         </ul>
       </div>
@@ -336,7 +336,7 @@ $alerts = get_active_alerts($conn, $username);
         <h4>Resources</h4>
         <ul>
           <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Documentation</a></li>
+          <li><a href="documentation.php">Documentation</a></li>
           <li><a href="Terms_of_use.php">Terms Of Use</a></li>
           <li><a href="#">Copyright Notice</a></li>
         </ul>

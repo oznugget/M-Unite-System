@@ -215,9 +215,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="email" id="email" name="email" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" required />
             </div>
 
-            <div class="form-group">
+           <div class="form-group">
                 <label for="pword">Password</label>
-                <input type="password" id="pword" name="pword" required />
+                <div class="password-wrapper">
+                    <input type="password" id="pword" name="pword" required>
+                    <button type="button" class="toggle-btn"
+                            onclick="togglePassword('pword', 'eyeIconSignin')"
+                            aria-label="Toggle password visibility">
+                        <svg id="eyeIconSignin" xmlns="http://www.w3.org/2000/svg"
+                            width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="#0E2841" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="form-actions">
@@ -276,8 +288,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h4>Resources</h4>
         <ul>
           <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Documentation</a></li>
-          <li><a href="#">Terms Of Use</a></li>
+          <li><a href="documentation.php">Documentation</a></li>
+          <li><a href="Terms_of_use.php">Terms Of Use</a></li>
           <li><a href="#">Copyright Notice</a></li>
         </ul>
       </div>

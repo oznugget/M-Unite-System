@@ -1,0 +1,226 @@
+/* --- BACK BUTTON BAR --- */
+.back-bar {
+    max-width: 960px;
+    margin: 2rem auto 0;
+    padding: 0 2.5rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: 'TikTok Sans', sans-serif;
+    color: #0E2841;
+    background: #ffffff;
+    border: 1px solid #0E2841;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+
+.back-btn:hover {
+    background: #0E2841;
+    color: #ffffff;
+    transform: translateX(-2px);
+}
+
+.back-btn i {
+    font-size: 0.85rem;
+}
+
+/* --- DOCUMENTATION PAGE --- */
+.doc-content {
+    max-width: 960px;
+    margin: 2rem auto 4rem;
+    padding: 3rem 2.5rem;       /* ← explicit top/bottom AND left/right padding */
+    color: #0E2841;
+    line-height: 1.75;
+    font-family: 'TikTok Sans', sans-serif;
+    background: #ffffff;        /* ← makes the padded area visible */
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgba(14, 40, 65, 0.06);
+}
+
+.doc-content h1 {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 2.2rem;
+    color: #0E2841;
+    margin-bottom: 0.75rem;
+}
+
+.doc-intro {
+    font-size: 1.05rem;
+    color: #3f5f7a;
+    margin-bottom: 2rem;
+    border-left: 4px solid #F36E39;
+    padding-left: 1rem;
+}
+
+/* Table of contents */
+.doc-toc {
+    background: #F4F8FC;
+    border: 1px solid #DCE6F2;
+    border-left: 4px solid #0E2841;
+    border-radius: 4px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.doc-toc h3 {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+    color: #0E2841;
+}
+
+.doc-toc ol {
+    padding-left: 1.25rem;
+    column-count: 2;
+    column-gap: 2rem;
+}
+
+.doc-toc li {
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+    break-inside: avoid;
+}
+
+.doc-toc a {
+    color: #0E2841;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.doc-toc a:hover {
+    color: #F36E39;
+    text-decoration: underline;
+}
+
+/* Sections */
+.doc-content section {
+    margin-bottom: 2.5rem;
+    scroll-margin-top: 100px;
+}
+
+.doc-content h2 {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 1.35rem;
+    color: #0E2841;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #DCE6F2;
+}
+
+.doc-content h3 {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 1.05rem;
+    color: #0E2841;
+    margin-top: 1.25rem;
+    margin-bottom: 0.4rem;
+}
+
+.doc-content p {
+    margin-bottom: 0.9rem;
+}
+
+.doc-content ul,
+.doc-content ol {
+    padding-left: 1.75rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.doc-content li {
+    margin-bottom: 0.5rem;
+}
+
+.doc-content strong {
+    color: #0E2841;
+}
+
+.doc-content a {
+    color: #F36E39;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.25s ease;
+}
+
+.doc-content a:hover {
+    color: #0E2841;
+}
+
+.doc-note {
+    background: #FFF6F1;
+    border-left: 4px solid #F36E39;
+    padding: 1rem 1.25rem;
+    border-radius: 3px;
+    font-size: 0.95rem;
+    margin: 1.25rem 0;
+}
+
+.doc-note strong {
+    color: #F36E39;
+}
+
+.signin-here {
+    color: #F36E39;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.signin-here:hover {
+    color: #ffffff;
+    background-color: #F36E39;
+    text-decoration: none;
+    padding: 1px 6px;
+    border-radius: 3px;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .back-bar {
+        margin: 1.25rem auto 0;
+        padding: 0 1.25rem;
+    }
+
+    .back-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .doc-content {
+        margin: 1.5rem 1rem 3rem;
+        padding: 2rem 1.25rem;      /* keep generous padding on mobile */
+    }
+
+    .doc-content h1 {
+        font-size: 1.6rem;
+    }
+
+    .doc-content h2 {
+        font-size: 1.15rem;
+    }
+
+    .doc-content h3 {
+        font-size: 1rem;
+    }
+
+    .doc-toc ol {
+        column-count: 1;
+    }
+
+    .doc-toc {
+        padding: 1.25rem 1.25rem;
+    }
+}
