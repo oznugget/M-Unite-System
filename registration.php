@@ -120,10 +120,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     //Filling in community member table
-    if ($role === "Community Member") {
-        $stmt2 = $conn->prepare("INSERT INTO community_member(username, ward_id, street_number, street_name, suburb) 
-            VALUES (?,?,?,?,?)");
-        $stmt2->bind_param("sisss", $username, $ward_id, $street_number, $street_name, $suburb);
+        if ($role === "Community Member") {
+        $latValue = ($lat !== "" && is_numeric($lat)) ? (float)$lat : null;
+        $lonValue = ($lon !== "" && is_numeric($lon)) ? (float)$lon : null;
+
+        $stmt2 = $conn->prepare("INSERT INTO community_member(username, ward_id, street_number, street_name, suburb, latitude, longitude) 
+            VALUES (?,?,?,?,?,?,?)");
+        $stmt2->bind_param("sisssdd", $username, $ward_id, $street_number, $street_name, $suburb, $latValue, $lonValue);
         $stmt2->execute();
         $stmt2->close();
     

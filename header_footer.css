@@ -299,14 +299,8 @@ a {
     height: 100vh; /* Full screen height */
     flex-direction: column;
     background: #0E2841;
-    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.35); /* Shadow adjusted for a side menu */
-    z-index: 20;
-    padding-top: 70px; /* Pushes links down so they aren't hidden behind the hamburger icon */
-    
-    /* Hides the menu off-screen to the left */
-    transform: translateX(-100%); 
-    /* Smooth sliding animation */
-    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+    z-index: 1000;
   }
 
   .navbar.active {
