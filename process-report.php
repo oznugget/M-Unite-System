@@ -1,7 +1,8 @@
 <?php
 
 
-require 'db-connect.php'; // gives us $pdo, our database connection
+require 'db-connect.php';
+require 'log_activity.php'; // gives us $pdo, our database connection
 
 function respond($success, $message) {
  
@@ -21,9 +22,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-//$username = $_SESSION['username'] ?? 'brown@gmail.com';
+$username = $_SESSION['username'] ?? 'brown@gmail.com';
 
-
+$isAuthenticated = isset($_SESSION['username']) ? 1 : 0;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
    respond(false, 'Invalid request method.');
@@ -106,11 +107,11 @@ if (isset($_FILES['fault-image']) && $_FILES['fault-image']['error'] === UPLOAD_
     $imageInfo = @getimagesize($uploadedFile['tmp_name']);
     $detectedType = $imageInfo ? $imageInfo['mime'] : '';
 
-    $allowedTypes = ['image/jpeg', 'image/png'];
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     $maxSizeInBytes = 128 * 1024 * 1024; // 128MB, matching the JS validation rule
 
     if (!in_array($detectedType, $allowedTypes)) {
-       respond(false, 'Uploaded file is not a valid .jpg, .jpeg, or .png image.');
+       respond(false, 'Uploaded file is not a valid .jpg, .jpeg, .png, or .webp image.');
     }
 
     if ($uploadedFile['size'] > $maxSizeInBytes) {
@@ -118,7 +119,13 @@ if (isset($_FILES['fault-image']) && $_FILES['fault-image']['error'] === UPLOAD_
     }
 
     
-    $extension = ($detectedType === 'image/png') ? 'png' : 'jpg';
+    if ($detectedType === 'image/png') {
+        $extension = 'png';
+    } elseif ($detectedType === 'image/webp') {
+        $extension = 'webp';
+    } else {
+        $extension = 'jpg';
+    }
     $newFilename = uniqid('report_', true) . '.' . $extension;
 
     
@@ -156,6 +163,10 @@ $insertStmt->execute([
     'timestamp' => date('Y-m-d H:i:s'), // current date/time, formatted the way MySQL's DATETIME column expects
 ]);
 
+logActivity($pdo, $username, 'REPORT_CREATE', $isAuthenticated);
 
+if ($imageUrl !== null) {
+    logActivity($pdo, $username, 'REPORT_ATTACH_MEDIA', $isAuthenticated);
+}
 
 Respond(true, 'Report submitted successfully.');

@@ -27,35 +27,79 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
   
 
-    <header class="site-header">
+  <header class="site-header">
 
     <div class="logo-box">
-      <a href="home.php" class="logo-link">
-      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
-      </a>
+        <a href="home.php" class="logo-link">
+            <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
+        </a>
     </div>
 
-    <nav class="navbar">
-      <a href="home.php" class="nav-item-active">Home</a>
-      <a href="reports.html" class="nav-item">Reports</a>
-      <a href="notification.html" class="nav-item">Notices</a>
-      <a href="map.php" class="nav-item">Map</a>
-      <a href="about_us.html" class="nav-item">About Us</a>
+    <div class="hamburger" id="hamburger-menu">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+
+    <nav class="navbar" id="nav-menu">
+        <a href="home.php" class="nav-item">Home</a>
+        <a href="CommReports.php" class="nav-item">Reports</a>
+        <a href="public_notices.php" class="nav-item">Notices</a>
+        <a href="map.php" class="nav-item">Map</a>
+        <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
 
-      <div class="header-right">
-      <?php if ($isLoggedIn): ?>
-        <a href="account.php" class="sign-in-btn">
-          <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
-        </a>
-      <?php else: ?>
-        <a href="signin.php" class="sign-in-btn">
-          Sign In <i class="fa-regular fa-circle-user"></i>
-        </a>
-      <?php endif; ?>
+    <div class="header-right">
+        <?php if ($isLoggedIn): ?>
+            <a href="account.php" class="sign-in-btn">
+                <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
+            </a>
+        <?php else: ?>
+            <a href="signin.php" class="sign-in-btn">
+                Sign In <i class="fa-regular fa-circle-user"></i>
+            </a>
+        <?php endif; ?>
     </div>
-    </header>
 
+</header>
+
+<script>
+  const hamburger = document.getElementById('hamburger-menu');
+  const navMenu   = document.getElementById('nav-menu');
+
+  if (hamburger && navMenu) {
+    const hamburgerIcon = hamburger.querySelector('i');
+
+    function toggleMenu() {
+      const isOpen = navMenu.classList.toggle('active');
+      hamburger.classList.toggle('active', isOpen);
+      hamburgerIcon.classList.toggle('fa-bars', !isOpen);
+      hamburgerIcon.classList.toggle('fa-xmark', isOpen);
+    }
+
+    function closeMenu() {
+      navMenu.classList.remove('active');
+      hamburger.classList.remove('active');
+      hamburgerIcon.classList.add('fa-bars');
+      hamburgerIcon.classList.remove('fa-xmark');
+    }
+
+    hamburger.addEventListener('click', toggleMenu);
+
+    navMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) closeMenu();
+    });
+
+    document.addEventListener('click', (event) => {
+      const clickedInsideMenu = navMenu.contains(event.target) || hamburger.contains(event.target);
+      if (!clickedInsideMenu && navMenu.classList.contains('active')) {
+        closeMenu();
+      }
+    });
+  }
+</script>
 
 
 
@@ -248,8 +292,8 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         <h4>Resources</h4>
         <ul>
           <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Documentation</a></li>
-          <li><a href="#">Terms Of Use</a></li>
+          <li><a href="documentation.php">Documentation</a></li>
+          <li><a href="Terms_of_use.php">Terms Of Use</a></li>
           <li><a href="#">Copyright Notice</a></li>
         </ul>
       </div>

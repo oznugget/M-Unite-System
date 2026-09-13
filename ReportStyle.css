@@ -381,26 +381,58 @@ h1, h2, h3, h4, button {
   padding: 0.5rem 1rem;
 }
  
-/* ===== SUBMISSION BANNER ===== */
  
-.submission-banner {
-  padding: 0.75rem 1rem;
-  margin-top: 1rem;
-  border: 1px solid var(--color-primary);
+/* ===== SUBMISSION MODAL ===== */
+ 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(14, 40, 65, 0.6); /* var(--color-primary) at 60% opacity */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200; /* above the AI chat widget's z-index: 100 */
 }
  
-/* Two different banner "moods" — JS adds one of these two
-   classes alongside .submission-banner depending on whether
-   the real submission succeeded or failed */
-.submission-banner.is-success {
-  border-color: var(--color-primary);
-  background-color: var(--color-bg);
-}
- 
-.submission-banner.is-error {
-  border-color: var(--color-accent);
+.modal-box {
   background-color: #ffffff;
+  border: 1px solid var(--color-primary);
+  padding: 1.5rem;
+  max-width: 400px;
+  width: calc(100% - 2rem);
+  text-align: center;
+}
+ 
+.modal-message {
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+}
+ 
+/* Same "mood" pattern as before — JS adds this class
+   alongside .modal-message when the submission failed */
+.modal-message.is-error {
   color: var(--color-accent);
+}
+ 
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+ 
+.modal-ok-btn {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-dark);
+  padding: 0.6rem 1.5rem;
+  font-weight: 700;
+}
+ 
+.modal-view-reports-btn {
+  background-color: var(--color-accent);
+  color: var(--color-text-on-dark);
+  padding: 0.6rem 1.5rem;
+  font-weight: 700;
 }
 
 /*=================================== PAST REPORTS ========================= */

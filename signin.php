@@ -53,6 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['username']  = $row['username'];
                         $_SESSION['firstname'] = $row['name'];
                         $_SESSION['role']      = $row['role'];
+                        $_SESSION['ward']    = null;
+                        $_SESSION['ward_id'] = null;
+                        $_SESSION['division'] = null;
                         $_SESSION['ward_id']   = isset($row['ward_id']) ? (int)$row['ward_id'] : null;
                         $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
                         if ($stmtLog) {
@@ -66,17 +69,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         switch ($row['role']) {
                             case "Community Member":
                             case "1":
+                                  $stmtC = $conn->prepare("SELECT ward FROM community_members WHERE username = ? LIMIT 1");
+                                    if ($stmtC) {
+                                        $stmtC->bind_param("s", $row['username']);
+                                        $stmtC->execute();
+                                        $cm = $stmtC->get_result()->fetch_assoc();
+                                        $stmtC->close();
+                                        if ($cm && !empty($cm['ward'])) {
+                                            $_SESSION['ward'] = $cm['ward'];
+                                        }
+                                    }
                                 header("Location: home.php?login=success");
                                 exit();
 
-                            case "Ward Councillor":
                             case "Ward councillor":
                             case "2":
+                                $stmtW = $conn->prepare("SELECT ward_id FROM ward_councillors WHERE username = ? LIMIT 1");
+                                if ($stmtW) {
+                                    $stmtW->bind_param("s", $row['username']);
+                                    $stmtW->execute();
+                                    $wardRow = $stmtW->get_result()->fetch_assoc();
+                                    $stmtW->close();
+
+                                    if ($wardRow) {
+                                        $_SESSION['ward_id'] = $wardRow['ward_id'];
+                                    }
+                                }
                                 header("Location: ward_councillor_home.php?login=success");
                                 exit();
 
                             case "Municipal Officer":
                             case "3":
+                                 $stmtM = $conn->prepare("SELECT division FROM municipal_officers WHERE username = ? LIMIT 1");
+                                if ($stmtM) {
+                                    $stmtM->bind_param("s", $row['username']);
+                                    $stmtM->execute();
+                                    $div = $stmtM->get_result()->fetch_assoc();
+                                    $stmtM->close();
+
+                                    if ($div) {
+                                        $_SESSION['division'] = $div['division'];
+                                    }
+                                }
                                 header("Location: officer-home.php?login=success");
                                 exit();
 
@@ -125,18 +159,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-
     
+</head>
 
-    <header class="site-header">
+<body>
 
-      <div class="logo-box">
+<header class="site-header">
+
+    <div class="logo-box">
       <a href="home.php" class="logo-link">
-      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
+        <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
       </a>
     </div>
 
-    <nav class="navbar"> 
+    <div class="hamburger" id="hamburger-menu">
+      <i class="fa-solid fa-bars"></i>
+    </div>
+
+    <nav class="navbar" id="nav-menu">
       <a href="home.php" class="nav-item">Home</a>
       <a href="CommReports.php" class="nav-item">Reports</a>
       <a href="public_notices.php" class="nav-item">Notices</a>
@@ -144,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
 
-      <div class="header-right">
+    <div class="header-right">
       <?php if ($isLoggedIn): ?>
         <a href="account.php" class="sign-in-btn">
           <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
@@ -155,13 +195,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </a>
       <?php endif; ?>
     </div>
-    </header>
 
-
-    
-</head>
-
-<body>
+</header>
 
 
 
@@ -176,12 +211,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
-        <?php if (isset($_GET['registration']) && $_GET['registration'] === 'success'): ?>
-            <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center; font-size: 14px;">
-                <p>Account created successfully! Please sign in below.</p>
-            </div>
-        <?php endif; ?>
-
 
         <form class="reg-form" action="" method="post">
          
@@ -190,9 +219,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="email" id="email" name="email" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" required />
             </div>
 
-            <div class="form-group">
+           <div class="form-group">
                 <label for="pword">Password</label>
-                <input type="password" id="pword" name="pword" required />
+                <div class="password-wrapper">
+                    <input type="password" id="pword" name="pword" required>
+                    <button type="button" class="toggle-btn"
+                            onclick="togglePassword('pword', 'eyeIconSignin')"
+                            aria-label="Toggle password visibility">
+                        <svg id="eyeIconSignin" xmlns="http://www.w3.org/2000/svg"
+                            width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="#0E2841" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="form-actions">
@@ -200,7 +241,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="register-link">
-                Don't have an account? <a href="createacc.php">Register Now</a>
+                Don't have an account? <a href="createacc.php">Register Now</a> <br>
                 Forgot your password? <a href="forgot_password.php">Reset It</a>
             </div>
         </form>
@@ -251,8 +292,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h4>Resources</h4>
         <ul>
           <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Documentation</a></li>
-          <li><a href="#">Terms Of Use</a></li>
+          <li><a href="documentation.php">Documentation</a></li>
+          <li><a href="Terms_of_use.php">Terms Of Use</a></li>
           <li><a href="#">Copyright Notice</a></li>
         </ul>
       </div>

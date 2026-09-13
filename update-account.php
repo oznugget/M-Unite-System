@@ -52,21 +52,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $suburb       = isset($_POST['suburb']) ? trim($_POST['suburb']) : '';
     $town         = isset($_POST['town']) ? trim($_POST['town']) : '';
     $postalCode   = isset($_POST['postal_code']) ? trim($_POST['postal_code']) : '';
+    $wardId       = isset($_POST['ward_id']) ? trim($_POST['ward_id']) : '';
 
     if (empty($name) || empty($surname) || empty($phone)) {
         $error = "Name, Surname, and Phone Number are required.";
+    } elseif (!ctype_digit($phone) || strlen($phone) !== 9) {
+        $error = "Phone number must be exactly 9 digits, without the leading 0.";
     } elseif (empty($streetNumber) || empty($streetName) || empty($suburb) || empty($town) || empty($postalCode)) {
         $error = "Please complete all physical address fields.";
+    } elseif ($wardId === '' || !ctype_digit($wardId)) {
+        // A picked suggestion always fills this in — an empty/non-numeric
+        // value here means the address text was edited but no suggestion
+        // was ever selected, so we don't know the real ward.
+        $error = "Please select your address from the suggestion list so we can confirm your ward.";
     } else {
         $updateSql = "UPDATE accounts SET name = ?, surname = ?, phone_number = ? WHERE username = ?";
         $stmtUpdate = $conn->prepare($updateSql);
 
-        $updateAddressSql = "UPDATE community_member SET street_number = ?, street_name = ?, suburb = ?, town = ?, postal_code = ? WHERE username = ?";
+        $updateAddressSql = "UPDATE community_member SET street_number = ?, street_name = ?, suburb = ?, town = ?, postal_code = ?, ward_id = ? WHERE username = ?";
         $stmtAddress = $conn->prepare($updateAddressSql);
 
         if ($stmtUpdate && $stmtAddress) {
             $stmtUpdate->bind_param("ssss", $name, $surname, $phone, $username);
-            $stmtAddress->bind_param("ssssss", $streetNumber, $streetName, $suburb, $town, $postalCode, $username);
+            $stmtAddress->bind_param("sssssss", $streetNumber, $streetName, $suburb, $town, $postalCode, $wardId, $username);
 
             if ($stmtUpdate->execute() && $stmtAddress->execute()) {
                 $_SESSION['firstname'] = $name;
@@ -92,6 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         $addressData['suburb'] = $suburb;
         $addressData['town'] = $town;
         $addressData['postal_code'] = $postalCode;
+        if ($wardId !== '') {
+            $addressData['ward_id'] = $wardId;
+        }
     }
 }
 
@@ -137,6 +148,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
 }
 
 $firstname = htmlspecialchars($_SESSION['firstname'] ?? '');
+
+// Build the display string shown in the address field on page load.
+// Mirrors the same fields used on account.php so what the user sees
+// here matches what they see on their profile.
+$prefillAddr = '';
+if ($addressData) {
+    $line1 = trim(($addressData['street_number'] ?? '') . ' ' . ($addressData['street_name'] ?? ''));
+    $parts = array_filter([
+        $line1,
+        $addressData['suburb'] ?? '',
+        $addressData['town'] ?? '',
+        $addressData['postal_code'] ?? ''
+    ], fn($p) => $p !== '');
+    $prefillAddr = implode(', ', $parts);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -199,35 +225,32 @@ $firstname = htmlspecialchars($_SESSION['firstname'] ?? '');
           <label>Phone Number:
             <input type="text" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars($userData['phone_number'] ?? ''); ?>" required />
           </label>
+          <p class="field-note">Enter 9 digits, without the leading 0 (e.g. 821234567 for 082 123 4567).</p>
           <ul id="phone-requirements" class="password-requirements">
-            <li id="req-phone-digits"><span class="req-icon">&#10007;</span> Exactly 10 digits</li>
+            <li id="req-phone-digits"><span class="req-icon">&#10007;</span> Exactly 9 digits</li>
           </ul>
 
           <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;" />
 
-          <label>Street Number:
-            <input type="text" id="street_number" name="street_number" value="<?php echo htmlspecialchars($addressData['street_number'] ?? ''); ?>" required />
-          </label>
+          <div class="form-group autocomplete-wrapper" id="address-container">
+        <label for="addr">Physical Address</label>
+        <input type="text" id="addr" name="addr" value="<?php echo htmlspecialchars($prefillAddr); ?>" placeholder="Type in street number + street name in Makhanda..." autocomplete="off" required />
+        
+        <ul id="suggestions" class="suggestions-list"></ul>
+        <p id="ward-change-notice" style="display:none; color: var(--navy); font-weight: 600; margin-top: 6px;"></p>
+      </div>
 
-          <label>Street Name:
-            <input type="text" id="street_name" name="street_name" value="<?php echo htmlspecialchars($addressData['street_name'] ?? ''); ?>" required />
-          </label>
 
-          <label>Suburb:
-            <input type="text" id="suburb" name="suburb" value="<?php echo htmlspecialchars($addressData['suburb'] ?? ''); ?>" required />
-          </label>
 
-          <label>Town:
-            <input type="text" id="town" name="town" value="<?php echo htmlspecialchars($addressData['town'] ?? ''); ?>" required />
-          </label>
-
-          <label>Postal Code:
-            <input type="text" id="postal_code" name="postal_code" value="<?php echo htmlspecialchars($addressData['postal_code'] ?? ''); ?>" required />
-          </label>
-
-          <label>Ward (Read-Only):
-            <input type="text" value="<?php echo htmlspecialchars($addressData['ward_id'] ?? ''); ?>" disabled />
-          </label>
+            <!-- Hidden address components extracted automatically -->
+      <input type="hidden" id="lat" name="lat">
+      <input type="hidden" id="lon" name="lon">
+      <input type="hidden" id="street_number" name="street_number" value="<?php echo htmlspecialchars($addressData['street_number'] ?? ''); ?>">
+      <input type="hidden" id="street_name" name="street_name" value="<?php echo htmlspecialchars($addressData['street_name'] ?? ''); ?>">
+      <input type="hidden" id="suburb" name="suburb" value="<?php echo htmlspecialchars($addressData['suburb'] ?? ''); ?>">
+      <input type="hidden" id="town" name="town" value="<?php echo htmlspecialchars($addressData['town'] ?? ''); ?>">
+      <input type="hidden" id="postal_code" name="postal_code" value="<?php echo htmlspecialchars($addressData['postal_code'] ?? ''); ?>">
+      <input type="hidden" id="ward_id" name="ward_id" value="<?php echo htmlspecialchars($addressData['ward_id'] ?? '1'); ?>">
 
           <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;" />
 

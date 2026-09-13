@@ -19,6 +19,7 @@
   z-index: 1;
 }
 
+
 #slides {
   display: flex;
   height: 100%;
@@ -172,6 +173,58 @@
 }
 /*----------------------------------------------------------------------*/
 /* section 2*/
+.dam-bar-container {
+  width: 100%;
+  height: 30px;
+  background-color: #e0e0e0;
+  border-radius: 0; 
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center; 
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dam-bar-fill {
+  height: 100%; /* Restored to ensure visibility */
+  flex: 0 0 auto; /* Strictly prevents flexbox from shrinking the width */
+  background-color: #0E2841; 
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 5 Q 5 0, 10 5 T 20 5' stroke='rgba(255, 255, 255, 0.25)' fill='none' stroke-width='2'/%3E%3C/svg%3E");
+  background-size: 20px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.dam-text-inside {
+  color: #ffffff;
+  padding-right: 10px;
+  font-family: 'Merriweather Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.dam-text-outside {
+  color: #0E2841;
+  padding-left: 10px;
+  font-family: 'Merriweather Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+#townNotices{
+  height: 11.5rem;
+  overflow: hidden;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  
+}
+
+
+#eventsInfo{
+  height: 8.8rem;
+  padding-bottom: 2rem;
+}
+
 
 .about-content {
   width: 100%;
@@ -186,10 +239,6 @@
 }
 
 
-.localinfo {
-  padding: 2rem 5rem;
-  margin: 0 5rem;
-}
 
 .section-title{
   text-align: center;
@@ -198,18 +247,6 @@
 }
 
 
-.localinfo-row {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 1.5rem;
-  align-items: start;
-}
-
-.localinfo-col {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
 
 /*----------------------------------------------------------------------*/
 
@@ -224,10 +261,11 @@
   position: relative;
   align-items: center;
   margin: 8rem auto 0 auto;
-  width: 70%;
+  width: 60%;
   background-color: #d4edda;
   justify-items: center;
   justify-content: center;
+  margin-bottom: 1rem;
 }
 
 .logo-image-about {
@@ -240,12 +278,341 @@
 
 
 
-#informatics {
-  display: flex;
-  gap: 2rem;
-  padding: 2rem 5rem;
+/* Update Grid to put Dams and Events side-by-side, Notices full width below */
+.localinfo-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Forces exactly 2 columns */
+  gap: 1.5rem;
+  align-items: stretch;
+  margin-right: 6rem;
+  margin-left: 6rem;
+  
 }
 
+/* ---- Card base ---- */
+.infocard {
+    background: #ffffff;
+    border: 1px solid #e5ecf4;
+    border-radius: 10px;
+    padding: 1.75rem 1.5rem;
+    text-align: left;
+    color: #262626;
+    box-shadow: 0 4px 16px rgba(14, 40, 65, 0.06);
+    height: 100%;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.infocard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(14, 40, 65, 0.12);
+    border-color: #F36E39;
+}
+
+/* ---- Card heading with orange underline ---- */
+.infocard h2 {
+    display: inline-block;
+    font-size: 1.15rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.35rem;
+    color: #0E2841;
+    font-family: 'Merriweather Sans', sans-serif;
+    border-bottom: 2px solid #F36E39;
+}
+
+/* Stray <br><br> after headings from old markup — hide them */
+.infocard h2 + br {
+    display: none;
+}
+
+/* Links inside cards inherit colour */
+.infocard a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Linked cards should fill their grid cell */
+.hover-orange a {
+    display: block;
+}
+
+/* ---- Section layout ---- */
+.localinfo {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: #0E2841;
+    font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+    letter-spacing: -0.01em;
+    font-family: 'Merriweather Sans', sans-serif;
+}
+
+.localinfo-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+
+.full-width {
+  grid-column: 1 / -1; /* Spans across all available columns */
+}
+
+/* Hover effects for Events and Notices */
+.hover-orange {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.hover-orange:hover {
+  background-color: #F36E39;
+  color: #ffffff !important; /* Overrides default text color */
+}
+
+/* Adjust heights so text doesn't get cut off when layout changes */
+#townNotices, #eventsInfo {
+  height: auto; 
+  padding-bottom: 2rem;
+  
+}
+#townNotices{
+  margin-top: 1rem;
+}
+
+/* Stack Informatics vertically so Current Issues spans the full width */
+#informatics {
+  display: flex;
+  flex-direction: column; /* Changed from row/default flex */
+  gap: 2rem;
+  padding: 2rem 5rem;
+  margin-right: 6rem;
+  margin-left: 11rem;
+}
+
+.infomaticsection {
+  width: 100%;
+}
+
+.infomaticsection:first-child {
+  border-right: none; /* Removes old divider */
+  border-bottom: 1px solid #cccccc; /* Replaces with horizontal divider */
+  padding-right: 0;
+  padding-bottom: 2rem;
+}
+
+/* =====================================================================
+   WHAT YOU CAN REPORT — icon card grid
+   ===================================================================== */
+
+.report-categories {
+    background: linear-gradient(180deg, #DCE6F2 0%, #eaf1f9 100%);
+    padding: 5rem 2rem 5.5rem;
+}
+
+.report-categories-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-subtitle {
+    text-align: center;
+    max-width: 640px;
+    margin: -1rem auto 3rem;
+    color: #3f5f7a;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+/* --- Grid --- */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+
+/* --- Card --- */
+.category-card {
+    background: #ffffff;
+    border: 1px solid #e5ecf4;
+    border-radius: 3px;
+    padding: 1.75rem 1.25rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(14, 40, 65, 0.05);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Thin accent stripe at the top of each card, tinted per category */
+.category-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent, #0E2841);
+    opacity: 0.85;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(14, 40, 65, 0.12);
+    border-color: #F36E39;
+}
+
+.category-card h3 {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 1.05rem;
+    color: #0E2841;
+    margin: 1rem 0 0.4rem;
+}
+
+.category-card p {
+    font-size: 0.9rem;
+    color: #4a5a6b;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* --- Circular icon badge --- */
+.category-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #ffffff;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover .category-icon {
+    transform: scale(1.08) rotate(-3deg);
+}
+
+.category-icon {
+    width: 28px;
+    height: 28px;
+    color: #0E2841;
+    opacity: 0.55;
+    margin-bottom: 1.25rem;
+    transition: color 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+}
+
+.category-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.category-card:hover .category-icon {
+    color: #F36E39;
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+/* --- Bottom CTA --- */
+.category-cta {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.mkrpt-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.9rem;
+    border-radius: 8px;
+    background: #F36E39;
+    color: #ffffff;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-decoration: none;
+    box-shadow: 0 6px 16px rgba(243, 110, 57, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.mkrpt-inline:hover {
+    background: #d95e2c;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(243, 110, 57, 0.45);
+}
+
+.mkrpt-inline i {
+    font-size: 0.9rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+    .category-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .report-categories {
+        padding: 3.5rem 1.25rem 4rem;
+    }
+
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .category-card {
+        padding: 1.4rem 1rem 1.2rem;
+    }
+
+    .category-icon {
+        width: 54px;
+        height: 54px;
+        font-size: 1.25rem;
+    }
+
+    .category-card h3 {
+        font-size: 0.98rem;
+    }
+
+    .category-card p {
+        font-size: 0.85rem;
+    }
+
+    .section-subtitle {
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Update Mobile Responsiveness */
+@media (max-width: 768px) {
+  .localinfo-row {
+    grid-template-columns: 1fr; /* Stacks to 1 column on mobile */
+  }
+  
+  #informatics {
+    padding: 1.5rem;
+  }
+}
 .infomaticsection {
   flex: 1;
   min-width: 280px;
@@ -375,3 +742,23 @@
 }
 
 
+/* ---- Mobile ---- */
+@media (max-width: 768px) {
+    .localinfo {
+        padding: 2rem 1.25rem;
+    }
+
+    .localinfo-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .infocard {
+        padding: 1.25rem 1rem;
+    }
+
+    .infocard h2 {
+        font-size: 1rem;
+    }
+}

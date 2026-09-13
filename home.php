@@ -1,8 +1,16 @@
 <?php
 session_start();
+include 'dbConnection.php';
+include 'alert_banner.php'; // Contains get_active_alerts() and format_alert_time()
+include 'alert_banner_data.php';
 
 $isLoggedIn = isset($_SESSION['username']);
 $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
+
+$username   = $isLoggedIn ? $_SESSION['username'] : null;
+
+// Fetch active alerts based on scope (public vs user's ward if logged in)
+$alerts = get_active_alerts($conn, $username);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,10 +21,15 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
     
     <script src="main.js" defer></script>
     <script src="homejs.js" defer></script>
+    <script src="alert_banner.js" defer></script>
     <link rel="stylesheet" href="homecss.css">
     <link rel="stylesheet" href="header_footer.css">
+    <link rel="stylesheet" href="alert_banner.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
 </head>
 
 
@@ -46,8 +59,8 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
       <a href="map.php" class="nav-item">Map</a>
       <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
-
-      <div class="header-right" id="header-right">
+    
+      <div class="header-right">
       <?php if ($isLoggedIn): ?>
         <a href="account.php" class="sign-in-btn">
           <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
@@ -58,6 +71,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         </a>
       <?php endif; ?>
     </div>
+    
     </header>
 
     
@@ -101,15 +115,14 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
         </script>
 
-        <a href = "CommReports.php"><button class="mkrpt">Make Report</button></a>
+        <a href="CommReports.php" class="mkrpt">Make Report</a>
     
         <div class="dots" id="dotsContainer"></div>
 
       </div>
 
     </section>
-    
-       </section>
+  
 
 
     <section id="about" class="step-card">
@@ -118,75 +131,252 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
       </div>
     </section>
 
-    <section id = "localinfo" class = "localinfo">
-      <h2 class = "section-title"> Local Information </h2>
+   <section id="localinfo" class="localinfo">
+      <h2 class="section-title">Local Information</h2>
 
-      <div class="localinfo-row">
+      <div class="localinfo-row"> 
 
-        <div id = "dams" class = "infocard">
-          <h2> Dam Levels </h2>
-            <h3 class = "damnames">Howieson's Poort Dam </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
-            <h3 class = "damnames">Settlers Dam </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
-            <h3 class = "damnames">Jamieson and Milner Dams </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
-            <h3 class = "damnames">Glen Melville Dam </h3>
-            <!---fetch number from municipal officer input and display horizontal bar percentage-->
+      
+        <!-- TOWN NOTICES (Spans full width below) -->
+        <div id="townNotices" class="infocard full-width hover-orange">
+          <a href="public_notices.php" style="text-decoration:none; color:inherit;">
+            <h2>Town Notices</h2>
+            <?php
+            $result = $conn->query("SELECT content FROM notices WHERE notif_type = 'general' ORDER BY created_at DESC LIMIT 1");
+            if ($result && $result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                echo "<p>" . htmlspecialchars($row['content']) . "</p>";
+            } else {
+                echo "<p>No new notices at this time.</p>";
+            }
+            ?>
+          </a>
         </div>
 
-        <div class="localinfo-col">
+        
+        <!-- DAM LEVELS -->
+        <div id="dams" class="infocard">
+          <h2>Dam Levels</h2>
+          <br>
+          <?php 
+          $damLevels = [
+              "Howieson's Poort Dam" => 0,
+              "Settlers Dam" => 0,
+              "Glen Melville Dam" => 0
+          ]; 
+          $result = $conn->query("SELECT dam_name, level_percent FROM dams_levels");
+          if ($result) {
+              while ($row = $result->fetch_assoc()) {
+                  if (stripos($row['dam_name'], "Howieson") !== false) $damLevels["Howieson's Poort Dam"] = $row['level_percent'];
+                  if (stripos($row['dam_name'], "Settlers") !== false) $damLevels["Settlers Dam"] = $row['level_percent'];
+                  if (stripos($row['dam_name'], "Glen") !== false) $damLevels["Glen Melville Dam"] = $row['level_percent'];
+              }
+          } else {
+              echo "<p style='color:red; font-size:12px;'>DB Error: " . $conn->error . "</p>";
+          }
+          ?>
+          <?php foreach ($damLevels as $name => $level): ?>
+              <h3 class="damnames"><?= htmlspecialchars($name) ?></h3>
+              <div class="dam-bar-container">
+                  <div class="dam-bar-fill" style="width: <?= htmlspecialchars($level) ?>%;">
+                      <?php if ($level >= 15): ?>
+                          <span class="dam-text-inside"><?= htmlspecialchars($level) ?>%</span>
+                      <?php endif; ?>
+                  </div>
+                  <?php if ($level < 15): ?>
+                      <span class="dam-text-outside"><?= htmlspecialchars($level) ?>%</span>
+                  <?php endif; ?>
+              </div>
+          <?php endforeach; ?>
+        </div>
 
-          <div id = "townnotices" class = "infocard">
-            <h2> Town Notices </h2>
-            <a href = "notifications.html"></a>
-            <!--- fetch top notice from municipal officer most recent community wide notices as a box
-            and render the first 3 lines from it. community wide is visible to guest and all other users-->
-          </div>
-
-          <div id = "events" class = "infocard">
-            <h2> Events </h2>
-             <!--- fetch top event from municipal officer most recent events post as a box
-            and render the first 3 lines from it. events are visible to guest and all other users-->
-          </div>
-
+        <!-- EVENTS INFO -->
+        <div id="eventsInfo" class="infocard hover-orange">
+          <a href="public_notices.php" style="text-decoration:none; color:inherit;">
+            <h2>Events</h2>
+            <br>
+            <br>
+            <?php
+                $eventinfo = $conn->query("SELECT title, event_date FROM events WHERE event_date >= CURDATE() ORDER BY event_date ASC LIMIT 3");
+                if ($eventinfo && $eventinfo->num_rows > 0) {
+                    while ($row = $eventinfo->fetch_assoc()) {
+                        echo "<p><strong>" . htmlspecialchars($row['title']) . "</strong> - " . date("F j, Y", strtotime($row['event_date'])) . "</p>";
+                    }
+                } else {
+                    echo "<p>No upcoming events at this time.</p>";
+                }
+            ?>
+          </a>
         </div>
 
       </div>
-     
     </section>
 
+<!-- WHAT YOU CAN REPORT -->
+<section id="report-categories" class="report-categories">
+    <div class="report-categories-inner">
 
+        <h2 class="section-title">What You Can Report</h2>
+        <p class="section-subtitle">
+            Read through the various reports you can submit through our website to the Makana municipality.
+        </p>
 
+        <div class="category-grid">
 
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2.5c3 4 6 7.5 6 11a6 6 0 1 1-12 0c0-3.5 3-7 6-11z"/>
+                    </svg>
+                </div>
+                <h3>Water</h3>
+                <p>Burst pipes, leaks, low pressure, or outages.</p>
+            </article>
 
- <section id="informatics">
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/>
+                    </svg>
+                </div>
+                <h3>Electricity</h3>
+                <p>Power outages, exposed cables, faulty meters, or damaged streetlights.</p>
+            </article>
 
-  <div id="currentissues" class="infomaticsection">
-    <h2>Current Issues</h2>
-    <p>Makhanda is currently facing a water crisis. Makhanda is currently using 18 megalitres a
-      day of water each day – about 180 litres per person. The crippling drought has nearly emptied
-      Settlers' Dam – which supplies about half of that – and it is unlikely to recover until/unless
-      we receive significant rainfall.</p>
-    <a href="notifications.html">Read more -></a>
-  </div>
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 22 8 2M20 22 16 2M12 6v2M12 12v2M12 18v2"/>
+                    </svg>
+                </div>
+                <h3>Roads &amp; Potholes</h3>
+                <p>Potholes, broken pavements, or missing signage.</p>
+            </article>
 
-  <div id="comein" class="infomaticsection">
-    <h2>Where You Come In</h2>
-    <p>Every drop counts. Use 50l a day. Keep taps closed. Take short showers.
-      Flush using grey water. A distribution schedule is being worked on that will get water tankers
-      delivering drinking water to different wards across the City. There will also be collection points,
-      replenished daily, where residents will be able to collect their daily allocation of water.
-    </p>
-    <a href="notifications.html">Read more -></a>
-  </div>
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    </svg>
+                </div>
+                <h3>Waste</h3>
+                <p>Missed collections, illegal dumping, or overflowing bins.</p>
+            </article>
 
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 6c2 0 3-1 5-1s3 1 5 1 3-1 5-1 3 1 5 1M2 12c2 0 3-1 5-1s3 1 5 1 3-1 5-1 3 1 5 1M2 18c2 0 3-1 5-1s3 1 5 1 3-1 5-1 3 1 5 1"/>
+                    </svg>
+                </div>
+                <h3>Sanitation</h3>
+                <p>Blocked drains, sewer overflows, or broken toilets.</p>
+            </article>
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="7" cy="9" r="2"/>
+                        <circle cx="12" cy="6" r="2"/>
+                        <circle cx="17" cy="9" r="2"/>
+                        <path d="M5.5 15c.5-1.5 2-2.5 3.5-2.5h6c1.5 0 3 1 3.5 2.5.7 2.3-.3 5-3 5h-7c-2.7 0-3.7-2.7-3-5z"/>
+                    </svg>
+                </div>
+                <h3>Stray Animals</h3>
+                <p>Strays, injured animals, or livestock on roads.</p>
+            </article>
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
+                        <path d="M2 21c0-3 1.85-5.36 5.08-6"/>
+                    </svg>
+                </div>
+                <h3>Environmental Issues</h3>
+                <p>Fallen trees, root damage, park issues, overgrowth, or disaster aftermath.</p>
+            </article>
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 3h6l.5 4h-7z"/>
+                        <path d="M8 7h8l-1 12a1 1 0 0 1-1 1H10a1 1 0 0 1-1-1L8 7z"/>
+                        <path d="M10 11h4"/>
+                        <path d="M4 5l2 2M20 5l-2 2M4 19l2-2M20 19l-2-2"/>
+                    </svg>
+                </div>
+                <h3>Vandalism</h3>
+                <p>Vandalism on the town's public property.</p>
+            </article>
+
+        </div>
+
+        <div class="category-cta">
+            <a href="CommReports.php" class="mkrpt-inline">
+                <i class="fa-solid fa-plus"></i> Make a Report
+            </a>
+        </div>
+
+    </div>
 </section>
 
-<div>
-  <p></p>
-</div>
 
+    
+    <section id="about" class="step-card">
+      <div class="about-content">
+        <img src="images/timeline3.png" alt="Journey Through M-Unite" class="logo-image-about"  >
+      </div>
+    </section>
+
+    <!-- INFORMATICS SECTION -->
+    <section id="informatics">
+      <div id="currentissues" class="infomaticsection">
+        <h2>Longterm Issues in Makhanda</h2>
+        <?php $issue = $conn->query("SELECT content, is_featured from current_issues ORDER BY created_at DESC LIMIT 1");
+                if ($issue && $issue->num_rows >0){
+                  $row = $issue->fetch_assoc();
+                  if ($row['is_featured'] == 1)
+                  echo "<p>" . htmlspecialchars($row['content']) . "</p>";
+                } else{
+                   echo "<p>There are no long-term issues to be reported</p> .";
+                }
+        ?>
+        <a href="public_notices.php#ci">Read more -></a>
+      </div>
+
+      <div id="comein" class="infomaticsection">
+        <h2>Where You Come In</h2>
+        <!-- Volunteer Form -->
+      
+        <form method = "POST" id="volunteerForm" data-logged-in="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 10px; max-width: 400px;">
+            <p style="margin-bottom: 0.5rem; font-weight: bold; color: #0E2841;">We would appreciate any assistance from you with 
+               different initiatives. Please select options to volunteer for should you wish to be added to a mailing list:</p>
+            
+            <!-- Checklist Options -->
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="clean_up"> Clean up</label>
+                <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="neighbourhood_watch"> Neighbourhood watch</label>
+                <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="soup_kitchens"> Soup kitchens</label>
+                <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="disaster_management"> Disaster management</label>
+                <label style="cursor: pointer;"><input type="checkbox" name="volunteerOptions[]" value="youth_mentor"> Youth mentor</label>
+            </div>
+
+            <?php if ($isLoggedIn): ?>
+                  <button type="button" id="confirmVolunteerBtn" class="mkrpt" style="position:static; font-size:1rem; padding: 0.8rem; margin-top: 10px;">
+                      Confirm sign up
+                  </button>
+              <?php else: ?>
+                  <p class="signin-prompt">
+                      Please <a href="signin.php" class="signin-here">sign in here</a> to volunteer.
+                  </p>
+              <?php endif; ?>
+        </form>
+        <p id="volunteerMessage" style="display:none; margin-top: 15px; font-weight: bold;"></p>
+      </div>
+    </section>
+
+    
 
 
      <!-- FOOTER -->
@@ -209,9 +399,9 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
       <div class="footer-col">
         <h4>Pages</h4>
         <ul>
-          <li><a href="index.html">Home</a></li>
+          <li><a href="home.php">Home</a></li>
           <li><a href="CommReports.php">Reports</a></li>
-          <li><a href="notices.html">Notices</a></li>
+          <li><a href="public_notices.html">Notices</a></li>
           <li><a href="map.html">Map</a></li>
           <li><a href="about.html">About Us</a></li>
         </ul>
@@ -222,8 +412,8 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         <h4>Connect</h4>
         <ul>
           <li><a href="#">Report Website Bugs</a></li>
-          <li><a href="#">Volunteer</a></li>
-          <li><a href="mailto:info@munite.co.za">info@munite.co.za</a></li>
+          <li><a href="home.php#volunteerForm">Volunteer</a></li>
+          <li><a href="#">info@munite.co.za</a></li>
           <li><a href="tel:+27000000000">+27 000000000</a></li>
         </ul>
       </div>
@@ -233,7 +423,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         <h4>Resources</h4>
         <ul>
           <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Documentation</a></li>
+          <li><a href="documentation.php">Documentation</a></li>
           <li><a href="Terms_of_use.php">Terms Of Use</a></li>
           <li><a href="#">Copyright Notice</a></li>
         </ul>

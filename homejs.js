@@ -94,4 +94,36 @@
     startAutoplay();
   });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('volunteerForm');
+    const btn = document.getElementById('confirmVolunteerBtn');
+    const msg = document.getElementById('volunteerMessage');
+
+    // Only run if the volunteer form exists on the current page
+    if (form && btn && msg) {
+        // Read the login status from the HTML data attribute
+        const isLoggedIn = form.getAttribute('data-logged-in') === 'true';
+
+        // Intercept clicks on the form if not logged in
+        form.addEventListener('click', (e) => {
+            if (!isLoggedIn) {
+                e.preventDefault(); 
+                msg.style.display = 'block';
+                msg.style.color = '#d9534f'; // Red
+                msg.innerText = 'Please sign in to volunteer.';
+            }
+        }, true); 
+
+        // Handle valid submission
+        btn.addEventListener('click', (e) => {
+            if (isLoggedIn) {
+                msg.style.display = 'block';
+                msg.style.color = '#28a745'; // Green
+                msg.innerText = 'Thank you. You will be informed about the relevant info.';
+            }
+        });
+    }
+});
+  
+
 })();
