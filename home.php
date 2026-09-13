@@ -154,14 +154,7 @@ $alerts = get_active_alerts($conn, $username);
       </div>
 
     </section>
-    
-
-
-    <section id="about" class="step-card">
-      <div class="about-content">
-        <img src="images/timeline3.png" alt="Journey Through M-Unite" class="logo-image-about"  >
-      </div>
-    </section>
+  
 
 
 
@@ -169,6 +162,25 @@ $alerts = get_active_alerts($conn, $username);
       <h2 class="section-title">Local Information</h2>
 
       <div class="localinfo-row"> 
+
+      
+        <!-- TOWN NOTICES (Spans full width below) -->
+        <div id="townNotices" class="infocard full-width hover-orange">
+          <a href="public_notices.php" style="text-decoration:none; color:inherit;">
+            <h2>Town Notices</h2>
+            <?php
+            $result = $conn->query("SELECT content FROM notices WHERE notif_type = 'general' ORDER BY created_at DESC LIMIT 1");
+            if ($result && $result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                echo "<p>" . htmlspecialchars($row['content']) . "</p>";
+            } else {
+                echo "<p>No new notices at this time.</p>";
+            }
+            ?>
+          </a>
+        </div>
+
+        
         <!-- DAM LEVELS -->
         <div id="dams" class="infocard">
           <h2>Dam Levels</h2>
@@ -224,21 +236,124 @@ $alerts = get_active_alerts($conn, $username);
           </a>
         </div>
 
-        <!-- TOWN NOTICES (Spans full width below) -->
-        <div id="townNotices" class="infocard full-width hover-orange">
-          <a href="public_notices.php" style="text-decoration:none; color:inherit;">
-            <h2>Town Notices</h2>
-            <?php
-            $result = $conn->query("SELECT content FROM notices WHERE notif_type = 'general' ORDER BY created_at DESC LIMIT 1");
-            if ($result && $result->num_rows > 0) {
-                $row = $result->fetch_assoc();
-                echo "<p>" . htmlspecialchars($row['content']) . "</p>";
-            } else {
-                echo "<p>No new notices at this time.</p>";
-            }
-            ?>
-          </a>
+      </div>
+    </section>
+
+    <!-- WHAT YOU CAN REPORT -->
+<!-- WHAT YOU CAN REPORT -->
+<section id="report-categories" class="report-categories">
+    <div class="report-categories-inner">
+
+        <h2 class="section-title">What You Can Report</h2>
+        <p class="section-subtitle">
+            The various reports you can submit throughout our website to the Makana municipality.
+        </p>
+
+        <div class="category-grid">
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2.5c3 4 6 7.5 6 11a6 6 0 1 1-12 0c0-3.5 3-7 6-11z"/>
+                    </svg>
+                </div>
+                <h3>Water</h3>
+                <p>Burst pipes, leaks, low pressure, or outages.</p>
+            </article>
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/>
+                    </svg>
+                </div>
+                <h3>Electricity</h3>
+                <p>Power outages, exposed cables, faulty meters, or damaged streetlights.</p>
+            </article>
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 22 8 2M20 22 16 2M12 6v2M12 12v2M12 18v2"/>
+                    </svg>
+                </div>
+                <h3>Roads &amp; Potholes</h3>
+                <p>Potholes, broken pavements, or missing signage.</p>
+            </article>
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    </svg>
+                </div>
+                <h3>Waste</h3>
+                <p>Missed collections, illegal dumping, or overflowing bins.</p>
+            </article>
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 6c2 0 3-1 5-1s3 1 5 1 3-1 5-1 3 1 5 1M2 12c2 0 3-1 5-1s3 1 5 1 3-1 5-1 3 1 5 1M2 18c2 0 3-1 5-1s3 1 5 1 3-1 5-1 3 1 5 1"/>
+                    </svg>
+                </div>
+                <h3>Sanitation</h3>
+                <p>Blocked drains, sewer overflows, or broken toilets.</p>
+            </article>
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="7" cy="9" r="2"/>
+                        <circle cx="12" cy="6" r="2"/>
+                        <circle cx="17" cy="9" r="2"/>
+                        <path d="M5.5 15c.5-1.5 2-2.5 3.5-2.5h6c1.5 0 3 1 3.5 2.5.7 2.3-.3 5-3 5h-7c-2.7 0-3.7-2.7-3-5z"/>
+                    </svg>
+                </div>
+                <h3>Stray Animals</h3>
+                <p>Strays, injured animals, or livestock on roads.</p>
+            </article>
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
+                        <path d="M2 21c0-3 1.85-5.36 5.08-6"/>
+                    </svg>
+                </div>
+                <h3>Environmental Issues</h3>
+                <p>Fallen trees, root damage, park issues, overgrowth, or disaster aftermath.</p>
+            </article>
+
+            <article class="category-card">
+                <div class="category-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 3h6l.5 4h-7z"/>
+                        <path d="M8 7h8l-1 12a1 1 0 0 1-1 1H10a1 1 0 0 1-1-1L8 7z"/>
+                        <path d="M10 11h4"/>
+                        <path d="M4 5l2 2M20 5l-2 2M4 19l2-2M20 19l-2-2"/>
+                    </svg>
+                </div>
+                <h3>Vandalism</h3>
+                <p>Vandalism on the town's public property.</p>
+            </article>
+
         </div>
+
+        <div class="category-cta">
+            <a href="CommReports.php" class="mkrpt-inline">
+                <i class="fa-solid fa-plus"></i> Make a Report
+            </a>
+        </div>
+
+    </div>
+</section>
+
+
+    
+    <section id="about" class="step-card">
+      <div class="about-content">
+        <img src="images/timeline3.png" alt="Journey Through M-Unite" class="logo-image-about"  >
       </div>
     </section>
 
