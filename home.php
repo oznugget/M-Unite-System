@@ -125,11 +125,7 @@ $alerts = get_active_alerts($conn, $username);
   
 
 
-    <section id="about" class="step-card">
-      <div class="about-content">
-        <img src="images/timeline4.png" alt="M-Unite Logo" class="logo-image-about"  >
-      </div>
-    </section>
+    
 
    <section id="localinfo" class="localinfo">
       <h2 class="section-title">Local Information</h2>
@@ -325,7 +321,7 @@ $alerts = get_active_alerts($conn, $username);
     
     <section id="about" class="step-card">
       <div class="about-content">
-        <img src="images/timeline3.png" alt="Journey Through M-Unite" class="logo-image-about"  >
+        <img src="images/timeline4.png" alt="Journey Through M-Unite" class="logo-image-about"  >
       </div>
     </section>
 
