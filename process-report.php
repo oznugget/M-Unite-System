@@ -39,6 +39,9 @@ $streetNumber = trim($_POST['house-number'] ?? '');
 $streetName = trim($_POST['road-name'] ?? '');
 $suburb = trim($_POST['suburb'] ?? '');
 $wardNumber = trim($_POST['ward-number'] ?? '');
+$wardNumber = trim($_POST['ward-number'] ?? '');
+$latitude = trim($_POST['latitude'] ?? '');
+$longitude = trim($_POST['longitude'] ?? '');
 
 
 
@@ -59,6 +62,10 @@ if ($suburb === '') {
 if ($wardNumber === '' || !ctype_digit($wardNumber) || (int)$wardNumber < 1 || (int)$wardNumber > 14) {
     
     $errors[] = 'A valid ward (1–14) could not be determined for this location — please drop a pin on a street with known ward data.';
+}
+
+if ($latitude === '' || $longitude === '' || !is_numeric($latitude) || !is_numeric($longitude)) {
+    $errors[] = 'Could not determine coordinates for this location — please drop a pin or use "Use My Location".';
 }
 
 
@@ -132,9 +139,33 @@ if (isset($_FILES['fault-image']) && $_FILES['fault-image']['error'] === UPLOAD_
     $uploadDirectory = __DIR__ . '/uploads/';
     $destinationPath = $uploadDirectory . $newFilename;
 
-    if (move_uploaded_file($uploadedFile['tmp_name'], $destinationPath)) {
-        
+        if ($detectedType === 'image/webp') {
+
+        /* Convert WebP to JPEG at upload time — this server's IIS
+           config won't reliably serve raw .webp files, so we never
+           store one; we store a real JPEG instead. */
+        $webpImage = @imagecreatefromwebp($uploadedFile['tmp_name']);
+
+        if ($webpImage === false) {
+            respond(false, 'Could not process the uploaded WebP image.');
+        }
+
+        $newFilename = uniqid('report_', true) . '.jpg';
+        $destinationPath = $uploadDirectory . $newFilename;
+
+        $saved = imagejpeg($webpImage, $destinationPath, 90); // 90 = JPEG quality
+        imagedestroy($webpImage);
+
+        if (!$saved) {
+            respond(false, 'Could not save the converted image.');
+        }
+
         $imageUrl = 'uploads/' . $newFilename;
+
+    } elseif (move_uploaded_file($uploadedFile['tmp_name'], $destinationPath)) {
+
+        $imageUrl = 'uploads/' . $newFilename;
+
     } else {
         respond(false, 'Could not save the uploaded image.');
     }
@@ -146,9 +177,9 @@ if (isset($_FILES['fault-image']) && $_FILES['fault-image']['error'] === UPLOAD_
 
 $insertStmt = $pdo->prepare('
     INSERT INTO reports
-        (username, category_id, ward_id, image_url, street_number, street_name, surburb, description, timestamp)
+        (username, category_id, ward_id, image_url, street_number, street_name, surburb, description, latitude, longitude, timestamp)
     VALUES
-        (:username, :categoryId, :wardId, :imageUrl, :streetNumber, :streetName, :surburb, :description, :timestamp)
+        (:username, :categoryId, :wardId, :imageUrl, :streetNumber, :streetName, :surburb, :description, :latitude, :longitude, :timestamp)
 ');
 
 $insertStmt->execute([
@@ -160,6 +191,8 @@ $insertStmt->execute([
     'streetName' => $streetName,
     'surburb' => $suburb,
     'description' => $description,
+    'latitude' => $latitude,
+    'longitude' => $longitude,
     'timestamp' => date('Y-m-d H:i:s'), // current date/time, formatted the way MySQL's DATETIME column expects
 ]);
 
