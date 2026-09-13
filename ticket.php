@@ -1,6 +1,13 @@
 <?php
-session_start();
+
+
 require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/categories.php';
+require_once __DIR__ . '/require_councillor.php';
+
+$isLoggedIn = true; // guaranteed by the guard
+$firstname  = htmlspecialchars($_SESSION['firstname'] ?? '');
+$ward_id    = $_SESSION['ward_id'] ?? null;
 
 $ticket_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -85,16 +92,44 @@ $current_username = $_SESSION['username'] ?? '';
 <meta charset="UTF-8">
 <title><?= htmlspecialchars($ticket['title']) ?> — Ticket #<?= $ticket['ticket_id'] ?></title>
 <link rel="stylesheet" href="tickets.css">
+<link rel="stylesheet" href="header_footer.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header class="topbar">
-    <h1>Ticket #<?= $ticket['ticket_id'] ?></h1>
-    <nav>
-        <a href="reports.php">Reports</a>
-        <a href="tickets.php" class="active">Tickets</a>
+<header class="site-header">
+
+    <div class="logo-box">
+      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
+      <a href="ward_councillor_home.php" class="logo-link"></a>
+    </div>
+
+    <nav class="navbar">
+      <a href="ward_councillor_home.php" class="nav-item">Dashboard</a>
+      <a href="reports.php" class="nav-item">Incoming Reports</a>
+      <a href="WC_make_reports.php" class="nav-item">Make Report</a>
+      <a href="tickets.php" class="nav-item-active">Tickets</a>
+      <a href="public_notices.php" class="nav-item">Notices</a>
+      <a href="map.php" class="nav-item">Map</a>
     </nav>
-</header>
+
+    
+           
+        <div class="header-right" id="header-right">
+      <?php if ($isLoggedIn): ?>
+        <a href="account.php" class="sign-in-btn">
+          <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php else: ?>
+        <a href="signin.php" class="sign-in-btn">
+          Sign In <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php endif; ?>
+            
+        </div>
+    </header>
 
 <div class="ticket-detail">
     <div class="ticket-detail-header">
@@ -112,7 +147,7 @@ $current_username = $_SESSION['username'] ?? '';
         <h2><?= htmlspecialchars($ticket['title']) ?></h2>
         <p><?= nl2br(htmlspecialchars($ticket['description'])) ?></p>
         <div class="ticket-meta">
-            <span>Type: <?= htmlspecialchars($ticket['category_id'] ?? 'Mixed') ?></span>
+            <span>Type: <span class="report-type <?= category_class($ticket['category_id']) ?>"><?= htmlspecialchars(category_name($ticket['category_id'])) ?></span></span>
             <span>Created: <?= $ticket['date_created'] ? date('d M Y, H:i', strtotime($ticket['date_created'])) : '—' ?></span>
         </div>
     </div>
@@ -134,7 +169,7 @@ $current_username = $_SESSION['username'] ?? '';
                         <span class="report-thumb report-thumb-empty" aria-hidden="true"></span>
                     <?php endif; ?>
                     <span class="badge badge-<?= strtolower(str_replace(' ', '-', $row['current_status'])) ?>"><?= htmlspecialchars($row['current_status']) ?></span>
-                    <span class="report-type"><?= htmlspecialchars($row['category_id']) ?></span>
+                    <span class="report-type <?= category_class($row['category_id']) ?>"><?= htmlspecialchars(category_name($row['category_id'])) ?></span>
                     <span class="report-desc" title="<?= htmlspecialchars($row['description']) ?>"><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 70, '…')) ?></span>
                     <span class="report-address"><?= htmlspecialchars($row['address']) ?></span>
                     <span class="report-time"><?= date('d M, H:i', strtotime($row['timestamp'])) ?></span>
@@ -163,7 +198,7 @@ $current_username = $_SESSION['username'] ?? '';
                         <span class="report-thumb report-thumb-empty" aria-hidden="true"></span>
                     <?php endif; ?>
                     <span class="badge badge-<?= strtolower(str_replace(' ', '-', $row['current_status'])) ?>"><?= htmlspecialchars($row['current_status']) ?></span>
-                    <span class="report-type"><?= htmlspecialchars($row['category_id']) ?></span>
+                    <span class="report-type <?= category_class($row['category_id']) ?>"><?= htmlspecialchars(category_name($row['category_id'])) ?></span>
                     <span class="report-desc" title="<?= htmlspecialchars($row['description']) ?>"><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 70, '…')) ?></span>
                     <span class="report-address"><?= htmlspecialchars($row['address']) ?></span>
                     <span class="report-time"><?= date('d M, H:i', strtotime($row['timestamp'])) ?></span>
@@ -176,7 +211,7 @@ $current_username = $_SESSION['username'] ?? '';
     <button id="add-reports-btn" class="btn-primary">+ Add Reports to This Ticket</button>
 
     <div id="add-reports-panel" class="add-reports-panel hidden">
-        <h3>Unassigned reports<?= $type_filter !== null ? ' — ' . htmlspecialchars($type_filter) : '' ?></h3>
+        <h3>Unassigned reports<?= $type_filter !== null ? ' — ' . htmlspecialchars(category_name($type_filter)) : '' ?></h3>
         <div class="report-list" id="candidate-report-list">
             <?php if ($candidate_reports->num_rows > 0): ?>
                 <?php while ($row = $candidate_reports->fetch_assoc()): ?>
@@ -193,7 +228,7 @@ $current_username = $_SESSION['username'] ?? '';
                         <?php else: ?>
                             <span class="report-thumb report-thumb-empty" aria-hidden="true"></span>
                         <?php endif; ?>
-                        <span class="report-type"><?= htmlspecialchars($row['category_id']) ?></span>
+                        <span class="report-type <?= category_class($row['category_id']) ?>"><?= htmlspecialchars(category_name($row['category_id'])) ?></span>
                         <span class="report-desc" title="<?= htmlspecialchars($row['description']) ?>"><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 70, '…')) ?></span>
                         <span class="report-address"><?= htmlspecialchars($row['address']) ?></span>
                         <span class="report-time"><?= date('d M, H:i', strtotime($row['timestamp'])) ?></span>

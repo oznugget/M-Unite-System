@@ -24,7 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $timestamp  = date('Y-m-d H:i:s');
             $ip_address = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
-            $sql = "SELECT * FROM accounts WHERE username = ?";
+            $sql = "SELECT a.*, wc.ward_id
+                    FROM accounts a
+                    LEFT JOIN ward_councillors wc ON wc.username = a.username
+                    WHERE a.username = ?";
             $stmt = $conn->prepare($sql);
 
             if ($stmt) {
@@ -50,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['username']  = $row['username'];
                         $_SESSION['firstname'] = $row['name'];
                         $_SESSION['role']      = $row['role'];
-
+                        $_SESSION['ward_id']   = isset($row['ward_id']) ? (int)$row['ward_id'] : null;
                         $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
                         if ($stmtLog) {
                             $action_type_id = 1; // Successful Login
@@ -69,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             case "Ward Councillor":
                             case "Ward councillor":
                             case "2":
-                                header("Location: ward_councillor_home.html?login=success");
+                                header("Location: ward_councillor_home.php?login=success");
                                 exit();
 
                             case "Municipal Officer":
@@ -112,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign In | M-Unite</title>
+    <link rel="stylesheet" href="forms.css">
     <link rel="stylesheet" href="signincss.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -133,9 +137,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <nav class="navbar"> 
-      <a href="home.php" class="nav-item-active">Home</a>
-      <a href="reports.html" class="nav-item">Reports</a>
-      <a href="notification.html" class="nav-item">Notices</a>
+      <a href="home.php" class="nav-item">Home</a>
+      <a href="CommReports.php" class="nav-item">Reports</a>
+      <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
       <a href="about_us.html" class="nav-item">About Us</a>
     </nav>

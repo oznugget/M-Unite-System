@@ -10,7 +10,8 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-
+    
+    <script src="main.js" defer></script>
     <script src="homejs.js" defer></script>
     <link rel="stylesheet" href="homecss.css">
     <link rel="stylesheet" href="header_footer.css">
@@ -20,6 +21,11 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
 
 <body>
+
+    
+    <div id="loading-screen">
+    <img src="loading_run.gif" alt="Loading..." class="loader-media">
+    </div>
 
     <header class="site-header">
 
@@ -35,7 +41,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
     <nav class="navbar" id="nav-menu">
       <a href="home.php" class="nav-item-active">Home</a>
-      <a href="CommReports.html" class="nav-item">Reports</a>
+      <a href="CommReports.php" class="nav-item">Reports</a>
       <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
       <a href="about_us.html" class="nav-item">About Us</a>
@@ -54,45 +60,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
     </div>
     </header>
 
-    <script>
-      const hamburger = document.getElementById('hamburger-menu');
-      const navMenu = document.getElementById('nav-menu');
-      const hamburgerIcon = hamburger.querySelector('i');
-
-      function toggleMenu() {
-        const isOpen = navMenu.classList.toggle('active');
-        hamburger.classList.toggle('active', isOpen);
-        hamburgerIcon.classList.toggle('fa-bars', !isOpen);
-        hamburgerIcon.classList.toggle('fa-xmark', isOpen);
-      }
-
-      function closeMenu() {
-        navMenu.classList.remove('active');
-        hamburger.classList.remove('active');
-        hamburgerIcon.classList.add('fa-bars');
-        hamburgerIcon.classList.remove('fa-xmark');
-      }
-
-      hamburger.addEventListener('click', toggleMenu);
-
-      // Close the menu after a nav link is tapped
-      navMenu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', closeMenu);
-      });
-
-      // Close the menu automatically if the viewport grows past the mobile breakpoint
-      window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) closeMenu();
-      });
-
-      // Close the menu if the user taps/clicks outside of it
-      document.addEventListener('click', (event) => {
-        const clickedInsideMenu = navMenu.contains(event.target) || hamburger.contains(event.target);
-        if (!clickedInsideMenu && navMenu.classList.contains('active')) {
-          closeMenu();
-        }
-      });
-    </script>
+    
 
 
 
@@ -116,7 +84,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
         <div class="carousel-text">
         <?php if ($isLoggedIn): ?>
-            <p>Welcome <?php echo $firstname .'<br>';?></p>
+            <p>Welcome <?php echo $firstname . ' ' . '<img src="images/makbot_wave.png" alt="Wave" class="wave-icon">' . '<br>'; ?>  </p>
         <?php endif; ?>
         
           <h1>Sibanye</h1>
@@ -146,7 +114,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
 
     <section id="about" class="step-card">
       <div class="about-content">
-        <img src="images/timeline3.png" alt="M-Unite Logo" class="logo-image-about"  >
+        <img src="images/timeline4.png" alt="M-Unite Logo" class="logo-image-about"  >
       </div>
     </section>
 

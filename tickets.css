@@ -69,6 +69,19 @@ body {
     background: white;
 }
 
+/* Shown above the report list when the current selection spans more
+   than one report type, since a ticket can only hold one type. */
+.mixed-type-warning {
+    margin: 0;
+    padding: 8px 24px;
+    background: #fff2e6;
+    color: #a15b1a;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+}
+.mixed-type-warning.hidden { display: none; }
+
 .group-header {
     margin: 14px 2px 2px;
     padding: 4px 0 6px;
@@ -116,6 +129,7 @@ button {
     font-size: 0.85rem;
     transition: background 0.15s;
     cursor: pointer;
+    height: 80px;
 }
 .report-row:hover { background: #f5faff; }
 .report-row.selected { background: #fff2e6; border-color: var(--orange); }
@@ -124,23 +138,23 @@ button {
    leading controls (checkbox and/or status badge), so columns are scoped
    by list id rather than forced into one shared template. */
 #report-list .report-row {
-    grid-template-columns: 24px 44px 90px 110px 1fr 160px 100px 60px;
+    grid-template-columns: 30px 100px 90px 1fr 110px  160px 100px 60px;
 }
 #linked-report-list .report-row,
 #completed-linked-report-list .report-row,
 #completed-report-list .report-row {
-    grid-template-columns: 44px 90px 110px 1fr 160px 100px 60px;
+    grid-template-columns: 44px 90px 1fr 110px  160px 100px 60px;
 }
 #candidate-report-list .report-row {
-    grid-template-columns: 24px 44px 110px 1fr 160px 100px 60px;
+    grid-template-columns: 24px 44px 1fr 110px  160px 100px 60px;
 }
 
 /* ---------- Report thumbnails ---------- */
 .report-thumb {
-    width: 36px;
-    height: 36px;
+    width: 55px;
+    height: 55px;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 2px;
     border: 1px solid var(--border);
     cursor: zoom-in;
 }
@@ -230,7 +244,31 @@ button {
     cursor: pointer;
 }
 
-.report-type { font-weight: 600; color: var(--navy); white-space: nowrap; }
+/* ---------- Category (type) color coding ----------
+   Applied as a second class alongside .report-type, e.g.
+   class="report-type type-cat-3". Keyed off category_id via
+   category_class() in categories.php, not the name, so relabeling a
+   category later doesn't require touching this CSS. */
+.report-type {
+    font-weight: 600;
+    white-space: nowrap;
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    background: var(--light-blue);
+    color: var(--navy);
+}
+.type-cat-1 { background: #fff3c4; color: #8a6d00; } /* Electricity */
+.type-cat-2 { background: #d6ecff; color: #0b5394; } /* Water */
+.type-cat-3 { background: #e6e6e6; color: #4a4a4a; } /* Roads */
+.type-cat-4 { background: #e6f2d9; color: #4c7a1f; } /* Animals */
+.type-cat-5 { background: #d6f5ef; color: #0d6e63; } /* Sanitation */
+.type-cat-6 { background: #fbdede; color: #a3272c; } /* Vandalism */
+.type-cat-7 { background: #ecdff9; color: #6b3fa0; } /* Waste Management */
+.type-cat-8 { background: #dbe8cf; color: #4a6b1f; } /* Environmental Incidents */
+.type-cat-mixed { background: var(--border); color: var(--muted); } /* Mixed / unknown */
+
 .report-desc {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -310,6 +348,7 @@ button {
 .ticket-card p { margin: 0; font-size: 0.85rem; color: var(--muted); }
 .ticket-card-bottom {
     display: flex; justify-content: space-between;
+    align-items: center;
     font-size: 0.78rem; color: var(--muted);
     border-top: 1px solid var(--border); padding-top: 8px;
 }
@@ -324,7 +363,7 @@ button {
     margin-bottom: 20px;
 }
 .ticket-detail-header h2 { margin: 8px 0; color: var(--navy); }
-.ticket-meta { display: flex; gap: 20px; color: var(--muted); font-size: 0.85rem; margin-top: 10px; }
+.ticket-meta { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 0.85rem; margin-top: 10px; }
 .ticket-detail h3 { color: var(--navy); }
 .add-reports-panel {
     margin-top: 20px;

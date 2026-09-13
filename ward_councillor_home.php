@@ -1,3 +1,10 @@
+<?php
+require_once __DIR__ . '/require_councillor.php';
+// session_start() removed — the guard already started it.
+$isLoggedIn = true; // guaranteed by the guard
+$firstname  = htmlspecialchars($_SESSION['firstname'] ?? '');
+$ward_id    = $_SESSION['ward_id'] ?? null;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +28,7 @@
     <header class="site-header">
 
       <div class="logo-box">
-      <a href="home.php" class="logo-link">
+      <a href="ward_councillor_home.php" class="logo-link">
       <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
       </a>
     </div>
@@ -31,9 +38,9 @@
       </div>
 
     <nav class="navbar" id="nav-menu">
-      <a href="ward_councillor_home.html" class="nav-item-active">Home</a>
+      <a href="ward_councillor_home.php" class="nav-item-active">Home</a>
       <a href="reports.php" class="nav-item">Incoming Reports</a>
-      <a href="CommReports.php" class="nav-item">Make Report</a>
+      <a href="WC_make_reports.php" class="nav-item">Make Report</a>
       <a href="tickets.php" class="nav-item">Tickets</a>
       <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
@@ -130,10 +137,6 @@
 
 
 
-
-
-
-
      <!-- FOOTER (Matches Wireframe) -->
   <footer class="site-footer">
 
@@ -154,11 +157,13 @@
       <div class="footer-col">
         <h4>Pages</h4>
         <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="reports.html">Reports</a></li>
-          <li><a href="notices.html">Notices</a></li>
-          <li><a href="map.html">Map</a></li>
-          <li><a href="about.html">About Us</a></li>
+          <li><a href="ward_councillor_home.php">Home</a></li>
+          <li><a href="reports.php">IncomingReports</a></li>
+          <li><a href="WC_make_reports.php">Make Report</a></li>
+          <li><a href="tickets.php">Tickets</a></li>
+          <li><a href="public_notices.php">Notices</a></li>
+          <li><a href="map.php">Map</a></li>
+          <li><a href="about.php">About Us</a></li>
         </ul>
       </div>
 

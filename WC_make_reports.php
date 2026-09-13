@@ -1,7 +1,8 @@
 <?php
-session_start();
-$isLoggedIn = isset($_SESSION['username']);
-$firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
+require_once __DIR__ . '/require_councillor.php';
+$isLoggedIn = true; // guaranteed by the guard
+$firstname  = htmlspecialchars($_SESSION['firstname'] ?? '');
+$ward_id    = $_SESSION['ward_id'] ?? null;
 ?>
 
 <!DOCTYPE html>
@@ -11,12 +12,9 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         <meta name = "viewport" content = "width = device-width, initial-scale = 1.0">
         <title>Reports</title>
 
-        <script src="main.js" defer></script>
-        <link rel="stylesheet" href="forms.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="header_footer.css">
-
         <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@400;700&family=TikTok+Sans:wght@400;500&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
@@ -27,29 +25,29 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
     </head>
 
     <body>
-
-      <div id="loading-screen">
-     <img src="loading_run.gif" alt="Loading..." class="loader-media">
-     </div>
-
         <!-- HEADER AND NAVIGATION -->
-        <header class="site-header">
+    <header class="site-header">
 
       <div class="logo-box">
-      <a href="home.php" class="logo-link">
+      <a href="ward_councillor_home.php" class="logo-link">
       <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
       </a>
     </div>
 
-    <nav class="navbar">
-      <a href="home.php" class="nav-item">Home</a>
-      <a href="CommReports.php" class="nav-item-active">Reports</a>
+    <div class="hamburger" id="hamburger-menu">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+
+    <nav class="navbar" id="nav-menu">
+      <a href="ward_councillor_home.php" class="nav-item">Home</a>
+      <a href="reports.php" class="nav-item">Incoming Reports</a>
+      <a href="WC_make_reports.php" class="nav-item-active">Make Report</a>
+      <a href="tickets.php" class="nav-item">Tickets</a>
       <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
-      <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
 
-      <div class="header-right">
+      <div class="header-right" id="header-right">
       <?php if ($isLoggedIn): ?>
         <a href="account.php" class="sign-in-btn">
           <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
@@ -249,4 +247,5 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script src = "ReportScript.js"></script>
         
-    </body
+  </body>
+</html>

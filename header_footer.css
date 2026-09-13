@@ -26,6 +26,41 @@ a {
   text-decoration: none;
 }
 
+/* --- LOADING STATE --- */
+
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #DCE6F2; /* Matches your existing body background color */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; 
+  transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+/* Restrict the size of your loading image/gif */
+.loader-media {
+  width: 200px; /* Adjust this to fit your specific asset */
+  height: 200px;
+  object-fit: contain;
+}
+
+/* The class we will add via JS to hide the screen */
+#loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden; 
+}
+
+.wave-icon{
+  width: 65px;
+  height: 100px;
+  
+}
+
 /* --- HEADER & NAVIGATION --- */
 .site-header {
   background: radial-gradient(circle, #3f5f7a 0%, #0e2841 100%);
@@ -72,7 +107,8 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 130px; /* Forces all items to share this exact width regardless of text length */
+  justify-items: center;
+  width: 155px; /* Forces all items to share this exact width regardless of text length */
   height: 100%; /* Fills the vertical space of the header */
   transition: background-color 0.5s ease, color 0.5s ease;
 }
@@ -233,9 +269,11 @@ a {
   .hamburger {
     display: flex;
     align-items: center;
-    order: -1;              /* keeps it pinned to the top-left, ahead of the logo */
-    margin-right: 12px;
+    order: -1; /* Forces the hamburger to the left side */
+    position: relative; 
+    z-index: 30; /* Keeps it visible above the sidebar */
     transition: transform 0.3s ease;
+    background: linear-gradient(180deg, #3f5f7a 0%, #0e2841 100%);
   }
 
   .hamburger.active {
@@ -243,25 +281,36 @@ a {
   }
 
   .logo-box {
-    height: 60px;
+   height: 60px;
     width: 110px;
+    /* Absolutely centers the logo in the middle of the header */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   /* The nav links drop down as an overlay panel instead of pushing page content */
   .navbar {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
+    display: flex; /* Changed from none so the transition can animate */
+    position: fixed; /* Fixed to the viewport */
+    top: 0;
+    left: 0; /* Aligns the sidebar to the left */
+    width: 250px; /* Set the width of your sidebar */
+    height: 100vh; /* Full screen height */
     flex-direction: column;
     background: #0E2841;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.35); /* Shadow adjusted for a side menu */
     z-index: 20;
+    padding-top: 70px; /* Pushes links down so they aren't hidden behind the hamburger icon */
+    
+    /* Hides the menu off-screen to the left */
+    transform: translateX(-100%); 
+    /* Smooth sliding animation */
+    transition: transform 0.3s ease-in-out;
   }
 
   .navbar.active {
-    display: flex;
+    transform: translateX(0);
   }
 
   .nav-item, .nav-item-active {
