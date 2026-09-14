@@ -18,7 +18,8 @@ $alerts = get_active_alerts($conn, $username);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-
+    
+    <script src="main.js" defer></script>
     <script src="homejs.js" defer></script>
     <script src="alert_banner.js" defer></script>
     <link rel="stylesheet" href="homecss.css">
@@ -33,6 +34,11 @@ $alerts = get_active_alerts($conn, $username);
 
 
 <body>
+
+    
+    <div id="loading-screen">
+    <img src="loading_run.gif" alt="Loading..." class="loader-media">
+    </div>
 
     <header class="site-header">
 
@@ -68,45 +74,7 @@ $alerts = get_active_alerts($conn, $username);
     
     </header>
 
-    <script>
-      const hamburger = document.getElementById('hamburger-menu');
-      const navMenu = document.getElementById('nav-menu');
-      const hamburgerIcon = hamburger.querySelector('i');
-
-      function toggleMenu() {
-        const isOpen = navMenu.classList.toggle('active');
-        hamburger.classList.toggle('active', isOpen);
-        hamburgerIcon.classList.toggle('fa-bars', !isOpen);
-        hamburgerIcon.classList.toggle('fa-xmark', isOpen);
-      }
-
-      function closeMenu() {
-        navMenu.classList.remove('active');
-        hamburger.classList.remove('active');
-        hamburgerIcon.classList.add('fa-bars');
-        hamburgerIcon.classList.remove('fa-xmark');
-      }
-
-      hamburger.addEventListener('click', toggleMenu);
-
-      // Close the menu after a nav link is tapped
-      navMenu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', closeMenu);
-      });
-
-      // Close the menu automatically if the viewport grows past the mobile breakpoint
-      window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) closeMenu();
-      });
-
-      // Close the menu if the user taps/clicks outside of it
-      document.addEventListener('click', (event) => {
-        const clickedInsideMenu = navMenu.contains(event.target) || hamburger.contains(event.target);
-        if (!clickedInsideMenu && navMenu.classList.contains('active')) {
-          closeMenu();
-        }
-      });
-    </script>
+    
 
 
 
@@ -130,7 +98,7 @@ $alerts = get_active_alerts($conn, $username);
 
         <div class="carousel-text">
         <?php if ($isLoggedIn): ?>
-            <p>Welcome <?php echo $firstname .'<br>';?></p>
+            <p>Welcome <?php echo $firstname . ' ' . '<img src="images/makbot_wave.png" alt="Wave" class="wave-icon">' . '<br>'; ?>  </p>
         <?php endif; ?>
         
           <h1>Sibanye</h1>
@@ -163,6 +131,7 @@ $alerts = get_active_alerts($conn, $username);
   
 
 
+    
 
    <section id="localinfo" class="localinfo">
       <h2 class="section-title">Local Information</h2>
@@ -358,7 +327,7 @@ $alerts = get_active_alerts($conn, $username);
     
     <section id="about" class="step-card">
       <div class="about-content">
-        <img src="images/timeline3.png" alt="Journey Through M-Unite" class="logo-image-about"  >
+        <img src="images/timeline4.png" alt="Journey Through M-Unite" class="logo-image-about"  >
       </div>
     </section>
 

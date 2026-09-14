@@ -1,14 +1,52 @@
 document.addEventListener('DOMContentLoaded', () => {
     const $ = id => document.getElementById(id); // Helper to shorten DOM queries
 
+    // Keep in sync with categories.php — used purely for display (grouping
+    // headers, the mixed-type warning). Validation always happens
+    // server-side too.
+    const CATEGORY_NAMES = {
+        '1': 'Electricity',
+        '2': 'Water',
+        '3': 'Roads',
+        '4': 'Animals',
+        '5': 'Sanitation',
+        '6': 'Vandalism',
+        '7': 'Waste Management',
+        '8': 'Environmental Incidents',
+    };
+    const categoryName = id => CATEGORY_NAMES[id] || 'Unknown';
+
     // Remember the server-rendered (timestamp DESC) order so "No grouping" can restore it
     document.querySelectorAll('.report-row').forEach((row, i) => { row.dataset.order = i; });
+
+    // Returns the distinct set of category ids among currently checked reports.
+    const selectedTypes = () => {
+        const types = new Set();
+        document.querySelectorAll('.report-checkbox:checked').forEach(cb => {
+            types.add(cb.closest('.report-row').dataset.type);
+        });
+        return types;
+    };
 
     const updateUI = () => {
         const selected = document.querySelectorAll('.report-checkbox:checked');
         $('selection-count').textContent = `${selected.length} selected`;
-        $('create-ticket-btn').disabled = !selected.length;
-        $('add-existing-btn').disabled = !selected.length;
+
+        const types = selectedTypes();
+        const mixedTypes = types.size > 1;
+        $('mixed-type-warning').classList.toggle('hidden', !selected.length || !mixedTypes);
+
+        $('create-ticket-btn').disabled = !selected.length || mixedTypes;
+        $('add-existing-btn').disabled = !selected.length || mixedTypes;
+
+        // Restrict the "add to existing ticket" dropdown to tickets whose
+        // category matches the single type currently selected.
+        const onlyType = types.size === 1 ? [...types][0] : null;
+        document.querySelectorAll('#existing-ticket-select option[data-category]').forEach(opt => {
+            const matches = onlyType === null || opt.dataset.category === onlyType;
+            opt.hidden = !matches;
+            opt.disabled = !matches;
+        });
 
         document.querySelectorAll('.report-checkbox').forEach(cb => {
             cb.closest('.report-row').classList.toggle('selected', cb.checked);
@@ -30,7 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const keyFor = row => (groupBy === 'street' ? row.dataset.street : row.dataset.type) || 'Unknown';
+        const keyFor = row => {
+            if (groupBy === 'street') return row.dataset.street || 'Unknown';
+            return categoryName(row.dataset.type);
+        };
 
         const groups = new Map();
         rows.forEach(row => {
@@ -74,6 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
     $('group-by-filter').addEventListener('change', applyGrouping);
 
     $('create-ticket-btn').addEventListener('click', () => {
+        if (selectedTypes().size > 1) {
+            alert('Please select reports of one type only to create a ticket.');
+            return;
+        }
         const count = document.querySelectorAll('.report-checkbox:checked').length;
         $('modal-report-count').textContent = `${count} report(s) will be aggregated.`;
         $('ticket-title').value = $('ticket-desc').value = '';
@@ -123,6 +168,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     $('add-existing-btn').addEventListener('click', () => {
+        if (selectedTypes().size > 1) {
+            alert('Please select reports of one type only to add to a ticket.');
+            return;
+        }
         const count = document.querySelectorAll('.report-checkbox:checked').length;
         $('existing-modal-report-count').textContent = `${count} report(s) will be added to the selected ticket.`;
         $('existing-ticket-modal').classList.remove('hidden');

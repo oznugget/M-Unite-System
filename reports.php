@@ -1,6 +1,12 @@
 <?php
-session_start();
+ 
+
 require_once __DIR__ . '/db_connect.php'; // expects $conn (mysqli)
+require_once __DIR__ . '/categories.php';
+require_once __DIR__ . '/require_councillor.php';
+$isLoggedIn = true; // guaranteed by the guard
+$firstname  = htmlspecialchars($_SESSION['firstname'] ?? '');
+$ward_id    = $_SESSION['ward_id'] ?? null;
 
 // TODO: role-gate this page to ward councillor accounts, matching
 // your existing role-gated display pattern.
@@ -19,6 +25,9 @@ $ward_id = $_SESSION['ward_id'] ?? null;
 if (!$ward_id) {
     die('No ward set for this session.'); // or redirect to a login page
 }
+
+$isLoggedIn = isset($_SESSION['username']);
+$firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname'] ?? '') : '';
 
 $sql = "SELECT report_id AS id, category_id, description, street_name, image_url,
         CONCAT(street_number, ' ', street_name, ', ', surburb) AS address,
@@ -59,8 +68,12 @@ $open_tickets = $open_tickets_stmt->get_result();
 <head>
 <meta charset="UTF-8">
 <title>Incoming Reports — M-Unite Councillor View</title>
+
 <link rel="stylesheet" href="tickets.css">
 <link rel="stylesheet" href="header_footer.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -68,21 +81,33 @@ $open_tickets = $open_tickets_stmt->get_result();
 
     <div class="logo-box">
       <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
-      <a href="home.html" class="logo-link"></a>
+      <a href="ward_councillor_home.php" class="logo-link"></a>
     </div>
 
     <nav class="navbar">
+      <a href="ward_councillor_home.php" class="nav-item">Home</a>
       <a href="reports.php" class="nav-item-active">Incoming Reports</a>
+      <a href="WC_make_reports.php" class="nav-item">Make Report</a>
       <a href="tickets.php" class="nav-item">Tickets</a>
-      <a href="notification.php" class="nav-item">Notices</a>
+      <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
     </nav>
 
-    <div class="header-right">
+    
            
-        <i class="fa-regular fa-circle-user"></i>
+        <div class="header-right" id="header-right">
+      <?php if ($isLoggedIn): ?>
+        <a href="account.php" class="sign-in-btn">
+          <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php else: ?>
+        <a href="signin.php" class="sign-in-btn">
+          Sign In <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php endif; ?>
+    </div>
             
-        </div>
+        
     </header>
 
 <div class="toolbar">
@@ -103,7 +128,7 @@ $open_tickets = $open_tickets_stmt->get_result();
             <?php
             $types = $conn->query("SELECT DISTINCT category_id FROM reports WHERE ticket_id IS NULL ORDER BY category_id");
             while ($t = $types->fetch_assoc()) {
-                echo '<option value="' . htmlspecialchars($t['category_id']) . '">' . htmlspecialchars($t['category_id']) . '</option>';
+                echo '<option value="' . htmlspecialchars($t['category_id']) . '">' . htmlspecialchars(category_name($t['category_id'])) . '</option>';
             }
             ?>
         </select>
@@ -111,6 +136,9 @@ $open_tickets = $open_tickets_stmt->get_result();
         <button id="create-ticket-btn" disabled>Create Ticket from Selected</button>
     </div>
 </div>
+<p id="mixed-type-warning" class="mixed-type-warning hidden">
+    Selected reports are of different types — a ticket can only be created from reports of one type.
+</p>
 
 <div class="report-list" id="report-list">
     <?php if ($result && $result->num_rows > 0): ?>
@@ -124,14 +152,15 @@ $open_tickets = $open_tickets_stmt->get_result();
                  data-time="<?= date('d M Y, H:i', strtotime($row['timestamp'])) ?>"
                  data-image="<?= htmlspecialchars($row['image_url'] ?? '') ?>">
                 <input type="checkbox" class="report-checkbox" value="<?= $row['id'] ?>">
-                <?php if (!empty($row['image_url'])): ?>
+               
+                <span class="badge badge-<?= strtolower(str_replace(' ', '-', $row['status'])) ?>"><?= htmlspecialchars($row['status']) ?></span>
+                <span class="report-type <?= category_class($row['category_id']) ?>"><?= htmlspecialchars(category_name($row['category_id'])) ?></span>
+                <span class="report-desc" title="<?= htmlspecialchars($row['description']) ?>"><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 70, '…')) ?></span>
+                 <?php if (!empty($row['image_url'])): ?>
                     <img class="report-thumb" src="<?= htmlspecialchars($row['image_url']) ?>" alt="Report photo">
                 <?php else: ?>
                     <span class="report-thumb report-thumb-empty" aria-hidden="true"></span>
                 <?php endif; ?>
-                <span class="badge badge-<?= strtolower(str_replace(' ', '-', $row['status'])) ?>"><?= htmlspecialchars($row['status']) ?></span>
-                <span class="report-type"><?= htmlspecialchars($row['category_id']) ?></span>
-                <span class="report-desc" title="<?= htmlspecialchars($row['description']) ?>"><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 70, '…')) ?></span>
                 <span class="report-address"><?= htmlspecialchars($row['address']) ?></span>
                 <span class="report-time"><?= date('d M, H:i', strtotime($row['timestamp'])) ?></span>
                 <span class="report-id">#<?= $row['id'] ?></span>
@@ -160,7 +189,7 @@ $open_tickets = $open_tickets_stmt->get_result();
                     <span class="report-thumb report-thumb-empty" aria-hidden="true"></span>
                 <?php endif; ?>
                 <span class="badge badge-<?= strtolower(str_replace(' ', '-', $row['status'])) ?>"><?= htmlspecialchars($row['status']) ?></span>
-                <span class="report-type"><?= htmlspecialchars($row['category_id']) ?></span>
+                <span class="report-type <?= category_class($row['category_id']) ?>"><?= htmlspecialchars(category_name($row['category_id'])) ?></span>
                 <span class="report-desc" title="<?= htmlspecialchars($row['description']) ?>"><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 70, '…')) ?></span>
                 <span class="report-address"><?= htmlspecialchars($row['address']) ?></span>
                 <span class="report-time"><?= date('d M, H:i', strtotime($row['timestamp'])) ?></span>
@@ -199,8 +228,8 @@ $open_tickets = $open_tickets_stmt->get_result();
         <select id="existing-ticket-select">
             <?php if ($open_tickets && $open_tickets->num_rows > 0): ?>
                 <?php while ($t = $open_tickets->fetch_assoc()): ?>
-                    <option value="<?= $t['ticket_id'] ?>">
-                        #<?= $t['ticket_id'] ?> — <?= htmlspecialchars($t['title']) ?> (<?= htmlspecialchars($t['category_id'] ?? 'Mixed') ?>)
+                    <option value="<?= $t['ticket_id'] ?>" data-category="<?= htmlspecialchars($t['category_id'] ?? '') ?>">
+                        #<?= $t['ticket_id'] ?> — <?= htmlspecialchars($t['title']) ?> (<?= htmlspecialchars(category_name($t['category_id'])) ?>)
                     </option>
                 <?php endwhile; ?>
             <?php else: ?>

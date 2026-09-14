@@ -3,6 +3,7 @@ session_start();
 header('Content-Type: text/plain');
 require_once 'db_connect.php';
 require_once 'log_helper.php';
+require_once 'categories.php';
 
 $title = trim($_POST['title'] ?? '');
 $description = trim($_POST['description'] ?? '');
@@ -21,28 +22,46 @@ if (empty($report_ids)) {
     exit;
 }
 
+$placeholders = implode(',', array_fill(0, count($report_ids), '?'));
 
+// A ticket must aggregate reports of a single type. Check this up front,
+// before touching the ward or opening a transaction, so we can give a
+// clear 400 instead of burying it in the generic 500 handler below.
+$types_stmt = $conn->prepare("SELECT DISTINCT category_id FROM reports WHERE report_id IN ($placeholders)");
+if (!$types_stmt) {
+    http_response_code(500);
+    echo 'Prepare failed (category lookup): ' . $conn->error;
+    exit;
+}
+$types_stmt->bind_param(str_repeat('i', count($report_ids)), ...$report_ids);
+if (!$types_stmt->execute()) {
+    http_response_code(500);
+    echo 'Execute failed (category lookup): ' . $types_stmt->error;
+    exit;
+}
+$types_result = $types_stmt->get_result();
+
+$distinct_types = [];
+while ($row = $types_result->fetch_assoc()) {
+    $distinct_types[] = $row['category_id'];
+}
+
+if (count($distinct_types) === 0) {
+    http_response_code(400);
+    echo 'Could not find the selected reports.';
+    exit;
+}
+
+if (count($distinct_types) > 1) {
+    http_response_code(400);
+    echo 'A ticket can only be created from reports of the same type. Please select reports of one type only.';
+    exit;
+}
+
+$category_id = $distinct_types[0];
 
 $conn->begin_transaction();
 try {
-    $placeholders = implode(',', array_fill(0, count($report_ids), '?'));
-
-    $types_stmt = $conn->prepare("SELECT DISTINCT category_id FROM reports WHERE report_id IN ($placeholders)");
-    if (!$types_stmt) {
-        throw new Exception('Prepare failed (category lookup): ' . $conn->error);
-    }
-    $types_stmt->bind_param(str_repeat('i', count($report_ids)), ...$report_ids);
-    if (!$types_stmt->execute()) {
-        throw new Exception('Execute failed (category lookup): ' . $types_stmt->error);
-    }
-    $types_result = $types_stmt->get_result();
-
-    $distinct_types = [];
-    while ($row = $types_result->fetch_assoc()) {
-        $distinct_types[] = $row['category_id'];
-    }
-    $category_id = count($distinct_types) === 1 ? $distinct_types[0] : null;
-
     $ward_id = $_SESSION['ward_id'] ?? null;
     if (!$ward_id) {
         throw new Exception('No ward set for this session. Please log in again.');

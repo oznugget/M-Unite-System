@@ -24,7 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $timestamp  = date('Y-m-d H:i:s');
             $ip_address = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
-            $sql = "SELECT * FROM accounts WHERE username = ?";
+            $sql = "SELECT a.*, wc.ward_id
+                    FROM accounts a
+                    LEFT JOIN ward_councillors wc ON wc.username = a.username
+                    WHERE a.username = ?";
             $stmt = $conn->prepare($sql);
 
             if ($stmt) {
@@ -53,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['ward']    = null;
                         $_SESSION['ward_id'] = null;
                         $_SESSION['division'] = null;
-
+                        $_SESSION['ward_id']   = isset($row['ward_id']) ? (int)$row['ward_id'] : null;
                         $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
                         if ($stmtLog) {
                             $action_type_id = 1; // Successful Login
@@ -92,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         $_SESSION['ward_id'] = $wardRow['ward_id'];
                                     }
                                 }
-                                header("Location: ward_councillor_home.html?login=success");
+                                header("Location: ward_councillor_home.php?login=success");
                                 exit();
 
                             case "Municipal Officer":
@@ -113,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             case "System Admin":
                             case "4":
-                                header("Location: admin-home.php?login=success");
+                                header("Location: sysadmin_home.php?login=success");
                                 exit();
 
                             default:
@@ -146,6 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign In | M-Unite</title>
+    <link rel="stylesheet" href="forms.css">
     <link rel="stylesheet" href="signincss.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

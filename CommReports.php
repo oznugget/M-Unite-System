@@ -9,6 +9,43 @@ if (!$isLoggedIn) {
     header('Location: signin.php');
     exit;
 }
+
+$username = $_SESSION['username'];
+
+require 'db-connect.php';
+
+$memberStmt = $pdo->prepare('
+    SELECT
+        cm.street_number,
+        cm.street_name,
+        cm.suburb,
+        cm.town,
+        cm.postal_code,
+        cm.latitude,
+        cm.longitude,
+        w.ward_name
+    FROM community_member cm
+    JOIN wards w ON cm.ward_id = w.ward_id
+    WHERE cm.username = :username
+');
+$memberStmt->execute(['username' => $username]);
+$memberInfo = $memberStmt->fetch();
+
+$defaultWardNumber = '';
+if ($memberInfo && preg_match('/Ward\s*(\d+)/i', $memberInfo['ward_name'], $wardMatch)) {
+    $defaultWardNumber = $wardMatch[1];
+}
+
+$defaultAddressText = '';
+if ($memberInfo) {
+    $addressParts = array_filter([
+        trim($memberInfo['street_number'] . ' ' . $memberInfo['street_name']),
+        trim($memberInfo['suburb']),
+        trim($memberInfo['town']),
+        trim($memberInfo['postal_code']),
+    ]);
+    $defaultAddressText = implode(', ', $addressParts);
+}
 ?>
 
 <!DOCTYPE html>
@@ -18,9 +55,12 @@ if (!$isLoggedIn) {
         <meta name = "viewport" content = "width = device-width, initial-scale = 1.0">
         <title>Reports</title>
 
+        <script src="main.js" defer></script>
+        <link rel="stylesheet" href="forms.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="header_footer.css">
+
         <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@400;700&family=TikTok+Sans:wght@400;500&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
@@ -31,22 +71,41 @@ if (!$isLoggedIn) {
     </head>
 
     <body>
+
+      <div id="loading-screen">
+     <img src="loading_run.gif" alt="Loading..." class="loader-media">
+     </div>
+
         <!-- HEADER AND NAVIGATION -->
         <header class="site-header">
 
-      <div class="logo-box">
-      <a href="home.php" class="logo-link">
-      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
-      </a>
-    </div>
+  <div class="logo-box">
+  <a href="home.php" class="logo-link">
+  <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
+  </a>
+</div>
 
+<<<<<<< HEAD
     <nav class="navbar">
-      <a href="home.php" class="nav-item-active">Home</a>
-      <a href="CommReports.php" class="nav-item">Reports</a>
+      <a href="home.php" class="nav-item">Home</a>
+      <a href="CommReports.php" class="nav-item-active">Reports</a>
       <a href="public_notices.php" class="nav-item">Notices</a>
       <a href="map.php" class="nav-item">Map</a>
       <a href="about_us.html" class="nav-item">About Us</a>
     </nav>
+=======
+<div class="hamburger" id="hamburger-menu">
+  <i class="fa-solid fa-bars"></i>
+</div>
+
+<nav class="navbar" id="nav-menu">
+  <a href="home.php" class="nav-item">Home</a>
+  <a href="CommReports.php" class="nav-item-active">Reports</a>
+  <a href="public_notices.php" class="nav-item">Notices</a>
+  <a href="map.php" class="nav-item">Map</a>
+  <a href="about_us.html" class="nav-item">About Us</a>
+</nav>
+>>>>>>> reports
 
       <div class="header-right">
       <?php if ($isLoggedIn): ?>
@@ -81,7 +140,7 @@ if (!$isLoggedIn) {
                         <label for = "location-address">Location address<span class = "required">*</span></label>
 
                         <div class = "location-input-row">
-                            <input type = "text" id = "location-address" name = "location-address" required>
+                            <input type = "text" id = "location-address" name = "location-address" required value="<?php echo htmlspecialchars($defaultAddressText); ?>">
                             <button type = "button" class = "use-my-location-btn">Use My Location</button>
                             
                         </div>
@@ -89,10 +148,12 @@ if (!$isLoggedIn) {
 
                         
                         <input type = "hidden" id = "place-name" name = "place-name">
-                        <input type = "hidden" id = "house-number" name = "house-number">
-                        <input type = "hidden" id = "road-name" name = "road-name">
-                        <input type = "hidden" id = "ward-number" name = "ward-number">
-                        <input type="hidden" id="suburb" name="suburb">
+                        <input type = "hidden" id = "house-number" name = "house-number" value="<?php echo htmlspecialchars($memberInfo['street_number'] ?? ''); ?>">
+                        <input type = "hidden" id = "road-name" name = "road-name" value="<?php echo htmlspecialchars($memberInfo['street_name'] ?? ''); ?>">
+                        <input type = "hidden" id = "ward-number" name = "ward-number" value="<?php echo htmlspecialchars($defaultWardNumber); ?>">
+                        <input type="hidden" id="suburb" name="suburb" value="<?php echo htmlspecialchars($memberInfo['suburb'] ?? ''); ?>">
+                        <input type="hidden" id="latitude" name="latitude" value="<?php echo htmlspecialchars($memberInfo['latitude'] ?? ''); ?>">
+                        <input type="hidden" id="longitude" name="longitude" value="<?php echo htmlspecialchars($memberInfo['longitude'] ?? ''); ?>">
 
                     </div>
 
@@ -258,5 +319,6 @@ if (!$isLoggedIn) {
         
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script src = "ReportScript.js"></script>
+        <script src="nav-toggle.js"></script>
         
     </body

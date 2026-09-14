@@ -1,0 +1,327 @@
+/* ==========================================================================
+   forms.css — shared form styling for the whole M-Unite site.
+
+   Include this on every page that has a form, alongside that page's own
+   stylesheet:
+
+       <link rel="stylesheet" href="forms.css">
+       <link rel="stylesheet" href="createacccss.css">   <!-- page-specific, loads after -->
+
+   This file uses plain selectors (no :where()), so normal CSS specificity
+   and load order apply — link it BEFORE each page's own stylesheet so
+   that stylesheet can still override anything page-specific (the address
+   autocomplete list, intl-tel-input, the upload dropzone preview, etc.).
+
+   It targets the class names already used across the site (.form-group,
+   .form-field, .reg-form, .report-form, .submit-btn, .secondary, .danger,
+   .field-error, .error, .success, ...) plus bare form elements, so it
+   applies to the officer-*.php admin forms too without any markup changes
+   there.
+   ========================================================================== */
+
+/* ---------- Form containers ----------
+   Covers the registration/sign-in form (.reg-form), the fault report
+   form (.report-form), the ticket modals (.modal form), and bare <form>
+   elements on the officer admin pages. */
+.reg-form,
+.report-form,
+.modal form,
+form {
+    font-family: 'TikTok Sans', 'Merriweather Sans', system-ui, sans-serif;
+    color: #1c2b3a;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Officer admin pages (officer-issues.php etc.) build forms out of a bare
+   <label> wrapping its input, rather than .form-group/.form-field — this
+   gives that pattern the same spacing and layout without needing to
+   touch every page's markup. */
+form > label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #0b2545;
+}
+
+/* ---------- Field groups ----------
+   .form-group is used by createacc.php/signin.php, .form-field by
+   CommReports.php — same treatment for both. */
+.form-group,
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+.form-group label,
+.form-field label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #0b2545;
+}
+.form-group label .required,
+.form-field label .required {
+    color: #c0392b;
+    margin-left: 2px;
+}
+
+/* ---------- Inputs, selects, textareas ----------
+   One consistent look for every field type used across the site's
+   forms (text, email, password, tel, date, number, file, select,
+   textarea) whether it sits in .form-group, .form-field, a bare
+   <label>, or loose in a form. */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="date"],
+input[type="number"],
+input[type="search"],
+input[type="file"],
+textarea,
+select {
+    font-family: 'TikTok Sans', 'Merriweather Sans', system-ui, sans-serif;
+    font-size: 0.95rem;
+    color: #1c2b3a;
+    background: white;
+    border: 1px solid #dde6ee;
+    border-radius: 6px;
+    padding: 10px 12px;
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #ff8c42;
+    box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.18);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.5;
+    font-family: inherit;
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+    background: #eaf4fb;
+    color: #6b7c8f;
+    cursor: not-allowed;
+}
+
+input[type="file"] {
+    padding: 8px;
+    background: #eaf4fb;
+    border-style: dashed;
+    cursor: pointer;
+}
+
+/* ---------- Character counters (CommReports.php) ---------- */
+.char-count {
+    align-self: flex-end;
+    font-size: 0.78rem;
+    color: #6b7c8f;
+}
+
+/* ---------- Upload dropzone (CommReports.php) ---------- */
+.upload-dropzone {
+    border: 1px dashed #dde6ee;
+    border-radius: 6px;
+    padding: 20px;
+    text-align: center;
+    color: #6b7c8f;
+    background: #eaf4fb;
+    position: relative;
+}
+.upload-hint { font-size: 0.85rem; }
+.upload-preview {
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+.upload-filename {
+    display: block;
+    font-size: 0.8rem;
+    color: #6b7c8f;
+    margin-top: 6px;
+}
+.remove-image-btn {
+    background: white;
+    border: 1px solid #dde6ee;
+    color: #c0392b;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+/* ---------- Password fields with a show/hide toggle (createacc.php) ---------- */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.password-wrapper input { padding-right: 40px; }
+.toggle-btn {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #6b7c8f;
+}
+.toggle-btn:hover { color: #0b2545; }
+
+/* ---------- Inline validation feedback ----------
+   .pwd-feedback / .confirm-pwd-feedback (createacc.php) and
+   .field-error (CommReports.php) both render short validation notes
+   right under a field. */
+.pwd-feedback,
+.confirm-pwd-feedback {
+    list-style: none;
+    margin: 2px 0 0;
+    padding: 0;
+    font-size: 0.78rem;
+    color: #6b7c8f;
+}
+.pwd-feedback li.valid,
+.confirm-pwd-feedback li.valid { color: #1f7a3d; }
+.pwd-feedback li.invalid,
+.confirm-pwd-feedback li.invalid { color: #c0392b; }
+
+.field-error {
+    font-size: 0.78rem;
+    color: #c0392b;
+    min-height: 1em;
+}
+
+/* Officer admin pages print plain <p class="error">/<p class="success">
+   messages above a form (officer-issues.php, officer-events.php, etc.) */
+p.error,
+.form-error-banner {
+    background: #f8d7da;
+    color: #c0392b;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin: 0 0 12px;
+}
+p.success {
+    background: #d4edda;
+    color: #1f7a3d;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin: 0 0 12px;
+}
+
+/* ---------- Buttons ----------
+   Unifies .submit-btn (CommReports.php, createacc.php "View My
+   Reports" link-button), the bare <button> used on officer-*.php
+   forms, and the .btn-primary/.btn-secondary naming used by the
+   ticket system, plus the "secondary"/"danger" aliases used on the
+   officer admin pages. */
+button,
+input[type="submit"],
+.submit-btn,
+.btn-primary,
+.btn-secondary,
+.secondary,
+.danger,
+.btn-danger {
+    font-family: 'TikTok Sans', 'Merriweather Sans', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+}
+
+button,
+input[type="submit"],
+.submit-btn,
+.btn-primary {
+    background: #ff8c42;
+    color: white;
+}
+button:hover,
+input[type="submit"]:hover,
+.submit-btn:hover,
+.btn-primary:hover {
+    background: #f07a2c;
+}
+button:disabled,
+input[type="submit"]:disabled,
+.submit-btn:disabled,
+.btn-primary:disabled {
+    background: #f3c9a8;
+    cursor: not-allowed;
+}
+
+.btn-secondary,
+.secondary {
+    background: #dde6ee;
+    color: #1c2b3a;
+}
+.btn-secondary:hover,
+.secondary:hover {
+    background: #cfdbe6;
+}
+
+.danger,
+.btn-danger {
+    background: #f8d7da;
+    color: #c0392b;
+}
+.danger:hover,
+.btn-danger:hover {
+    background: #f3c2c7;
+}
+
+/* Reset/plain-text buttons (createacc.php "Clear Form") stay neutral
+   rather than picking up the orange primary look. */
+button[type="reset"] {
+    background: #dde6ee;
+    color: #1c2b3a;
+}
+
+/* Grouped form actions row, how most of these forms end. */
+.form-buttons,
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* ---------- Badges reused inline in officer admin item lists ---------- */
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+.badge-approved { background: #d3f2dc; color: #1f7a3d; }
+.badge-progress { background: #cfe4ff; color: #1a4b8f; }
+.badge-closed { background: #e3e6e9; color: #55606b; }

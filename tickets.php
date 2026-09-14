@@ -1,6 +1,12 @@
 <?php
-session_start();
+
 require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/categories.php';
+require_once __DIR__ . '/require_councillor.php';
+
+$isLoggedIn = true; // guaranteed by the guard
+$firstname  = htmlspecialchars($_SESSION['firstname'] ?? '');
+$ward_id    = $_SESSION['ward_id'] ?? null;
 
 $sql = "SELECT t.ticket_id AS id, t.title, t.description, t.category_id AS fault_type,
         t.current_status AS status, t.date_created AS created_at, COUNT(r.report_id) AS report_count
@@ -27,16 +33,45 @@ $completed_tickets = array_filter($all_tickets, fn($t) => in_array($t['status'],
 <meta charset="UTF-8">
 <title>Tickets — M-Unite Councillor View</title>
 <link rel="stylesheet" href="tickets.css">
+<link rel="stylesheet" href="header_footer.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-<header class="topbar">
-    <h1>Tickets</h1>
-    <nav>
-        <a href="reports.php">Reports</a>
-        <a href="tickets.php" class="active">Tickets</a>
+<header class="site-header">
+
+    <div class="logo-box">
+      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
+      <a href="ward_councillor_home.php" class="logo-link"></a>
+    </div>
+
+    <nav class="navbar">
+      <a href="ward_councillor_home.php" class="nav-item">Home</a>
+      <a href="reports.php" class="nav-item">Incoming Reports</a>
+      <a href="WC_make_reports.php" class="nav-item">Make Report</a>
+      <a href="tickets.php" class="nav-item-active">Tickets</a>
+      <a href="public_notices.php" class="nav-item">Notices</a>
+      <a href="map.php" class="nav-item">Map</a>
     </nav>
-</header>
+
+    
+           
+        <div class="header-right" id="header-right">
+      <?php if ($isLoggedIn): ?>
+        <a href="account.php" class="sign-in-btn">
+          <?php echo $firstname ?> <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php else: ?>
+        <a href="signin.php" class="sign-in-btn">
+          Sign In <i class="fa-regular fa-circle-user"></i>
+        </a>
+      <?php endif; ?>
+            
+        </div>
+    </header>
 
 <?php
 // Renders one ticket card — kept as a tiny local helper so the active
@@ -51,7 +86,7 @@ function render_ticket_card(array $row): void {
         <h3><?= htmlspecialchars($row['title']) ?></h3>
         <p><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 120, '…')) ?></p>
         <div class="ticket-card-bottom">
-            <span><?= htmlspecialchars($row['fault_type'] ?? 'Mixed') ?></span>
+            <span class="report-type <?= category_class($row['fault_type']) ?>"><?= htmlspecialchars(category_name($row['fault_type'])) ?></span>
             <span><?= $row['created_at'] ? date('d M Y', strtotime($row['created_at'])) : '—' ?></span>
         </div>
     </a>

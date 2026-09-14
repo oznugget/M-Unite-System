@@ -12,6 +12,7 @@ $firstname  = $isLoggedIn ? htmlspecialchars($_SESSION['firstname']) : '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account | M-Unite</title>
 
+       <link rel="stylesheet" href="forms.css">
        <link rel="stylesheet" href="createacccss.css">
        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.1.0/build/css/intlTelInput.css">
        <script src="createaccjs.js" defer></script>

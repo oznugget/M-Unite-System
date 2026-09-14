@@ -2,6 +2,7 @@
 // Only start the session if one isn't already active
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+    
 }
 // Check session authentication first
 if (!isset($_SESSION['username'])) {
