@@ -139,12 +139,18 @@ $alerts = get_active_alerts($conn, $username);
 
          
    
-        <div class="weather-widget-wrap">
+       <!-- <div class="weather-widget-wrap">
           <a class="weatherwidget-io" href="https://forecast7.com/en/n33d3126d53/grahamstown/" data-label_1="MAKHANDA" 
-          data-label_2="WEATHER" data-font="Roboto" data-mode="Current" data-theme="pure" data-basecolor="transparent">MAKHANDA WEATHER</a>
+          data-label_2="WEATHER" data-font="Roboto" data-mode="Current" data-theme="blue-mountains"  data-basecolor="transparent">MAKHANDA WEATHER</a>
         </div>
         <script>
         !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+        </script> -->
+        <div class="weather-widget-wrap">
+        <a class="weatherwidget-io" href="https://forecast7.com/en/40d71n74d01/new-york/" data-label_1="NEW YORK" data-label_2="WEATHER" data-mode="Current" data-theme="pure" data-basecolor="#0E2841" data-shadow="#424141a2" data-textcolor="#ffffff" data-highcolor="#fcd3d3" data-lowcolor="#bde3fe" data-suncolor="#fff53b" data-mooncolor="#ffffff" data-cloudcolor="#ffffff" data-cloudfill="#d2d2d2" data-raincolor="#51acec" >NEW YORK WEATHER</a>
+        </div>
+        <script>
+          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
         </script>
 
         <a href="CommReports.php" class="mkrpt">Make Report</a>
