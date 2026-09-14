@@ -104,21 +104,25 @@ function buildStatusTimeline($currentStatus) {
 </head>
 
 <body>
-     <header class="site-header">
+<header class="site-header">
 
-      <div class="logo-box">
-      <a href="home.php" class="logo-link">
-      <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
-      </a>
-    </div>
+  <div class="logo-box">
+  <a href="home.php" class="logo-link">
+  <img src="images/logo_1.png" alt="M-Unite Logo" class="logo-image">
+  </a>
+</div>
 
-    <nav class="navbar">
-      <a href="home.php" class="nav-item-active">Home</a>
-      <a href="CommReports.php" class="nav-item">Reports</a>
-      <a href="public_notices.php" class="nav-item">Notices</a>
-      <a href="map.php" class="nav-item">Map</a>
-      <a href="about_us.html" class="nav-item">About Us</a>
-    </nav>
+<div class="hamburger" id="hamburger-menu">
+  <i class="fa-solid fa-bars"></i>
+</div>
+
+<nav class="navbar" id="nav-menu">
+  <a href="home.php" class="nav-item">Home</a>
+  <a href="CommReports.php" class="nav-item">Reports</a>
+  <a href="public_notices.php" class="nav-item">Notices</a>
+  <a href="map.php" class="nav-item">Map</a>
+  <a href="about_us.html" class="nav-item">About Us</a>
+</nav>
 
       <div class="header-right">
       <?php if ($isLoggedIn): ?>
@@ -319,6 +323,7 @@ function buildStatusTimeline($currentStatus) {
   </footer>
 
     <script src="MyPastReportsScript.js"></script>
+    <script src="nav-toggle.js"></script>
 
 </body>
 </html>

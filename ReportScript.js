@@ -51,8 +51,13 @@ map.on('click', function (e) {
 /* ========== COORDINATES TO ADDRESS =========*/
 
 const locationAddressInput = document.getElementById('location-address');
+const latitudeField = document.getElementById('latitude');
+const longitudeField = document.getElementById('longitude');
 
 async function fillAddressFromCoordinates(lat, lng) {
+
+    latitudeField.value = lat;
+    longitudeField.value = lng;
 
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
 
@@ -133,7 +138,7 @@ const roadNameField = document.getElementById('road-name');
 const wardNumberField = document.getElementById('ward-number');
 const suburbField = document.getElementById('suburb');
 
-const POSSIBLE_WARD_FIELDS = ['neighbourhood', 'suburb', 'city_district', 'quater'];
+const POSSIBLE_WARD_FIELDS = ['neighbourhood', 'suburb', 'city_district', 'quarter']; // fixed typo: was 'quater'
 
 function extraWardNumber(text){
     
@@ -164,6 +169,31 @@ function extractSuburb(addr) {
 
 }
 
+/* Broader ward search — rather than trusting a fixed list of
+   field names (OSM contributors tag inconsistently between
+   areas), first check the known fields, then scan EVERY value
+   Nominatim gave us for this address, and finally fall back to
+   the full display_name string as a last resort. */
+function findWardNumber(addr, displayName) {
+
+    for (const fieldName of POSSIBLE_WARD_FIELDS) {
+        const found = extraWardNumber(addr[fieldName]);
+        if (found !== null) {
+            return found;
+        }
+    }
+
+    for (const value of Object.values(addr)) {
+        const found = extraWardNumber(value);
+        if (found !== null) {
+            return found;
+        }
+    }
+
+    return extraWardNumber(displayName);
+
+}
+
 
 function fillStructuredLocationDetails(data){
 
@@ -177,19 +207,11 @@ function fillStructuredLocationDetails(data){
     roadNameField.value = addr.road || ' ';
 
     suburbField.value = extractSuburb(addr) || ' ';
-    
-    let wardNumber = null;
 
-    for (const fieldName of POSSIBLE_WARD_FIELDS){
-
-        wardNumber = extraWardNumber(addr[fieldName]);
-
-        if(wardNumber !== null){
-            break
-        }
-    }
+    const wardNumber = findWardNumber(addr, data.display_name);
 
     wardNumberField.value = wardNumber || ' ';
+
 }
 
 /* ====================== FORM VALIDATION ====================== */
@@ -499,24 +521,26 @@ function unlockReportForm() {
 
 function showPendingCard(faultType, description, location) {
  
-  
   const shortDescription = description.length > 100
     ? description.substring(0, 100) + '...'
     : description;
+
+  const safeFaultType = escapeHtml(faultType);
+  const safeDescription = escapeHtml(shortDescription);
+  const safeLocation = escapeHtml(location);
  
   pendingContainer.innerHTML = `
     <div class="report-card pending-card">
-      <h3 class="report-card-title">${faultType} Report</h3>
+      <h3 class="report-card-title">${safeFaultType} Report</h3>
       <p class="pending-message">
         This report will be submitted in <span class="countdown-seconds">15</span> seconds.
         You can still cancel it until then - after that, it cannot be undone.
       </p>
-      <p class="report-description"><strong>Description:</strong> ${shortDescription}</p>
-      <p class="report-location"><strong>Location:</strong> ${location}</p>
+      <p class="report-description"><strong>Description:</strong> ${safeDescription}</p>
+      <p class="report-location"><strong>Location:</strong> ${safeLocation}</p>
       <button type="button" class="cancel-pending-btn">Cancel Report</button>
     </div>
   `;
- 
   
   const cancelBtn = pendingContainer.querySelector('.cancel-pending-btn');
   cancelBtn.addEventListener('click', cancelPendingReport);
@@ -626,7 +650,12 @@ function showModal(message, moodClass) {
  
 }
  
- 
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 
  
 window.addEventListener('beforeunload', function (event) {
@@ -637,3 +666,11 @@ window.addEventListener('beforeunload', function (event) {
   }
  
 });
+/* Recalculate validity on load — a pre-filled field (e.g. a
+   logged-in user's default home address) should count as
+   already valid without the user needing to touch anything
+   first. Silent so nothing flashes red on page load. */
+updateFormValidity(true);
+
+
+
