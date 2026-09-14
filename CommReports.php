@@ -85,15 +85,6 @@ if ($memberInfo) {
   </a>
 </div>
 
-<<<<<<< HEAD
-    <nav class="navbar">
-      <a href="home.php" class="nav-item">Home</a>
-      <a href="CommReports.php" class="nav-item-active">Reports</a>
-      <a href="public_notices.php" class="nav-item">Notices</a>
-      <a href="map.php" class="nav-item">Map</a>
-      <a href="about_us.html" class="nav-item">About Us</a>
-    </nav>
-=======
 <div class="hamburger" id="hamburger-menu">
   <i class="fa-solid fa-bars"></i>
 </div>
@@ -105,7 +96,6 @@ if ($memberInfo) {
   <a href="map.php" class="nav-item">Map</a>
   <a href="about_us.html" class="nav-item">About Us</a>
 </nav>
->>>>>>> reports
 
       <div class="header-right">
       <?php if ($isLoggedIn): ?>
