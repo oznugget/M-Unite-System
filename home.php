@@ -348,7 +348,7 @@ $alerts = get_active_alerts($conn, $username);
       </div>
 
       <div id="comein" class="infomaticsection">
-        <h2>Where You Come In</h2>
+        <h2>Volunteering Opportunities</h2>
         <!-- Volunteer Form -->
       
         <form method = "POST" id="volunteerForm" data-logged-in="<?php echo $isLoggedIn ? 'true' : 'false'; ?>" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 10px; max-width: 400px;">
