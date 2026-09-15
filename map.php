@@ -7,18 +7,32 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // ----- include your existing database connection -----
-require_once 'db_connect.php';  // provides $conn (MySQLi)
+require_once 'db_connect.php';  // provides $conn (MySQLi)    
+require_once 'categories.php';    // provides $CATEGORY_NAMES
 
-// ----- Category mapping (static) -----
+// Colours per category id. Names live in categories.php so they stay
+// in sync with the DB – only the palette is defined here.
+$CATEGORY_COLORS = [
+    1 => '#E3B505',   // Electricity
+    2 => '#3399CC',   // Water
+    3 => '#F36E39',   // Roads
+    4 => '#8B5A2B',   // Animals
+    5 => '#6B8E23',   // Sanitation
+    6 => '#C0392B',   // Vandalism
+    7 => '#7D3C98',   // Waste Management
+    8 => '#16A085',   // Environmental Incidents
+];
+
 function getCategoryInfo($id) {
-    $map = [
-        1 => ['name' => 'Water Leak',     'color' => '#3399CC'],
-        2 => ['name' => 'Road Defect',     'color' => '#F36E39'],
-        3 => ['name' => 'Electrical Fault','color' => '#E3B505'],
-        4 => ['name' => 'Sanitation',      'color' => '#6B8E23'],
+    global $CATEGORY_NAMES, $CATEGORY_COLORS;
+    $id = (int)$id;
+    return [
+        'name'  => $CATEGORY_NAMES[$id] ?? 'Unknown',
+        'color' => $CATEGORY_COLORS[$id] ?? '#999999',
     ];
-    return $map[$id] ?? ['name' => 'Unknown', 'color' => '#999999'];
 }
+// ----- Category mapping (static) -----
+
 
 // ----- API endpoints -----
 $action = $_GET['action'] ?? '';
@@ -26,15 +40,17 @@ $action = $_GET['action'] ?? '';
 // 1) Get categories
 if ($action === 'get_categories') {
     $categories = [];
-    for ($i = 1; $i <= 4; $i++) {
-        $info = getCategoryInfo($i);
-        $categories[] = ['id' => $i, 'name' => $info['name'], 'color' => $info['color']];
+    foreach ($CATEGORY_NAMES as $id => $name) {
+        $categories[] = [
+            'id'    => $id,
+            'name'  => $name,
+            'color' => $CATEGORY_COLORS[$id] ?? '#999999',
+        ];
     }
     header('Content-Type: application/json');
     echo json_encode($categories);
     exit;
 }
-
 // 2) Get distinct streets
 if ($action === 'get_streets') {
     $query = "SELECT DISTINCT street_name FROM reports WHERE street_name IS NOT NULL AND street_name != '' ORDER BY street_name";
@@ -56,28 +72,34 @@ if ($action === 'get_streets') {
 // 3) Get filtered reports
 if ($action === 'get_reports') {
     $params = [];
-    $types = '';
-    $where = [];
+    $types  = '';
+    $where  = [];
 
-    $sql = "SELECT report_id, category_id, 
+    // Only pull reports that actually have coordinates.
+    // (Filtering in SQL is cheaper than fetching and discarding in PHP.)
+    $sql = "SELECT report_id, category_id,
                    street_number, street_name, surburb, town, postal_code,
-                   description, current_status
-            FROM reports WHERE 1=1";
+                   description, current_status,
+                   longitude, latitude
+            FROM reports
+            WHERE longitude IS NOT NULL
+              AND latitude  IS NOT NULL
+              AND NOT (longitude = 0 AND latitude = 0)";
 
     if (!empty($_GET['category_id'])) {
-        $where[] = "category_id = ?";
+        $where[]  = "category_id = ?";
         $params[] = intval($_GET['category_id']);
-        $types .= 'i';
+        $types   .= 'i';
     }
     if (!empty($_GET['street'])) {
-        $where[] = "street_name LIKE ?";
+        $where[]  = "street_name LIKE ?";
         $params[] = '%' . $_GET['street'] . '%';
-        $types .= 's';
+        $types   .= 's';
     }
     if (!empty($_GET['status'])) {
-        $where[] = "current_status = ?";
+        $where[]  = "current_status = ?";
         $params[] = $_GET['status'];
-        $types .= 's';
+        $types   .= 's';
     }
 
     if (!empty($where)) {
@@ -100,6 +122,13 @@ if ($action === 'get_reports') {
 
     $reports = [];
     while ($row = mysqli_fetch_assoc($result)) {
+        // Defensive second check – MySQL DECIMAL comes back as a string
+        $lat = $row['latitude'];
+        $lng = $row['longitude'];
+        if ($lat === null || $lng === null || $lat === '' || $lng === '') {
+            continue;   // not geocoded – skip it
+        }
+
         $reports[] = [
             'id'            => $row['report_id'],
             'title'         => $row['description'] ? substr($row['description'], 0, 60) : 'Issue',
@@ -110,7 +139,9 @@ if ($action === 'get_reports') {
             'town'          => $row['town'] ?? '',
             'postal_code'   => $row['postal_code'] ?? '',
             'status'        => $row['current_status'] ?? 'Pending',
-            'description'   => $row['description']
+            'description'   => $row['description'],
+            'lat'           => (float)$lat,   // <-- new
+            'lng'           => (float)$lng,   // <-- new
         ];
     }
 
@@ -120,59 +151,34 @@ if ($action === 'get_reports') {
     exit;
 }
 
-// 4) Geocode proxy (NEW – must be inside its own condition)
-if ($action === 'geocode') {
-    $address = $_GET['address'] ?? '';
-    if (empty($address)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Address parameter required']);
-        exit;
-    }
-
-    $url = 'https://nominatim.openstreetmap.org/search?format=json&q=' . urlencode($address) . '&limit=1';
-    
-    if (!function_exists('curl_init')) {
+// 3b) Get dam levels
+if ($action === 'get_dams') {
+    $sql = "SELECT dam_id, dam_name, level_percent, supply_area, updated_at
+            FROM dams_levels
+            ORDER BY dam_name";
+    $result = mysqli_query($conn, $sql);
+    if (!$result) {
         http_response_code(500);
-        echo json_encode(['error' => 'cURL is not installed on this server']);
+        echo json_encode(['error' => mysqli_error($conn)]);
         exit;
     }
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    // Nominatim STRICTLY requires an email address in the User-Agent to avoid being banned
-    curl_setopt($ch, CURLOPT_USERAGENT, 'M-Unite Map App (your.student.email@ru.ac.za)');
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-    
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlError = curl_error($ch);
-    curl_close($ch);
-
-    if ($response === false || $httpCode !== 200) {
-        // This will now output the EXACT reason for the failure to your browser console
-        http_response_code(500);
-        echo json_encode([
-            'error' => 'Upstream API request failed',
-            'http_status' => $httpCode,
-            'curl_error' => $curlError,
-            'nominatim_response' => $response
-        ]);
-        exit;
+    $dams = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $dams[] = [
+            'id'         => (int)$row['dam_id'],
+            'name'       => $row['dam_name'],
+            'level'      => (float)$row['level_percent'],
+            'area'       => $row['supply_area'],
+            'updated_at' => $row['updated_at'],
+        ];
     }
-
-    $data = json_decode($response, true);
-    if (!empty($data) && isset($data[0]['lat'], $data[0]['lon'])) {
-        echo json_encode([
-            'lat' => (float)$data[0]['lat'],
-            'lng' => (float)$data[0]['lon']
-        ]);
-    } else {
-        echo json_encode(null);
-    }
+    header('Content-Type: application/json');
+    echo json_encode($dams);
     exit;
 }
+
+
+
 
 // ----- No action: serve the HTML page (same as before) -----
 ?>
@@ -181,7 +187,7 @@ if ($action === 'geocode') {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Map | M-Unite</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet" />
@@ -270,42 +276,28 @@ if ($action === 'geocode') {
                     <h3>Reports by Category</h3>
                     <div id="categoryBreakdown"></div>
                 </div>
-                <div class="info-card">
-                    <h3>Water &amp; Load-Shedding</h3>
-                    <div class="info-row"><span>Current water schedule</span><span>Normal supply</span></div>
-                    <div class="info-row"><span>Load-shedding stage</span><span>Stage 0</span></div>
-                    <div class="info-row"><span>Next scheduled maintenance</span><span>25 Aug</span></div>
-                    <div class="info-row"><span>Reservoir status</span><span>Stable</span></div>
-                </div>
+    
             </div>
             <div class="stats-grid" style="margin-top:20px;">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
-                    <div>
-                        <div class="stat-label">Population (Makana Municipality)</div>
-                        <div class="stat-value" id="statPopulation">~93,000</div>
-                        <div class="stat-subvalue">2022 municipal estimate</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <div>
-                        <div class="stat-label">Active Reports</div>
-                        <div class="stat-value" id="statActiveReports">0</div>
-                        <div class="stat-subvalue" id="statResolvedThisWeek">0 resolved</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-water"></i></div>
-                    <div>
-                        <div class="stat-label">Dam Levels</div>
-                        <div class="stat-value">61%</div>
-                        <div>Grey Dam – 61%</div>
-                        <div>Buffels Dam – 59%</div>
-                        <div>Loerie Dam – 64%</div>
-                    </div>
-                </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div>
+            <div class="stat-label">Active Reports</div>
+            <div class="stat-value" id="statActiveReports">0</div>
+            <div class="stat-subvalue" id="statResolvedThisWeek">0 resolved</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-water"></i></div>
+        <div>
+            <div class="stat-label">Dam Levels (avg)</div>
+            <div class="stat-value" id="statAvgDamLevel">—</div>
+            <div id="damLevelsList">
+                <!-- populated by map.js -->
             </div>
+        </div>
+    </div>
+</div>
         </section>
     </main>
 
@@ -317,56 +309,71 @@ if ($action === 'geocode') {
         </button>
     </aside>
 
-    <!-- FOOTER -->
-    <footer class="site-footer">
-        <div class="footer-top">
-            <div class="footer-col footer-about">
-                <div class="footer-logo-box">
-                    <img src="logo1.png" alt="M-Unite Logo" class="logo-image" />
-                </div>
-                <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Pages</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="reports.html">Reports</a></li>
-                    <li><a href="notices.html">Notices</a></li>
-                    <li><a href="map.php">Map</a></li>
-                    <li><a href="about.html">About Us</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Connect</h4>
-                <ul>
-                    <li><a href="#">Report Website Bugs</a></li>
-                    <li><a href="#">Volunteer</a></li>
-                    <li><a href="mailto:info@munite.co.za">info@munite.co.za</a></li>
-                    <li><a href="tel:+27000000000">+27 000000000</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Resources</h4>
-                <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Documentation</a></li>
-                    <li><a href="#">Terms Of Use</a></li>
-                    <li><a href="#">Copyright Notice</a></li>
-                </ul>
-            </div>
-            <div class="footer-col footer-socials">
-                <h4>Socials</h4>
-                <div class="social-icons-vertical">
-                    <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://github.com" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-                    <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
-                </div>
-            </div>
+       <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <img src="images/footerimgresponsive1.png" alt="Makhanda skyline" class="footer-skyline-mobile">
+    <img src = "images/footer_img.png" alt = "Makhanda skyline" id = "footerimg">
+
+
+    <div class="footer-top">
+      <!-- Left Info -->
+      <div class="footer-col footer-about">
+        <div class="footer-logo-box">
+            <img src="images\logo_1.png" alt="M-Unite Logo" class="footer-logo">
         </div>
-        <div class="footer-bottom">
-            <p>&copy; M-Unite 2026</p>
+        <p>Connecting residents of Makhanda and the Municipality, enabling you to share and report municipal issues.</p>
+      </div>
+
+      <!-- Pages Column -->
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <ul>
+          <li><a href="home.php">Home</a></li>
+          <li><a href="CommReports.php">Reports</a></li>
+          <li><a href="public_notices.html">Notices</a></li>
+          <li><a href="map.html">Map</a></li>
+          <li><a href="about.html">About Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Connect Column -->
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Report Website Bugs</a></li>
+          <li><a href="home.php#volunteerForm">Volunteer</a></li>
+          <li><a href="#">info@munite.co.za</a></li>
+          <li><a href="tel:+27000000000">+27 000000000</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources Column -->
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="documentation.php">Documentation</a></li>
+          <li><a href="Terms_of_use.php">Terms Of Use</a></li>
+          <li><a href="#">Copyright Notice</a></li>
+        </ul>
+      </div>
+
+     <div class="footer-col footer-socials">
+        <h4>Socials</h4>
+        <div class="social-icons-vertical">
+          <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://github.com" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+          <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
         </div>
-    </footer>
+      </div>
+    </div>
+
+  
+    <div class="footer-bottom">
+      <p>&copy; M-Unite 2026</p>
+    </div>
+  </footer>
 
     <!-- Leaflet + plugins -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>

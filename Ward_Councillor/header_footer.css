@@ -4,10 +4,10 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'TikTok Sans', Arial, sans-serif;
+
 }
 
 body {
-  background: #DCE6F2;
   color: #222222;
   line-height: 1.6;
   min-height: 100vh;

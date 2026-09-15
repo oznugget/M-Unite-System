@@ -30,50 +30,7 @@ function initMap() {
     pinLayer = L.layerGroup().addTo(map);
 }
 
-const geocodeCache = new Map();
 
-async function geocodeAddress(street_number, street_name, suburb, town, postal_code, isFallback = false) {
-    // Build address string. If it's the fallback attempt, ignore street_number and suburb.
-    const parts = isFallback 
-        ? [street_name, town] 
-        : [street_number, street_name, suburb, town, postal_code].filter(p => p && p.trim() !== '');
-        
-    const address = parts.join(', ');
-    if (!address) return null;
-
-    if (geocodeCache.has(address)) {
-        return geocodeCache.get(address);
-    }
-
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`;
-    
-    try {
-        const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        
-        const data = await response.json();
-        
-        if (data && data.length > 0 && data[0].lat !== undefined && data[0].lon !== undefined) {
-            const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-            geocodeCache.set(address, coords);
-            return coords;
-        } else {
-            // If the strict address wasn't found, try again with just the street and town
-            if (!isFallback && street_name && town) {
-                console.warn(`Could not find precise address for "${address}". Trying broader search...`);
-                // Wait 1.1s before firing the fallback request to respect limits
-                await new Promise(resolve => setTimeout(resolve, 1100)); 
-                return await geocodeAddress(null, street_name, null, town, null, true);
-            }
-            geocodeCache.set(address, null);
-            return null;
-        }
-    } catch (error) {
-        console.warn('Geocoding error for', address, error);
-        geocodeCache.set(address, null);
-        return null;
-    }
-}
 
 
 // ------------------------------------------------------------------
@@ -134,6 +91,7 @@ function buildLegend(categories) {
     categories.forEach(c => {
         const div = document.createElement('div');
         div.className = 'legend-item';
+        div.dataset.catId = c.id;
         div.innerHTML = `
             <span class="legend-dot" style="background:${c.color};"></span>
             ${c.name}
@@ -163,21 +121,55 @@ async function fetchReports(filters = {}) {
     }
 }
 
+async function fetchAndRenderDams() {
+    const avgEl  = document.getElementById('statAvgDamLevel');
+    const listEl = document.getElementById('damLevelsList');
+    if (!avgEl || !listEl) return;
+
+    try {
+        const res  = await fetch(`${API_BASE}?action=get_dams`);
+        const dams = await res.json();
+
+        if (!Array.isArray(dams) || dams.length === 0) {
+            avgEl.textContent = 'N/A';
+            listEl.innerHTML = '<div class="stat-subvalue">No dam data available</div>';
+            return;
+        }
+
+        // Average level across all dams
+        const avg = dams.reduce((sum, d) => sum + (d.level || 0), 0) / dams.length;
+        avgEl.textContent = `${avg.toFixed(0)}%`;
+
+        // One line per dam
+        listEl.innerHTML = '';
+        dams.forEach(d => {
+            const row = document.createElement('div');
+            row.className = 'stat-subvalue';
+            row.textContent = `${d.name} – ${d.level}%`;
+            listEl.appendChild(row);
+        });
+    } catch (err) {
+        console.warn('Could not fetch dam levels', err);
+        avgEl.textContent = 'N/A';
+        listEl.innerHTML = '<div class="stat-subvalue">Failed to load dam data</div>';
+    }
+}
+
 // Fallback dummy data (only used if API fails)
 function getFallbackReports(filters) {
     const dummy = [
-        {id: 1, title: 'Burst water main', category_id: 1, latitude: -33.3120, longitude: 26.5225, street_name: 'High Street, CBD', status: 'Pending' },
-        {id: 2, title: 'Large pothole', category_id: 2, latitude: -33.2980, longitude: 26.5470, street_name: 'Joza', status: 'In Progress' },
-        {id: 3, title: 'Downed power line', category_id: 3, latitude: -33.3050, longitude: 26.5380, street_name: 'Fingo Village', status: 'Pending' },
-        {id: 4, title: 'Leaking pipe', category_id: 1, latitude: -33.2900, longitude: 26.5520, street_name: 'Extension 6', status: 'Pending' },
-        {id: 5, title: 'Collapsed storm drain', category_id: 2, latitude: -33.3115, longitude: 26.5200, street_name: 'Somerset Street', status: 'Resolved' },
-        {id: 6, title: 'No water supply', category_id: 1, latitude: -33.2850, longitude: 26.5550, street_name: 'Vukani', status: 'Pending' },
-        {id: 7, title: 'Flickering streetlights', category_id: 3, latitude: -33.3000, longitude: 26.5450, street_name: 'Grahamstown East', status: 'In Progress' },
-        {id: 8, title: 'Road surface erosion', category_id: 2, latitude: -33.3180, longitude: 26.5150, street_name: 'Sunnyside', status: 'Pending' },
-        {id: 9, title: 'Sewage overflow', category_id: 4, latitude: -33.3020, longitude: 26.5320, street_name: 'Tantyi', status: 'Pending' },
-        {id: 10, title: 'Blocked drain', category_id: 4, latitude: -33.3200, longitude: 26.5100, street_name: 'Hooggenoeg', status: 'Resolved' },
-        {id: 11, title: 'Overflowing bin area', category_id: 4, latitude: -33.2930, longitude: 26.5400, street_name: 'Extension 9', status: 'Pending' },
-        {id: 12, title: 'Faulty traffic light', category_id: 3, latitude: -33.3070, longitude: 26.5260, street_name: 'Beaufort Street', status: 'In Progress' }
+        {id: 1, title: 'Burst water main',       category_id: 2, lat: -33.3120, lng: 26.5225, street_name: 'High Street, CBD',   status: 'Pending' },
+        {id: 2, title: 'Large pothole',          category_id: 3, lat: -33.2980, lng: 26.5470, street_name: 'Joza',              status: 'In Progress' },
+        {id: 3, title: 'Downed power line',      category_id: 1, lat: -33.3050, lng: 26.5380, street_name: 'Fingo Village',     status: 'Pending' },
+        {id: 4, title: 'Leaking pipe',           category_id: 2, lat: -33.2900, lng: 26.5520, street_name: 'Extension 6',       status: 'Pending' },
+        {id: 5, title: 'Collapsed storm drain',  category_id: 5, lat: -33.3115, lng: 26.5200, street_name: 'Somerset Street',   status: 'Resolved' },
+        {id: 6, title: 'No water supply',        category_id: 2, lat: -33.2850, lng: 26.5550, street_name: 'Vukani',            status: 'Pending' },
+        {id: 7, title: 'Flickering streetlights',category_id: 1, lat: -33.3000, lng: 26.5450, street_name: 'Grahamstown East',  status: 'In Progress' },
+        {id: 8, title: 'Road surface erosion',   category_id: 3, lat: -33.3180, lng: 26.5150, street_name: 'Sunnyside',         status: 'Pending' },
+        {id: 9, title: 'Sewage overflow',        category_id: 5, lat: -33.3020, lng: 26.5320, street_name: 'Tantyi',            status: 'Pending' },
+        {id: 10,title: 'Blocked drain',          category_id: 5, lat: -33.3200, lng: 26.5100, street_name: 'Hooggenoeg',        status: 'Resolved' },
+        {id: 11,title: 'Overflowing bin area',   category_id: 7, lat: -33.2930, lng: 26.5400, street_name: 'Extension 9',       status: 'Pending' },
+        {id: 12,title: 'Faulty traffic light',   category_id: 1, lat: -33.3070, lng: 26.5260, street_name: 'Beaufort Street',   status: 'In Progress' }
     ];
     let filtered = dummy;
     if (filters.category_id) {
@@ -209,26 +201,14 @@ async function renderMap(issues) {
         return;
     }
 
-    // REMOVED the conflicting issues.map() block from here
+    // Keep only reports that actually have usable coordinates.
+    const validIssues = issues.filter(issue =>
+        typeof issue.lat === 'number' && !isNaN(issue.lat) &&
+        typeof issue.lng === 'number' && !isNaN(issue.lng)
+    );
 
-    const issuesWithCoords = [];
-    for (const issue of issues) {
-        const coords = await geocodeAddress(
-            issue.street_number,
-            issue.street_name,
-            issue.suburb,
-            issue.town,
-            issue.postal_code
-        );
-        issuesWithCoords.push({ ...issue, coords });
-        // Wait 1.1 seconds between requests to respect Nominatim's rate limit
-        await new Promise(resolve => setTimeout(resolve, 1100));
-    }
-    
-    // Filter out those that couldn't be geocoded
-    const validIssues = issuesWithCoords.filter(issue => issue.coords !== null);
     if (validIssues.length === 0) {
-        document.getElementById('resultCount').textContent = '0 issues (geocoding failed)';
+        document.getElementById('resultCount').textContent = '0 issues (none geocoded)';
         updateStats(issues);
         return;
     }
@@ -238,8 +218,7 @@ async function renderMap(issues) {
     // --- PIN VIEW ---
     validIssues.forEach(issue => {
         const cat = categoriesMap[issue.category_id] || { name: 'Unknown', color: '#999999' };
-        // CHANGE issue.latitude / issue.longitude to issue.coords.lat / issue.coords.lng
-        const marker = L.circleMarker([issue.coords.lat, issue.coords.lng], {
+        const marker = L.circleMarker([issue.lat, issue.lng], {
             radius: 9,
             fillColor: cat.color,
             color: '#ffffff',
@@ -255,14 +234,11 @@ async function renderMap(issues) {
     });
 
     // --- HEATMAP VIEW (one layer per category) ---
-    const cats = Object.keys(categoriesMap);
-    cats.forEach(catId => {
+    Object.keys(categoriesMap).forEach(catId => {
         const cat = categoriesMap[catId];
-        // CHANGE 'issues' to 'validIssues'
         const points = validIssues
             .filter(r => r.category_id == catId)
-            // CHANGE r.latitude / r.longitude to r.coords.lat / r.coords.lng
-            .map(r => [r.coords.lat, r.coords.lng, 0.9]);
+            .map(r => [r.lat, r.lng, 0.9]);
         if (points.length === 0) return;
         const layer = L.heatLayer(points, {
             radius: 30,
@@ -318,23 +294,17 @@ function updateStats(issues) {
         });
     }
 
-    // Update legend with counts
-    const legendItems = document.querySelectorAll('.legend-item');
-    legendItems.forEach(item => {
-        const name = item.textContent.trim();
-        for (const [id, cat] of Object.entries(categoriesMap)) {
-            if (cat.name === name) {
-                const count = counts[id] || 0;
-                let countSpan = item.querySelector('.legend-count');
-                if (!countSpan) {
-                    countSpan = document.createElement('span');
-                    countSpan.className = 'legend-count';
-                    item.appendChild(countSpan);
-                }
-                countSpan.textContent = ` (${count})`;
-                break;
-            }
+    // Update legend counts (reads data-cat-id set in buildLegend)
+    document.querySelectorAll('.legend-item').forEach(item => {
+        const id = item.dataset.catId;
+        const count = counts[id] || 0;
+        let countSpan = item.querySelector('.legend-count');
+        if (!countSpan) {
+            countSpan = document.createElement('span');
+            countSpan.className = 'legend-count';
+            item.appendChild(countSpan);
         }
+        countSpan.textContent = ` (${count})`;
     });
 }
 
@@ -350,7 +320,7 @@ async function applyFilters() {
 
     const data = await fetchReports(currentFilters);
     allIssues = data;
-    await renderMap(data);
+    renderMap(data);   // no need to await any more
 }
 
 // ------------------------------------------------------------------
@@ -377,6 +347,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     initMap();
     await fetchFilterOptions();
     await applyFilters();
+
+    fetchAndRenderDams();   
 
     // Event listeners
     document.getElementById('applyFiltersBtn').addEventListener('click', applyFilters);
