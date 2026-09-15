@@ -17,6 +17,16 @@ if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], $allowedRoles)) {
     exit();
 }
 
+// South African numbers are stored without the leading 0 (e.g. "821234567").
+// Display them as +27 xx xxx xxxx.
+function formatPhoneZA($phone) {
+    $phone = trim((string) $phone);
+    if ($phone === '') {
+        return null;
+    }
+    $phone = ltrim($phone, '0'); // in case a leading 0 slipped in anyway
+    return '+27 ' . $phone;
+}
 // ---- Read filters/pagination from the URL ----
 $search     = isset($_GET['search']) ? trim($_GET['search']) : '';
 $roleFilter = isset($_GET['role']) ? trim($_GET['role']) : 'All roles';
@@ -38,7 +48,7 @@ $roleMap = [
 // fail_streak = failed logins since their last successful login (same logic as the dashboard)
 $baseSql = "
     SELECT t.* FROM (
-        SELECT a.username, a.name, a.surname, a.role, a.is_registered, a.active_status, a.date_registered,
+        SELECT a.username, a.name, a.surname, a.role, a.is_registered, a.active_status, a.date_registered, a.is_deleted,
                wc_w.ward_name AS councillor_ward,
                cm_w.ward_name AS citizen_ward,
                mo.division,
@@ -58,7 +68,7 @@ $baseSql = "
         LEFT JOIN wards cm_w ON cm.ward_id = cm_w.ward_id
         LEFT JOIN municipal_officers mo ON a.username = mo.username
     ) AS t
-    WHERE 1=1
+    WHERE t.is_deleted = 0
 ";
 
 $conditions = [];
@@ -131,10 +141,10 @@ while ($row = $result->fetch_assoc()) {
         $row['ward_label'] = $row['councillor_ward'] ?? '—';
     } elseif (in_array($row['role'], ['Municipal Officer', '3'])) {
         $row['role_label'] = 'Municipal Officer';
-        $row['ward_label'] = 'Community-wide';
+        $row['ward_label'] = 'N/A';
     } elseif (in_array($row['role'], ['System Admin', '4'])) {
         $row['role_label'] = 'System Admin';
-        $row['ward_label'] = 'Community-wide';
+        $row['ward_label'] = 'N/A';
     } else {
         $row['role_label'] = 'Community Member';
         $row['ward_label'] = $row['citizen_ward'] ?? '—';
@@ -156,6 +166,7 @@ while ($row = $result->fetch_assoc()) {
 
     $usersList[] = $row;
 }
+
 
 //  If a specific user was selected via ?username=..., load their full detail 
 $selectedUser = null;
@@ -194,6 +205,7 @@ if (isset($_GET['username']) && $_GET['username'] !== '') {
 
     if ($selResult->num_rows > 0) {
         $selectedUser = $selResult->fetch_assoc();
+        $selectedUser['phone_display'] = formatPhoneZA($selectedUser['phone_number']);
 
         if (in_array($selectedUser['role'], ['Ward Councillor', 'Ward councillor', '2'])) {
             $selectedUser['role_label'] = 'Ward Councillor';
@@ -205,7 +217,7 @@ if (isset($_GET['username']) && $_GET['username'] !== '') {
             $selectedUser['role_label'] = 'System Admin';
             $selectedUser['ward_label'] = 'N/A';
         } else {
-            $selectedUser['role_label'] = 'Citizen';
+            $selectedUser['role_label'] = 'Commmunity Member';
             $selectedUser['ward_label'] = $selectedUser['citizen_ward'] ?? '—';
         }
 
