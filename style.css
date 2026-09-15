@@ -36,63 +36,14 @@ body {
   margin: 0;
 }
 
-/* ---------- Header: horizontal tab bar, matching the SDS wireframe
-   (logo, tabs, account button) but without hand-drawn divider lines -
-   flat tabs with a soft rounded highlight instead ---------- */
-header {
-  background-color: var(--navy);
-  color: white;
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.logo-box {
-  border-radius: 8px;
-  background: white;
-  color: var(--navy);
-  padding: 7px 14px;
-  font-weight: 800;
-}
-
-nav {
-  display: flex;
-  gap: 4px;
-  margin-right: auto;
-}
-
-header nav a {
-  color: white;
-  text-decoration: none;
-  padding: 9px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  display: inline-block;
-  transition: transform 0.18s ease, background-color 0.18s ease;
-}
-
-header nav a.active { background-color: rgba(255, 255, 255, 0.18); }
-header nav a.nav-hover { background-color: rgba(255, 255, 255, 0.22); transform: translateY(-3px); }
-
-.account-btn {
-  background: var(--orange);
-  border: none;
-  border-radius: 8px;
-  padding: 9px 18px;
-  white-space: nowrap;
-  color: white;
-  font-weight: 700;
-  font-size: 0.88rem;
-  display: inline-block;
-  transition: transform 0.18s ease;
-}
-.account-btn a { color: inherit; text-decoration: none; font-weight: inherit; }
-.account-btn.nav-hover { transform: translateY(-4px); }
+/* ---------- Header/nav/logo/account-button rules used to live here.
+   Officer pages now use header_footer.css's .site-header/.navbar/
+   .nav-item/.sign-in-btn design instead (shared with the resident pages),
+   so the old .logo-box, bare `nav`, `header nav a`, and .account-btn
+   rules were removed - they were bare element/tag selectors that still
+   matched the new markup underneath the new classes, silently fighting
+   header_footer.css's rules for the same elements (this is exactly what
+   caused the white box around the logo). ---------- */
 
 /* ---------- Main content ---------- */
 main {
@@ -101,11 +52,6 @@ main {
   padding: 0 20px;
 }
 main.wide { max-width: 1000px; }
-
-@media (max-width: 700px) {
-  header { flex-wrap: wrap; }
-  nav { order: 3; width: 100%; margin-top: 8px; justify-content: center; flex-wrap: wrap; }
-}
 
 h1, h2, h3 { color: var(--navy); margin: 0 0 8px; }
 h1 { margin-bottom: 4px; }
@@ -143,6 +89,30 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--o
 .invalid .error-text { display: block; }
 .invalid input, .invalid textarea { border-color: var(--red-fg); }
 .field-note { font-size: 0.8rem; font-weight: normal; color: #767b80; margin-top: 4px; }
+
+/* ---------- Password field show/hide toggle ---------- */
+.password-wrapper {
+  position: relative;
+}
+.password-wrapper input {
+  padding-right: 40px; /* room for the eye icon */
+}
+.password-wrapper .toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(calc(-50% + 2px)); /* nudges for the label's margin-top on the input */
+  background: none;
+  border: none;
+  padding: 4px;
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.password-wrapper .toggle-btn:hover svg {
+  stroke: var(--orange);
+}
 
 /* ---------- Buttons ---------- */
 button {
@@ -198,6 +168,54 @@ button.danger:hover { background-color: var(--red-bg); }
 .status-value.fail { color: var(--red-fg); }
 .status-card .status-meta { font-size: 0.78rem; color: #8a94a3; margin-top: 2px; }
 
+/* ---------- Address autocomplete dropdown ---------- */
+.autocomplete-wrapper {
+  position: relative;
+}
+
+#suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+#suggestions li {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.15s ease;
+}
+
+#suggestions li:last-child {
+  border-bottom: none;
+}
+
+#suggestions li:hover,
+#suggestions li:active {
+  background-color: var(--bg);
+}
+
+#suggestions li.no-match {
+  cursor: default;
+  color: #8a94a3;
+  font-style: italic;
+}
+#suggestions li.no-match:hover {
+  background-color: transparent;
+}
+
 .alert-card {
   background: var(--red-bg); border-left: 5px solid var(--red-fg); border-radius: var(--radius);
   padding: 14px 18px; margin-bottom: 22px; display: flex; align-items: flex-start; gap: 12px;
@@ -234,16 +252,7 @@ tr:hover td { background: #f5f8fc; }
 
 .empty-msg { text-align: center; color: #8a94a3; padding: 24px; }
 
-/* ---------- Footer ---------- */
-footer { background-color: var(--navy); color: white; text-align: center; padding: 20px; margin-top: 30px; }
-footer a { color: white; margin: 0 8px; text-decoration: none; }
-footer p { margin: 4px 0; }
-
 /* ---------- Responsive ---------- */
-@media (max-width: 700px) {
-  header { flex-wrap: wrap; }
-  nav { order: 3; width: 100%; margin-top: 8px; }
-}
 
 /* ---------- Events page: flyer thumbnails and preview ---------- */
 .flyer-thumb {

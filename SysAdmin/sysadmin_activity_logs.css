@@ -151,13 +151,41 @@
 }
 
 .action-tag.failed {
-  color: #d97706;
+  color: #dc2626;
 }
 
 .action-tag.locked {
   color: #dc2626;
 }
 
-.action-tag.notice {
-  color: #2563eb;
+
+
+
+
+/* Remove the red vertical indicator strip on flagged table rows */
+tr.log-flagged {
+    border-left: none !important;
+}
+
+/* Keep the soft red background tint for flagged rows, but remove any leftover borders */
+tr.log-flagged td {
+    background-color: #fef2f2 !important;
+    border-left: none !important;
+}
+
+/* Hide the icons/logos inside the action tags */
+.action-tag svg,
+.action-tag i,
+.action-tag span.icon,
+.action-tag::before {
+    display: none !important;
+}
+
+/* Adjust action tag layout if spacing looks off after removing the icon */
+.action-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0px !important;
+    padding-left: 8px;
+    padding-right: 8px;
 }

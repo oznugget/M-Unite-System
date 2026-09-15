@@ -2,7 +2,7 @@
 session_start();
 require "dbConnection.php";
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['username']) || !in_array($_SESSION['role'], ['1', 'Community Member'])) {
     header("Location: signin.php");
     exit();
 }

@@ -1,4 +1,5 @@
 <?php
+require "sysadmin_user_actions.php";
 require "sysadmin_home_data.php";
 require "sysadmin_users_data.php";
 ?>
@@ -106,7 +107,7 @@ require "sysadmin_users_data.php";
                     <tr>
                       <td>
                         <div class="user-name"><?php echo htmlspecialchars($u['name'] . ' ' . $u['surname']); ?></div>
-                        <div class="user-id"><?php echo htmlspecialchars($u['username']); ?></div>
+
                       </td>
                       <td><?php echo htmlspecialchars($u['username']); ?></td>
                       <td><?php echo htmlspecialchars($u['role_label']); ?></td>
@@ -161,9 +162,10 @@ require "sysadmin_users_data.php";
             <div class="manage-panel-avatar"><?php echo htmlspecialchars($selectedUser['initials']); ?></div>
             <div class="manage-panel-heading">
               <div class="manage-panel-name"><?php echo htmlspecialchars($selectedUser['name'] . ' ' . $selectedUser['surname']); ?></div>
-              <div class="manage-panel-sub"><?php echo htmlspecialchars($selectedUser['username']); ?> &middot; <?php echo htmlspecialchars($selectedUser['role_label']); ?></div>
+              <div class="manage-panel-sub"><?php echo htmlspecialchars($selectedUser['role_label']); ?></div>
             </div>
-            <a href="?<?php echo http_build_query(array_diff_key($_GET, ['username' => ''])); ?>" class="manage-panel-close">&times;</a>
+          <!-- PHP-generated link used to close a panel while keeping the other URL parameters intact-->
+            <a href="?<?php echo http_build_query(array_diff_key($_GET, ['username' => ''])); ?>" class="manage-panel-close" id="managePanelClose">&times;</a>
           </div>
 
           <div class="manage-panel-body">
@@ -181,7 +183,7 @@ require "sysadmin_users_data.php";
               <span class="manage-detail-icon">&#9742;</span>
               <div>
                 <div class="manage-detail-label">Phone</div>
-                <div class="manage-detail-value"><?php echo htmlspecialchars($selectedUser['phone_number'] ?: '—'); ?></div>
+                <div class="manage-detail-value"><?php echo htmlspecialchars($selectedUser['phone_display'] ?: '—'); ?></div>
               </div>
             </div>
 
@@ -209,22 +211,83 @@ require "sysadmin_users_data.php";
               </div>
             </div>
 
+
+      <!--Actions performed by sysadmin, approve registration, lock, suspend, actibvate and remove-->
             <div class="manage-actions-label">ADMIN ACTIONS</div>
 
-            <?php if ($selectedUser['is_registered'] == 0): ?>
-              <button class="btn-approve-full" id="mp-approve-btn">&check; Approve registration</button>
-            <?php endif; ?>
+              <?php if ($selectedUser['is_registered'] == 0): ?>
+                <form method="post" action="sysadmin_users.php">
+                  <input type="hidden" name="action" value="approve">
+                  <input type="hidden" name="username" value="<?php echo htmlspecialchars($selectedUser['username']); ?>">
+                  <input type="hidden" name="return_search" value="<?php echo htmlspecialchars($search); ?>">
+                  <input type="hidden" name="return_role" value="<?php echo htmlspecialchars($roleFilter); ?>">
+                  <input type="hidden" name="return_status" value="<?php echo htmlspecialchars($statusFilter); ?>">
+                  <input type="hidden" name="return_page" value="<?php echo (int) $page; ?>">
+                  <button type="submit" class="btn-approve-full">&check; Approve registration</button>
+                </form>
+              <?php endif; ?>
 
-            <div class="manage-actions-grid">
-              <button class="btn-action-outline" id="mp-assign-role">&#128100; Assign role</button>
-              <button class="btn-action-outline" id="mp-unlock">&#128274; Unlock</button>
-              <button class="btn-action-outline" id="mp-suspend">&#9201; Suspend</button>
-              <button class="btn-action-outline danger" id="mp-remove">&#128465; Remove</button>
-            </div>
-          </div>
-        </aside>
-      </div>
+              <form method="post" action="sysadmin_users.php" style="margin-bottom:12px;">
+                <input type="hidden" name="action" value="assign_role">
+                <input type="hidden" name="username" value="<?php echo htmlspecialchars($selectedUser['username']); ?>">
+                <input type="hidden" name="return_search" value="<?php echo htmlspecialchars($search); ?>">
+                <input type="hidden" name="return_role" value="<?php echo htmlspecialchars($roleFilter); ?>">
+                <input type="hidden" name="return_status" value="<?php echo htmlspecialchars($statusFilter); ?>">
+                <input type="hidden" name="return_page" value="<?php echo (int) $page; ?>">
+                <div class="manage-detail-label" style="margin-bottom:6px;">Assign role</div>
+                <select name="new_role" style="width:100%; padding:8px; border-radius:8px; border:1px solid #e5e7eb; margin-bottom:8px;">
+                  <?php foreach (['Community Member', 'Ward Councillor', 'Municipal Officer', 'System Admin'] as $r): ?>
+                    <option value="<?php echo htmlspecialchars($r); ?>" <?php echo ($selectedUser['role_label'] === $r) ? 'selected' : ''; ?>>
+                      <?php echo htmlspecialchars($r); ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+                <button type="submit" class="btn-action-outline" style="width:100%;">&#128100; Assign role</button>
+              </form>
+
+    <div class="manage-actions-grid">
+      <form method="post" action="sysadmin_users.php">
+        <input type="hidden" name="action" value="unlock">
+        <input type="hidden" name="username" value="<?php echo htmlspecialchars($selectedUser['username']); ?>">
+        <input type="hidden" name="return_search" value="<?php echo htmlspecialchars($search); ?>">
+        <input type="hidden" name="return_role" value="<?php echo htmlspecialchars($roleFilter); ?>">
+        <input type="hidden" name="return_status" value="<?php echo htmlspecialchars($statusFilter); ?>">
+        <input type="hidden" name="return_page" value="<?php echo (int) $page; ?>">
+        <button type="submit" class="btn-action-outline" style="width:100%;">&#128274; Unlock</button>
+      </form>
+
+        <?php if ($selectedUser['active_status'] == 1): ?>
+        <form method="post" action="sysadmin_users.php" onsubmit="return confirm('Suspend this account?');">
+          <input type="hidden" name="action" value="suspend">
+          <input type="hidden" name="username" value="<?php echo htmlspecialchars($selectedUser['username']); ?>">
+          <input type="hidden" name="return_search" value="<?php echo htmlspecialchars($search); ?>">
+          <input type="hidden" name="return_role" value="<?php echo htmlspecialchars($roleFilter); ?>">
+          <input type="hidden" name="return_status" value="<?php echo htmlspecialchars($statusFilter); ?>">
+          <input type="hidden" name="return_page" value="<?php echo (int) $page; ?>">
+          <button type="submit" class="btn-action-outline" style="width:100%;">&#9201; Suspend</button>
+        </form>
+      <?php else: ?>
+        <form method="post" action="sysadmin_users.php">
+          <input type="hidden" name="action" value="activate">
+          <input type="hidden" name="username" value="<?php echo htmlspecialchars($selectedUser['username']); ?>">
+          <input type="hidden" name="return_search" value="<?php echo htmlspecialchars($search); ?>">
+          <input type="hidden" name="return_role" value="<?php echo htmlspecialchars($roleFilter); ?>">
+          <input type="hidden" name="return_status" value="<?php echo htmlspecialchars($statusFilter); ?>">
+          <input type="hidden" name="return_page" value="<?php echo (int) $page; ?>">
+          <button type="submit" class="btn-action-outline" style="width:100%;">&#9989; Activate</button>
+        </form>
       <?php endif; ?>
-  
+
+      <form method="post" action="sysadmin_users.php" onsubmit="return confirm('Remove this user? This deactivates their account and hides it from the list, but does not permanently delete their record.');" style="grid-column: 1 / -1;">
+        <input type="hidden" name="action" value="remove">
+        <input type="hidden" name="username" value="<?php echo htmlspecialchars($selectedUser['username']); ?>">
+        <input type="hidden" name="return_search" value="<?php echo htmlspecialchars($search); ?>">
+        <input type="hidden" name="return_role" value="<?php echo htmlspecialchars($roleFilter); ?>">
+        <input type="hidden" name="return_status" value="<?php echo htmlspecialchars($statusFilter); ?>">
+        <input type="hidden" name="return_page" value="<?php echo (int) $page; ?>">
+        <button type="submit" class="btn-action-outline danger" style="width:100%;">&#128465; Remove</button>
+      </form>
+    </div>
+      <?php endif; ?>
   </body>
 </html>
