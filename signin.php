@@ -107,9 +107,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             $_SESSION['ward_id'] = $wardRow['ward_id'];
                                         }
                                     }
-                                    header("Location: ward_councillor_home.php?login=success");
-                                    exit();
-                              
+                                
+                                session_write_close();
+                                header("Location: Ward_Councillor/ward_councillor_home.php?login=success");
+                                exit();
 
                             case "Municipal Officer":
                             case "3":
@@ -124,15 +125,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             $_SESSION['division'] = $div['division'];
                                         }
                                     }
-                                    header("Location: officer-home.php?login=success");
-                                    exit();
-                               
+                                
+                                session_write_close();
+                                header("Location: officer-home.php?login=success");
+                                exit();
+
                             case "System Admin":
                             case "4":
-                                 if ($is_authenticated = 1) {
+                                session_write_close();
                                 header("Location: sysadmin_home.php?login=success");
-                                exit();
-                                 }
+                                exit();                                 }
 
                             default:
                                 $error = "Access level not recognized. Please contact administrator.";
