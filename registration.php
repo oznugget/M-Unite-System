@@ -104,14 +104,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
 
-  
-    $is_registered = 1;
+
     $active_status = 1;
 
     // Begin Database Transaction
     $conn->begin_transaction();
 
     try {
+         if ($role === "Community Member"){
+             $is_registered = 1;
+         }else{
+            $is_registered = 0;
+         }
         // 1. Insert into Accounts
         $stmt = $conn->prepare("INSERT INTO accounts (username, password, phone_number, name, surname, role, is_registered, active_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssssii", $username, $hash_pword, $contact, $firstname, $surname, $role, $is_registered, $active_status);
@@ -170,8 +174,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn->commit();
 
         // Redirect after successful commit
-        header("Location: signin.php?registration=success");
-        exit();
+            if ($role == "Community Member"){
+                header("Location: signin.php?registration=success");
+                exit();
+            }else{
+                header("Location: isregisteredPortal.php");
+                exit();
+            }
 
         } catch (mysqli_sql_exception $e) {
         // Rollback any database changes if a query fails
@@ -193,10 +202,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             showError("Something went wrong while creating your account. Please try again, and contact support if the problem continues.");
             error_log("Registration DB error [" . $e->getCode() . "]: " . $e->getMessage());
         }
-    } catch (mysqli_sql_exception $e) {
-        $conn->rollback();
-        // TEMPORARY DEBUG: Displays the exact database error on your screen
-        showError("SQL Error [" . $e->getCode() . "]: " . $e->getMessage());
     } catch (Exception $e) {
         $conn->rollback();
         showError("PHP Error: " . $e->getMessage());

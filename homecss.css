@@ -1,18 +1,19 @@
-
+body {
+  background-color: #d4edda;
+}
 
 
 /*----------------------------------------------------------------------*/
 /*section 1*/
 
 #carousel {
-  height: calc(100vh - 142px);
+  height: calc(100dvh - 80px); 
   margin: 0;
 }
 
-
 #carousel-frame {
   width: 100%;
-  height: 110%;
+  height: 100%; 
   margin: 0;
   overflow: hidden;
   position: relative;
@@ -262,7 +263,7 @@
   align-items: center;
   margin: 8rem auto 0 auto;
   width: 60%;
-  background-color: #d4edda;
+  background: #eaf1f9;
   justify-items: center;
   justify-content: center;
   margin-bottom: 1rem;
@@ -303,9 +304,7 @@
 }
 
 .infocard:hover {
-    transform: translateY(-4px);
     box-shadow: 0 10px 28px rgba(14, 40, 65, 0.12);
-    border-color: #F36E39;
 }
 
 /* ---- Card heading with orange underline ---- */
@@ -413,8 +412,10 @@
    ===================================================================== */
 
 .report-categories {
-    background: linear-gradient(180deg, #DCE6F2 0%, #eaf1f9 100%);
+    
     padding: 5rem 2rem 5.5rem;
+    background: #eaf1f9;
+    
 }
 
 .report-categories-inner {
@@ -463,11 +464,7 @@
     opacity: 0.85;
 }
 
-.category-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 28px rgba(14, 40, 65, 0.12);
-    border-color: #F36E39;
-}
+
 
 .category-card h3 {
     font-family: 'Merriweather Sans', sans-serif;
@@ -654,16 +651,16 @@
 /* --- RESPONSIVENESS --- */
 @media (max-width: 768px) {
   #carousel-frame {
-  width: 100%;
-  height: 125%;
+    width: 100%;
+    height: 100%; 
+  }
+
+  #carousel {
+    height: calc(100dvh - 70px); 
   }
 
   .social-icons-vertical {
     flex-direction: row;
-  }
-
-  #carousel {
-    height: 70vh;
   }
 
   .carousel-text {
@@ -697,6 +694,7 @@
   .localinfo {
     margin: 0;
     padding: 1.5rem;
+    background-color: #d4edda;
   }
 
   
