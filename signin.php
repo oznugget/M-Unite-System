@@ -49,6 +49,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $row = $result->fetch_assoc();
 
                     if (password_verify($pword, $row['password'])) {
+                        //Check if account has been authenticated/verified by System Admin
+                        if ((int)$row['is_registered'] !== 1) {
+                            $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, timestamp, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
+                            if ($stmtLog) {
+                                $action_type_id = 2; 
+                                $is_auth = 0;
+                                $stmtLog->bind_param("sissi", $email, $action_type_id, $ip_address, $timestamp, $is_auth);
+                                $stmtLog->execute();
+                                $stmtLog->close();
+                            }
+                            $error = "Your account is awaiting verification by a system administrator. Please try signing in later.";
+                        } else {
                         session_regenerate_id(true);
                         $_SESSION['username']  = $row['username'];
                         $_SESSION['firstname'] = $row['name'];
@@ -82,46 +94,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 header("Location: home.php?login=success");
                                 exit();
 
-                            case "Ward councillor":
+                            case "Ward Councillor":
                             case "2":
                                 $stmtW = $conn->prepare("SELECT ward_id FROM ward_councillors WHERE username = ? LIMIT 1");
                                 if ($stmtW) {
-                                    $stmtW->bind_param("s", $row['username']);
-                                    $stmtW->execute();
-                                    $wardRow = $stmtW->get_result()->fetch_assoc();
-                                    $stmtW->close();
+                                        $stmtW->bind_param("s", $row['username']);
+                                        $stmtW->execute();
+                                        $wardRow = $stmtW->get_result()->fetch_assoc();
+                                        $stmtW->close();
 
-                                    if ($wardRow) {
-                                        $_SESSION['ward_id'] = $wardRow['ward_id'];
+                                        if ($wardRow) {
+                                            $_SESSION['ward_id'] = $wardRow['ward_id'];
+                                        }
                                     }
-                                }
-                                header("Location: ward_councillor_home.php?login=success");
-                                exit();
+                                    header("Location: ward_councillor_home.php?login=success");
+                                    exit();
+                              
 
                             case "Municipal Officer":
                             case "3":
                                  $stmtM = $conn->prepare("SELECT division FROM municipal_officers WHERE username = ? LIMIT 1");
-                                if ($stmtM) {
-                                    $stmtM->bind_param("s", $row['username']);
-                                    $stmtM->execute();
-                                    $div = $stmtM->get_result()->fetch_assoc();
-                                    $stmtM->close();
+                                 if ($stmtM) {
+                                        $stmtM->bind_param("s", $row['username']);
+                                        $stmtM->execute();
+                                        $div = $stmtM->get_result()->fetch_assoc();
+                                        $stmtM->close();
 
-                                    if ($div) {
-                                        $_SESSION['division'] = $div['division'];
+                                        if ($div) {
+                                            $_SESSION['division'] = $div['division'];
+                                        }
                                     }
-                                }
-                                header("Location: officer-home.php?login=success");
-                                exit();
-
+                                    header("Location: officer-home.php?login=success");
+                                    exit();
+                               
                             case "System Admin":
                             case "4":
+                                 if ($is_authenticated = 1) {
                                 header("Location: sysadmin_home.php?login=success");
                                 exit();
+                                 }
 
                             default:
                                 $error = "Access level not recognized. Please contact administrator.";
                                 break;
+                        }
                         }
                     } else {
                         $stmtLog = $conn->prepare("INSERT INTO logtrails (username, action_type_id, ip_address, start_session, end_session, is_authenticated) VALUES (?, ?, ?, ?, ?, ?)");
