@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 header("Location: home.php?login=success");
                                 exit();
 
-                            case "Ward councillor":
+                            case "Ward Councillor":
                             case "2":
                                 $stmtW = $conn->prepare("SELECT ward_id FROM ward_councillors WHERE username = ? LIMIT 1");
                                 if ($stmtW) {
@@ -95,7 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         $_SESSION['ward_id'] = $wardRow['ward_id'];
                                     }
                                 }
-                                header("Location: ward_councillor_home.php?login=success");
+                                session_write_close();
+                                header("Location: Ward_Councillor/ward_councillor_home.php?login=success");
                                 exit();
 
                             case "Municipal Officer":
@@ -111,11 +112,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         $_SESSION['division'] = $div['division'];
                                     }
                                 }
+                                session_write_close();
                                 header("Location: officer-home.php?login=success");
                                 exit();
 
                             case "System Admin":
                             case "4":
+                                session_write_close();
                                 header("Location: sysadmin_home.php?login=success");
                                 exit();
 

@@ -71,8 +71,6 @@ a {
   padding: 0 1.5rem; 
   height: 80px; /* Explicit height replaces the removed vertical padding */
   width: 100%;
-  position: fixed; /* Keeps the header at the top of the viewport */
-  z-index: 500000000; /* Ensures the header stays above other content */
 }
 
 /* Keeps logo and sign-in button vertically centered, preventing them from stretching */
